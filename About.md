@@ -1233,5 +1233,14 @@ export default Timer;
 - Efficiency: Only updates parts of the DOM that actually changed, reducing the need for reflows and repaints.
 - Declarative UI: You describe what your UI should look like for any given state, and React takes care of making the necessary updates.
 
+## Functional vs Class Component
+
+| **Functional Components                  **                                                            | **                         Class Components                 **                                 |
+|--------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| **A functional component is just a plain JavaScript pure function that accepts props as an argument ** | A class component requires you to extend from React. Component and create a render function    |
+| **No render method used**                                                                              | It must have the render() method returning JSX                                                 |
+| **Also known as Stateless components **                                                                | Also known as Stateful components                                                              |
+| **React lifecycle methods (for example, componentDidMount) cannot be used in functional components.**  | React lifecycle methods can be used inside class components (for example, componentDidMount).  |
+| **Constructors are not used.**                                                                         | Constructor is used as it needs to store state.                                                |
 
 
