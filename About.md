@@ -47,7 +47,7 @@ npx create-react-app textutilities              OR          npm create-react-app
 
 - Post running the `npx` command we can see below folder structure gets created.
 
-![alt text](Images/Images/image-1.png)
+![alt text](Images/image-1.png)
 
 - Here’s a simple breakdown of each part:
     - **node_modules**: This is a folder that contains all the code libraries (called `packages`) your app needs to run. When you install libraries with npm, they go here. You usually don’t touch this folder directly. Basically the dependencies.
@@ -163,7 +163,7 @@ To create a production build, use npm run build.
 
 - On browser we can see 
 
-![alt text](Images/Images/image-2.png)
+![alt text](Images/image-2.png)
 
 - In the **App.js** file, if we change the content, its get reflected automatically
 
@@ -197,7 +197,7 @@ export default App;
 
 - On browser
 
-![alt text](Images/Images/image-3.png)
+![alt text](Images/image-3.png)
 
 - Lets edit the **App.js** file and lets some implement basic elements
 
@@ -220,7 +220,7 @@ export default App;
 
 - On browser 
 
-![alt text](Images/Images/image-4.png)
+![alt text](Images/image-4.png)
 
 - If you observer , we have defined Javascript variable `let h1Content="ABC"` and used it inside the HTML `<h1>Hello!, My name is {h1Content}</h1>`. The `return` function thus gives us HTML,CSS and JS code, the component that is returned by `App` function is called **JSX (JavaScript XML)**.
 - JSX stands for JavaScript XML. It’s a syntax that lets you write HTML-like code directly in JavaScript files. Even though it looks like HTML, it’s actually JavaScript under the hood. JSX makes it easy to combine JavaScript logic and HTML structure within your components, so your code stays readable and organized.
@@ -275,7 +275,7 @@ export default App;
 
 - The above code will give error
 
-![alt text](Images/Images/image-5.png)
+![alt text](Images/image-5.png)
 
 - Why so? In React, every component can return only one single parent element. This is a design decision because React needs a single “container” element to manage each component **effectively within the Virtual DOM**, which keeps rendering updates efficient. Fewer DOM elements mean lighter page structure, which can improve page load times and rendering.
 
@@ -326,7 +326,7 @@ export default App;
 
 - On browser 
 
-![alt text](Images/Images/image-6.png)
+![alt text](Images/image-6.png)
 
 - Alternatively you can use `<>..</>` short syntax for fragments.
 
@@ -405,7 +405,7 @@ import { add, subtract } from './utils'; // Named import, must use exact names
 
 - Now we wanted to build first this below Navigation bar.
 
-![alt text](Images/Images/image-7.png)
+![alt text](Images/image-7.png)
 
 - So lets consider that we will be having navigation bar as one of the component. First create a component folder (`/src/components`) which will consist all your components of your web page.
 - Lets create `Navbar.js` file and export the function `Navbar` as default export. Since navigation requires list of items, the below code snip of HTML elements you gonna get it from [bootstrap](https://getbootstrap.com/docs/4.4/components/navbar/#supported-content). Using the template , tweaking it little bit we modify as per the require page above.
@@ -574,7 +574,7 @@ export default App;
 
 - On browser console
 
-![alt text](Images/Images/image-8.png)
+![alt text](Images/image-8.png)
 
 
 - You can also add some default values. To specify a default value for a prop if it’s not provided, you can use the `defaultProps` property. This is helpful for props that can have a fallback value.
@@ -605,7 +605,7 @@ export default App;
 
 - On browser
 
-![alt text](Images/Images/image-9.png)
+![alt text](Images/image-9.png)
 
 
 >[!WARNING]
@@ -799,7 +799,7 @@ export default function TextInput(){
 
 - On browser
 
-![alt text](Images/Images/image-10.png)
+![alt text](Images/image-10.png)
 
 ## React Router
 
@@ -978,7 +978,7 @@ export default TextFilters;
 
 - On browser
 
-![alt text](Images/Images/image-11.png)
+![alt text](Images/image-11.png)
 
 - Lets add state into our class component.
 
@@ -1040,7 +1040,7 @@ You can also initialize state directly using class property .
 
 - On browser
 
-![alt text](Images/Images/image-12.png)
+![alt text](Images/image-12.png)
 
 ## Lifecycle of Component
 
@@ -1124,11 +1124,11 @@ export default TextFilters;
 
 - On browser
 
-![alt text](Images/Images/image-13.png)
+![alt text](Images/image-13.png)
 
 - Now when you switch to another menu, the component gets **unmounted**.
 
-![alt text](Images/Images/image-14.png)
+![alt text](Images/image-14.png)
 
 - **Every React component has a lifecycle, and may manage state and/or have side effects depending on its functionality. Not every component needs to manage state. Some components are purely presentational and receive data through `props`, without maintaining their own internal state. Similarly, not all components have side effects. Side effects are actions that interact with the outside world, like fetching data, updating the DOM directly, or subscribing to events. Components that only render UI based on props might not need side effects.**
 - State is a JavaScript object that holds data relevant to a component. In class components, you typically manage state using the component's constructor and `this.setState()` whereas in functional component we use `useState` hook set method. The state can hold various values, and when the state changes, the component re-renders.
@@ -1186,7 +1186,7 @@ export default Timer;
 
 - The DOM, or Document Object Model, is a representation of the HTML structure that allows JavaScript to interact with and manipulate the elements on a webpage. Each HTML element is a node in the DOM tree, with parent-child relationships based on their nesting in the HTML code.
 
-![alt text](Images/Images/image-15.png)
+![alt text](Images/image-15.png)
 
 - Web browsers utilize the DOM tree to represent and manipulate HTML documents, which enables easy identification and positioning of elements within the browser’s display.
 - However, modifying or making changes to DOM elements is a resource intensive and time-consuming process. When a DOM element is altered, the browser has to recalculate the element’s size and position, as well as repaint the screen. This process can be slow, especially for larger applications, because even minor updates might cause extensive re-rendering and repainting of the entire UI.
