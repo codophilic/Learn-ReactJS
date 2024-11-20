@@ -51,8 +51,8 @@ npx create-react-app textutilities              OR          npm create-react-app
 
 - Here’s a simple breakdown of each part:
     - **node_modules**: This is a folder that contains all the code libraries (called `packages`) your app needs to run. When you install libraries with npm, they go here. You usually don’t touch this folder directly. Basically the dependencies.
-    - **package.json**: This file keeps track of the libraries and versions your app uses. It also contains some basic information about your app, like its name and version. It’s like the app’s “table of contents” for dependencies.
-    - **package-lock.json**: This file “locks” the specific versions of each library so that if someone else installs your app, they get the exact same versions. It helps make sure everything works the same on different computers.
+    - **package.json**: **This file keeps track of the libraries and versions your app uses**. It also contains some basic information about your app, like its name and version. It’s like the app’s “table of contents” for dependencies.
+    - **package-lock.json**: **This file “locks” the specific versions of each library** so that if someone else installs your app, they get the exact same versions. It helps make sure everything works the same on different computers.
     - **src** (Source): This folder is where you write most of your code! It contains the app’s main logic and components. You’ll find files like **`App.js`** here, which is the main file for your app’s code.
     - **public**: This folder holds files that won’t change, like images or the main HTML file (`index.html`). React injects your code into this HTML file so it can show up on the web page.
     - **README.md**: This file usually has information about your app, like what it does and how to run it. It’s helpful for others who might work on your app later.
@@ -625,7 +625,7 @@ export default App;
 > ```
 
 
-- Instead of writing `prop.attributeName` we can also write `attributeName` providing the function accepts object of attributes like below.
+- Instead of writing `prop.attributeName (e.g prop.tab1)` we can also write `attributeName (e.g {tab1})` providing the function accepts object of attributes like below.
 
 ```
 export default function Navbar({navTitle,tab1,tab2}){
@@ -737,7 +737,7 @@ export default function TextInput(){
 }
 ```
 
-- Here `useState` will be used to manage the state of the within the functional component `TextInput`. 
+- Here `useState` will be used to manage the state of the `inputUser` within the functional component `TextInput`. 
 
 ```
 export default function TextInput() {
@@ -925,6 +925,37 @@ Navbar.propTypes={
 //     tab1: "Some Tab1",
 //     tab2: "Some Tab2"
 // }
+```
+
+- In **App.js**, we have mentioned the routes whenever the user clicks on certain tab.
+
+```
+import React from 'react';
+import './App.css';
+import About from './components/About';
+import Navbar from './components/Navbar';
+import TextInput from './components/TextInput';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import TextFilters from './components/TextFilters';
+import Timer from './components/Timer';
+
+function App() {
+  return (
+    <Router>
+      <Navbar navTitle="Text Utilities" tab1="Home" tab2="About" tab3="Text Filtration" tab4="Timer"/>
+      <div className="container">
+        <Routes>
+          <Route path="/" element={<TextInput />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/filter" element={<TextFilters />} />
+          <Route path="/timer" element={<Timer />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
 ```
 
 - `BrowserRouter`: Wraps your application and enables routing functionality. 
@@ -1238,12 +1269,12 @@ export default Timer;
 
 ## Functional vs Class Component
 
-| **Functional Components                  **                                                            | **                         Class Components                 **                                 |
+| **Functional Components**                                                            | **Class Components**                              |
 |--------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
-| **A functional component is just a plain JavaScript pure function that accepts props as an argument ** | A class component requires you to extend from React. Component and create a render function    |
-| **No render method used**                                                                              | It must have the render() method returning JSX                                                 |
-| **Also known as Stateless components **                                                                | Also known as Stateful components                                                              |
-| **React lifecycle methods (for example, componentDidMount) cannot be used in functional components.**  | React lifecycle methods can be used inside class components (for example, componentDidMount).  |
-| **Constructors are not used.**                                                                         | Constructor is used as it needs to store state.                                                |
+| A functional component is just a plain JavaScript pure function that accepts props as an argument | A class component requires you to extend from React. Component and create a render function    |
+| No render method used                                                                             | It must have the render() method returning JSX                                                 |
+| Also known as Stateless components                                                                | Also known as Stateful components                                                              |
+| React lifecycle methods (for example, componentDidMount) cannot be used in functional components.  | React lifecycle methods can be used inside class components (for example, componentDidMount).  |
+| Constructors are not used.                                                                        | Constructor is used as it needs to store state.                                                |
 
 
