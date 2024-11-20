@@ -23,14 +23,14 @@ npx create-react-app textutilities              OR          npm create-react-app
 
 - Whats the difference between **npx** and **npm**?
 
-### `npx`
+### `npx (Node Package eXecute)`
 
 - `npx create-react-app my-app`
     - One-time use: `npx` lets you use `create-react-app` without installing it on your computer.
     - Always up-to-date: It will always get the latest version automatically.
     - Recommended for most people: Since it doesn’t leave extra files on your computer, it’s a cleaner and easier option if you don’t make React apps every day.
 
-### `npm`
+### `npm (Node Package Manager)`
 - `npm install -g create-react-app` and then `create-react-app my-app`
     - Permanent install: You’re adding create-react-app to your computer, so it’s ready whenever you want to make a new React app.
     - You’re responsible for updates: It stays at that version until you update it yourself.
@@ -148,6 +148,9 @@ export default App;
   cd texutilities
   npm start
 ```
+
+>[!NOTE]
+> - `node_modules` folder is required to start your application and **it is not usually committed in github repositories because it can be regenerated again by using `npm install`**. So first generate the `node_modules` by running command `npm install` then start your application.
 
 - In Terminal
 
