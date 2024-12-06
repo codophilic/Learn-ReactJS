@@ -1,7 +1,7 @@
 # About React JS
 
-- React.js is a JavaScript library and not a framework for building user interfaces, primarily for single-page applications where the data dynamically updates without requiring a full page reload. 
-- It’s component-based, which means it lets developers create reusable UI components that manage their own state. React was originally developed by Facebook (now Meta), which introduced it in 2013 to solve the challenges of managing complex and interactive user interfaces.
+- **React.js** is a JavaScript library and not a framework for building user interfaces, primarily for single-page applications where the data dynamically updates without requiring a full page reload. 
+- It's component-based, which means it lets developers create reusable UI components that manage their own state. React was originally developed by Facebook (now Meta), which introduced it in 2013 to solve the challenges of managing complex and interactive user interfaces.
 
 ## Component Based 
 
@@ -39,7 +39,7 @@ npx create-react-app textutilities              OR          npm create-react-app
 
 >[!NOTE]
 > - For most people, `npx create-react-app my-app` is easier and recommended. It keeps things simple by always using the latest version without installing extra stuff on your computer. 
-> - For most developers, using npx create-react-app my-app is recommended because:
+> - For most developers, using `npx create-react-app my-app` is recommended because:
 >   - It saves space by not permanently installing the tool.
 >   - It ensures you’re always using the latest version.
 
@@ -225,14 +225,14 @@ export default App;
 
 ![alt text](Images/image-4.png)
 
-- If you observer , we have defined Javascript variable `let h1Content="ABC"` and used it inside the HTML `<h1>Hello!, My name is {h1Content}</h1>`. The `return` function thus gives us HTML,CSS and JS code, the component that is returned by `App` function is called **JSX (JavaScript XML)**.
+- If you observer , we have defined Javascript variable `let h1Content="ABC"` and used it inside the HTML `<h1>Hello!, My name is {h1Content}</h1>`. The `return` function thus gives us HTML, CSS and JS code, the component that is returned by `App` function is called **JSX (JavaScript XML)**.
 - JSX stands for JavaScript XML. It’s a syntax that lets you write HTML-like code directly in JavaScript files. Even though it looks like HTML, it’s actually JavaScript under the hood. JSX makes it easy to combine JavaScript logic and HTML structure within your components, so your code stays readable and organized.
 - JSX makes it easy to see both the structure (HTML-like) and logic (JavaScript) of your components in one place. Instead of splitting code between HTML files and JavaScript files, JSX lets you:
     - Build UI components directly in JavaScript.
     - Embed logic (like `{h1Content}`) alongside your HTML structure.
     - Style elements directly with className or inline CSS.
-- JSX is very similar to HTML, but it has a few key differences in how attributes are named.
--  In JavaScript, `class` is a reserved keyword used to define classes (for example, `class MyComponent {}`). So, React uses `className` instead to avoid conflicts. Similarly, `for` is a reserved word in JavaScript (used in `for` loops). So, React uses `htmlFor` instead when setting labels for inputs in JSX. In HTML, `tabindex` is all lowercase, but in JSX, it’s `tabIndex` with camelCase, which matches JavaScript naming conventions.
+- JSX is very similar to HTML, but it has a few key differences in how attributes are named as we are writing HTML code inside javascript file, there will be conflict in the keywords preserved by both of them.
+-  In JavaScript, `class` is a reserved keyword used to define classes (for example, `class MyComponent {}`). So, React uses `className`, to avoid conflicts. Similarly, `for` is a reserved word in JavaScript (used in `for` loops). So, React uses `htmlFor` instead when setting labels for inputs in JSX. In HTML, `tabindex` is all lowercase, but in JSX, it’s `tabIndex` with camelCase, which matches JavaScript naming conventions.
 - Most other HTML attributes remain the same (like `src`, `alt`, `title`, etc.), as they don’t conflict with JavaScript syntax. However, custom attributes or event handlers are camelCased, like `onClick` and `onChange`.
 - Behind the scenes, JSX is **transformed by tools like Babel** into JavaScript `React.createElement() `calls. When you use JSX, the compiler transforms it into React function calls that the browser can understand.
 
