@@ -5,7 +5,8 @@
 
 ## Component Based 
 
-- What does **component-based** means??
+### What does **component-based** means??
+
 - Lets say you wanna build below page
 
 ![alt text](Images/image.png)
@@ -15,6 +16,13 @@
 - Each component will have its own CSS and JS. So whenever you wanna change any part of your page, you just require to edit that particular component CSS or JS.
 - These component can be reuse as well. Lets say in the above image, there are 3 widgets (**Read, Practice and Learn**). If you observer the styling and layout are same. Only the content and images are being varying, so you can make a generalize component of that widget and reuse it by passing the content and images. Any change require will be affected to 3 of them.
 - That's why React is a component based library. Each component is a small, reusable piece of UI that manages its own state and renders as needed.
+
+
+![alt text](image.png)
+
+
+- Components are reusable and independent building blocks of a React application's user interface. They divide the UI into smaller, manageable parts, making development, testing, and maintenance easier. Each component manages its own logic and appearance, allowing for modular and organized code.
+- Components promote reusability, reducing code duplication and development time. A component can be used multiple times throughout the application, even in different projects, ensuring consistency and efficiency. When changes are needed, updating a single component automatically reflects those changes everywhere it's used.
 - Lets start create a project using React JS.
 
 ```
@@ -225,7 +233,7 @@ export default App;
 
 ![alt text](Images/image-4.png)
 
-- If you observer , we have defined Javascript variable `let h1Content="ABC"` and used it inside the HTML `<h1>Hello!, My name is {h1Content}</h1>`. The `return` function thus gives us HTML, CSS and JS code, the component that is returned by `App` function is called **JSX (JavaScript XML)**.
+- If you observer , we have defined Javascript variable `let h1Content="ABC"` and used it inside the HTML `<h1>Hello!, My name is {h1Content}</h1>`. The `return` function thus gives us HTML, CSS and JS code, the component that is returned by `App` function is called **JSX (JavaScript XML or JavaScript syntax eXtension)**.
 - JSX stands for JavaScript XML. It’s a syntax that lets you write HTML-like code directly in JavaScript files. Even though it looks like HTML, it’s actually JavaScript under the hood. JSX makes it easy to combine JavaScript logic and HTML structure within your components, so your code stays readable and organized.
 - JSX makes it easy to see both the structure (HTML-like) and logic (JavaScript) of your components in one place. Instead of splitting code between HTML files and JavaScript files, JSX lets you:
     - Build UI components directly in JavaScript.
