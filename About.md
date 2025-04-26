@@ -250,6 +250,69 @@ export default App;
 
 ![alt text](Images/image-3.png)
 
+- Using `{}` curly braces in React's JSX syntax are used to embed JavaScript expressions, allowing for the dynamic passing of values. These expressions can include variables, function calls, and even inline operations, providing flexibility in rendering dynamic content.
+- So below is `App.js` file
+
+```
+import React from 'react';
+import './App.css';
+
+function App() {
+  const greeting = `Hello, Harsh!`;
+  const randomNumber = Math.floor(Math.random() * 10);
+
+  return (
+    <div>
+      <p>{greeting}</p>
+      <p>Random Number: {randomNumber}</p>
+      <p>2 + 2 = {2 + 2}</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-6.png)
+
+- We can import images or any assets in react
+
+```
+import React from 'react';
+import './App.css';
+import reactImage from './logo.svg';
+
+function App() {
+  const greeting = `Hello, Harsh!`;
+  const randomNumber = Math.floor(Math.random() * 10);
+  const style ={
+   height : 400,
+   width : 400,
+  }
+
+  return (
+    <div>
+      <img src={reactImage} height={style['width']} alt="Placeholder" />
+      <p>{greeting}</p>
+      <p>Random Number: {randomNumber}</p>
+      <p>2 + 2 = {2 + 2}</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-7.png)
+
+- It is possible to import various types of assets in React, including images, and they are handled as objects. When you import an image (or other file types) in React using the `import` statement, it doesn't directly embed the file's content into your code. Instead, it creates a reference, which acts like an object containing information about the imported asset, such as its path.
+- `reactImage` becomes an object that holds the resolved path to the image file. In a React project (especially with bundlers like Webpack, Vite, Create React App), you can import not just `.js` or `.jsx` files - you can also import images, CSS files, JSON files, SVGs, and more.
+- When you import these files, they don’t behave like raw files, they behave like JavaScript objects or URLs that point to the final processed file.
+- `reactImage` is not the image itself. It's a string that contains the URL to the optimized image file after build. React (and Webpack) bundle it properly so it works even when you deploy.
 - Lets edit the **App.js** file and lets some implement basic elements
 
 ```
@@ -530,6 +593,7 @@ export default App;
 
 - There you only find default HTML elements, for example, here, the `h1` tag & `div` which is the built-in header element, not our custom component, not our `<Headers>` component. We also don't see the `<App>` component in here.
 - So your tree of components is, in the end, just analyzed by React. And React then combines all the JSX code from all those components to generate the overall DOM and then these elements that are showing up on the screen.
+- React translates your JSX into a component tree that represents the UI structure, which it then uses to efficiently update the actual webpage by changing the DOM, helping you build dynamic interfaces smoothly.
 
 ## Import Export
 
