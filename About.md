@@ -147,8 +147,48 @@ export default App;
     - **React Injection Point**: React uses JavaScript to inject everything from `App.js` and other components into this root `div`. So, instead of having lots of HTML files, React puts everything inside this single `index.html` through JavaScript.
 - **`index.js`** (in the src Folder)
     - **Starting Point**: `index.js` is where React’s code starts running. It’s like the “control center” that tells React what to display.
-    - **Connecting `App.js` to `index.html`**: `index.js` imports `App.js` and then uses a React function (`ReactDOM.render`) to load everything from `App.js` into the root div in `index.html`. If you see in `index.js` there is an `<App/>` tag , this is a component 
+    - **Connecting `App.js` to `index.html`**: `index.js` imports `App.js` and then uses a React function (`ReactDOM.render`) to load everything from `App.js` into the root div in `index.html`. If you see in `index.js` there is an `<App/>` tag , this is a component
 
+- Inside **`index.js`** file we can see below code
+
+```
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+- `document.getElementById('root')` it finds the `<div>` in `index.html` with `id="root"` inside `index.html`. It's just plain JavaScript DOM manipulation — like you do in vanilla JS.
+- `ReactDOM.createRoot(...)` creates a "root" React container. New in React 18 this uses "concurrent rendering", which is faster and smarter than the old `ReactDOM.render(...)`. It tells React *Hey React, this is the area of the page (the 'root' div) where you will take control and manage everything.*
+- `.render(...)` injects and renders your entire React component tree inside that root div. Here you're saying *Render the `<App /> `component inside `<div id="root"></div>`.*
+- What is `<React.StrictMode>`? It’s a helper component (does not render anything visible). It enables additional checks and warnings for:
+  - Detecting side effects.
+  - Warning about deprecated APIs.
+  - Double-invoking some lifecycle methods (only in development mode, not in production).
+
+```
+// index.html
+<body>
+  <div id="root">
+    <!-- React will inject App here -->
+  </div>
+</body>
+
+index.jsx:
+- find div#root
+- create a React "root" inside that div
+- render <App /> inside that root
+Result after rendering looks like:
+
+<body>
+  <div id="root">
+    <div> <!-- All your App component and its children are here --> </div>
+  </div>
+</body>
+```
 
 - Lets run our simple app
 
@@ -235,6 +275,11 @@ export default App;
 
 - If you observer , we have defined Javascript variable `let h1Content="ABC"` and used it inside the HTML `<h1>Hello!, My name is {h1Content}</h1>`. The `return` function thus gives us HTML, CSS and JS code, the component that is returned by `App` function is called **JSX (JavaScript XML or JavaScript syntax eXtension)**.
 - JSX stands for JavaScript XML. It’s a syntax that lets you write HTML-like code directly in JavaScript files. Even though it looks like HTML, it’s actually JavaScript under the hood. JSX makes it easy to combine JavaScript logic and HTML structure within your components, so your code stays readable and organized.
+
+
+![alt text](image-1.png)
+
+
 - JSX makes it easy to see both the structure (HTML-like) and logic (JavaScript) of your components in one place. Instead of splitting code between HTML files and JavaScript files, JSX lets you:
     - Build UI components directly in JavaScript.
     - Embed logic (like `{h1Content}`) alongside your HTML structure.
@@ -265,6 +310,84 @@ export default App;
 ```
 
 - Using JSX isn’t mandatory, but it’s popular because it makes React code more readable and expressive. If you don’t use JSX, you’ll need to use pure JavaScript to define elements. To make this work, React elements must be created using `React.createElement()`. Additionally, you need to defined a compiler like Babel (a JavaScript compiler) which is required to convert your code into JavaScript that the browser understands.
+- Consider below **App.js** file
+
+```
+import logo from './logo.svg';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Hello World
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+    </div>
+  );
+}
+
+export default App;
+```
+
+
+- Here **`App()` is component and it is just a javascript function returning a renderable content**.
+- **In React, component function names must start with a Capital Letter.** If you are writing your own React component, the name must start with a capital letter like `MyComponent`, `Header`, `LoginForm`, etc.
+- Why so? React depends on capitalization to decide:
+  - If a tag is a custom component (like `<MyComponent />`)
+  - Or a normal HTML tag (like `<div>`, `<h1>`, etc.)
+- If you start with a lowercase (like `loginform`), React will treat it like an HTML element — and will not render your component properly (or might throw a warning).
+- Wrong way of writing components
+
+```
+function loginform() {
+  return <h1>Login Form</h1>;
+}
+
+// In App.jsx
+export default function App() {
+  return (
+    <div>
+      <loginform /> {/* React thinks 'loginform' is an HTML tag. */}
+    </div>
+  );
+}
+```
+
+- Correct way of writing components
+
+```
+function LoginForm() {
+  return <h1>Login Form</h1>;
+}
+
+// In App.jsx
+export default function App() {
+  return (
+    <div>
+      <LoginForm /> {/* React knows this is a component */}
+    </div>
+  );
+}
+```
+
+- In React, you can use both `.jsx` and `.js` file extensions for components.
+  - `.jsx` — This is the official extension for files containing JSX (i.e., JavaScript + HTML syntax like `<div>Hello</div>`).
+  - `.js` — Many projects still use `.js` even if they contain JSX. This is very common
+- Modern React setups (like Create React App, Vite, Next.js) are already configured to parse both `.js` and `.jsx` files with JSX inside.
+- React does not care about the file extension itself — it's the build tool (like Babel) that parses your code and converts JSX into regular JavaScript.
+- Use `.jsx` if the file mostly contains React components with JSX — it makes it easier for other developers (and yourself) to understand the file purpose at a glance.
+- But using `.js` is perfectly fine too — just be consistent across your project.
 - Lets create another `h1` tag
 
 ```
@@ -360,6 +483,53 @@ function App() {
 
 export default App;
 ```
+
+
+- When we inspect the HTML file we can see all the HTML elements are containerized under the `<div id='root'>` element
+
+![alt text](image-2.png)
+
+- Let's create our own simple header component for `h1` which will display `Hello`.
+
+```
+import './App.css';
+
+function Headers() {
+  return (
+      <h1>Hello</h1>
+  );
+}
+
+let h1Content="ABC"
+function App() {
+  return (
+    <>
+    <div className="App">
+      <h1>Hello!, My name is {h1Content}</h1>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur aspernatur a recusandae omnis consequuntur, impedit officiis at quae aut dignissimos nisi corporis fuga! Deserunt eum omnis voluptatum minus in adipisci.</p>
+    </div>
+    <Headers />
+    </>
+
+  );
+}
+
+export default App;
+```
+
+
+![alt text](image-4.png)
+
+- So the header and the paragraphy section, in the App component and our custom Header component are inside of that div with the id `root`. So the `createRoot` and `render` methods are responsible for rendering a single root component, the App component in this case, which then in turn may contain as many nested components as needed. And those nested components, it may include like this Header component in this case, could then contain even more child components. And with that, ultimately you end up with a component hierarchy, which is often called a tree of components, a structure of components, which is then rendered to the screen via React.
+
+![alt text](image-3.png)
+
+- Let's inspect the HTML, can we see our own custom HTML tag which is `<Header>`?
+
+![alt text](image-5.png)
+
+- There you only find default HTML elements, for example, here, the `h1` tag & `div` which is the built-in header element, not our custom component, not our `<Headers>` component. We also don't see the `<App>` component in here.
+- So your tree of components is, in the end, just analyzed by React. And React then combines all the JSX code from all those components to generate the overall DOM and then these elements that are showing up on the screen.
 
 ## Import Export
 
