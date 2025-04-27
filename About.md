@@ -1124,14 +1124,309 @@ export default App;
 - They enable dynamic and interactive user interfaces by allowing components to react to user input.
 - Let's see an example
 
+```
+// App.js
 
+import React from 'react';
+
+function onClickedHanlder() {
+  console.log('Button clicked');
+}
+
+function onMouseUpHandler() {
+  console.log('Mouse up');
+}
+function App() {
+  return (
+
+    <div>
+      <button onClick={onClickedHanlder}>Click me</button>
+      <p onMouseOver={onMouseUpHandler}>Click me</p>
+
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-16.png)
+
+
+- In React, you add event listeners directly in your JSX — similar to HTML but with a few important differences:
+  - CamelCase event names (like `onClick`, not *`onclick`*).
+  - You pass a function, not a string.
+- So here, we have added two events `onClick` and `onMouseOver` which calls two different methods `onClickedHanlder` and `onMouseUpHandler` respectively. React provides built-in event handlers (props) for most common DOM events, like:
+
+| **Type**             | **Examples**                                                    |
+|----------------------|-----------------------------------------------------------------|
+| **Mouse Events**     | onClick, onDoubleClick, onMouseEnter, onMouseLeave, onMouseMove |
+| **Keyboard Events**  | onKeyDown, onKeyPress, onKeyUp                                  |
+| **Form Events**      | onChange, onSubmit, onInput, onFocus, onBlur                    |
+| **Touch Events**     | onTouchStart, onTouchMove, onTouchEnd                           |
+| **UI Events**        | onScroll, onResize                                              |
+| **Drag Events**      | onDrag, onDragStart, onDrop                                     |
+| **Clipboard Events** | onCopy, onCut, onPaste                                          |
+| **Media Events**     | onPlay, onPause, onEnded, onVolumeChange                        |
+
+
+- You don't need to manually attach listeners like `addEventListener` — React does it behind the scenes for you. Here, you are passing function as a props in your component.
+- How does react handles these events? React uses something called Synthetic Events — a lightweight wrapper around native browser events — to make sure events work the same way across all browsers.
+- In plain JavaScript (without React), if you write:
+
+```
+<button onclick="alert('Clicked!')">Click me</button>
+or
+
+
+document.getElementById('btn').addEventListener('click', function() {
+  alert('Clicked!');
+});
+```
+
+- The browser directly gives you a native DOM Event. Different browsers (Chrome, Firefox, Safari) may handle tiny details a bit differently — which can cause bugs.
+- In React, you would have written
+
+```
+<button onClick={handleClick}>Click Me</button>
+
+function handleClick(event) {
+  console.log(event);  // SyntheticEvent!
+}
+```
+
+- A Synthetic Event is React’s own wrapper around the browser's native event.
+  - React catches the real browser event.
+  - Then wraps it inside a SyntheticEvent object.
+  - This object behaves almost exactly like the native event, but it’s consistent across all browsers
+- So basically when you click:
+  - Browser fires the native event (`click`).
+  - React catches it behind the scenes.
+  - React wraps it inside a SyntheticEvent.
+  - React gives your `handleClick(event)` this SyntheticEvent.
+- React’s Synthetic Events make your event handling reliable, clean, and faster across all browsers — without you worrying about browser differences.
+- React batches multiple events together (better for speed). It also automatically cleans up event objects after use, to avoid memory leaks.
+- Now let's say you wanted to pass some arguments into you event handler function
+
+```
+<button onClick={onClickedHanlder('name')}>Click me</button>
+```
+
+- You cannot write this ❌ , here you are executing the function immediately and passing its result. When you add an event handler like `onClick`, React expects you to give it a function, NOT the result of a function.
+- You need to use **anonymous function**. You are giving React a function to call later. When user clicks, the anonymous function `(() => sayHello('John'))` runs. Inside that, it calls `sayHello('John')`.
+
+```
+//App.js
+
+import React from 'react';
+
+function saHello(name) {
+  alert('Button clicked by ' + name);
+}
+
+function onMouseUpHandler() {
+  console.log('Mouse up');
+}
+function App() {
+  return (
+
+    <div>
+      <button onClick={()=> saHello('Harsh')}>Click me</button>
+
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-17.png)
 
 
 ## State
 
+- Consider below `App.jsx` file 
+
+```
+import React from 'react';
+import Card from './components/Card/Card.jsx';
+
+function App() {
+
+  let initialText = "Learning about React is fun!";
+
+  function onClickHandler() {
+    initialText = "You clicked the button!";
+    console.log(initialText);
+  }
+
+  return (
+      <div>
+      <Card name="Click the button to change text">
+        {initialText}
+        
+        <div>
+        <button onClick={onClickHandler}>Click Me</button>
+        </div>
+      </Card>
+      </div>
+  );
+}
+
+export default App;
+
+// Card.jsx
+import index from './card.css'
+
+export default function Card(props){
+    return(
+        <div className='card'>
+        <h2>{props.name}</h2>
+        {props.children}
+        </div>
+        
+        );
+}
+```
+
+- On browser when we click on the button, the value of text `Learning about React is fun!` does not gets changed to `You clicked the button!`.
+
+<video controls src="2025-1.mov" title="title"></video>
+
+
+
+- The `onClick` hanlder `onClickHandler` is getting executed by the on the page it does not shows up the latest content of variable `initialText`. Why so? **In React, components only load once initially.** If you want to reload your component or execute the component again, you need to tell this to React. It will not automatically execute and show up the contents.
+- To manage dynamic data within a component and trigger re-renders to reflect changes, React provides the state mechanism.
 - State is like a component's memory. It’s a way to store information that can change over time as the user interacts with the app. Think of state as a variable that "remembers" values between renders of your component.
 - For example, if you have a counter component that displays a number on the screen and you want it to increase every time the user clicks a button, that number needs to be stored somewhere. That’s where state comes in—it holds the current value of the counter and can be updated every time the button is clicked.
-- Now our page will accept input text from the user, and based on it will perform operation on it like upper case etc.., So lets create a **TextInput.js**.
+- React provides `useState` function, which manages the state of component. `useState()` yields an array of with two elements and it will be always exactly two elements.
+- Let's see an simple example of `useState()`
+
+```
+import React, { useState } from 'react';
+import Card from './components/Card/Card.jsx';
+
+
+let number_ofClicks = 0;
+
+function App() {
+
+  const [ initialText, setInitialText ] = useState("Learning about React is fun!");
+
+  function onClickHandler() {
+    const text = "You clicked the button! " + number_ofClicks;
+    setInitialText(text);
+    number_ofClicks++;
+    console.log(text);
+  }
+
+  return (
+      <div>
+      <Card name="Click the button to change text">
+        {initialText}
+        
+        <div>
+        <button onClick={onClickHandler}>Click Me</button>
+        </div>
+      </Card>
+      </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-2.mov" title="title"> </video>
+
+
+- Here, `initialtext` is stored as state, When you call `setInitialText`, React:
+  - Updates the value.
+  - Re-renders the component.
+  - Shows the new text on the screen!
+- We cannot update like this, for updating the value we need to use the set method
+
+```
+this.initialText = "New Content" ❌
+```
+
+
+![alt text](image-18.png)
+
+>[!NOTE]
+> - Rules for `useState()`
+> 
+> ![alt text](image-19.png)
+
+- Consider below JSX files
+
+```
+// App.js
+
+import React, { useState } from 'react';
+import Card from './components/Card/Card.jsx';
+
+
+let number_ofClicks = 0;
+
+function App() {
+
+  const [ initialText, setInitialText ] = useState("Learning about React is fun!");
+
+  function onClickHandler() {
+    const text = "You clicked the button! " + number_ofClicks;
+    setInitialText(text);
+    number_ofClicks++;
+    console.log(text);
+  }
+
+  return (
+      <div>
+      <Card name="Click the button to change text">
+        {initialText}
+        
+        <div>
+        <button onClick={onClickHandler}>Click Me</button>
+        </div>
+      </Card>
+      </div>
+  );
+}
+
+export default App;
+
+
+// Card.jsx
+
+import index from './card.css'
+
+export default function Card(props){
+
+    console.log("Card component rendered");
+    return(
+        <div className='card'>
+        <h2>{props.name}</h2>
+        {props.children}
+        </div>
+        
+        );
+}
+```
+
+- When we execute it, on browser we can see
+
+
+<video controls src="2025-3.mov" title="title"></video>
+
+- Whenever we click on the button, the `Card` component also gets rendered. So does state reload the whole component?
+  - ✅Yes, the entire component function runs again! But not the whole page, just this component.
+- Every tag inside the component of `App` (`div`, `Card` etc..) will be re-rendered. So **state reloads the whole component**.
+- Continuing out text utility website, now our page will accept input text from the user, and based on it will perform operation on it like upper case etc.., So lets create a **TextInput.js**.
 
 ```
 import React from 'react'
@@ -1261,6 +1556,377 @@ export default function TextInput(){
 - On browser
 
 ![alt text](Images/image-10.png)
+
+## Conditional Rendering
+
+- Conditional rendering in React allows for displaying different UI elements or components based on certain conditions. This dynamic rendering ensures that the user interface updates in response to changes in application state or user interactions. Several approaches facilitate conditional rendering in React.
+- Let's see you need to render below image in case of, when `delete` button is clicked.
+
+![alt text](image-20.png)
+
+- So current **App.jsx**
+
+```
+// App.jsx
+
+import React from 'react';
+import indexcss from './index.css';
+
+function App() {
+  return (
+      <div>
+        <div data-testid="alert" id="alert">
+          <h2>Are you sure?</h2>
+          <p>These changes can't be reverted!</p>
+          <button>Proceed</button>
+        </div>
+      <button>Delete</button>
+      </div> 
+  );
+}
+
+export default App;
+
+
+//index.css
+
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 3rem;
+  background-color: #2d2c2c;
+  color: #959090;
+  text-align: center;
+}
+
+#alert {
+  margin: 3rem auto;
+  padding: 1rem;
+  width: 15rem;
+  border: 2px solid #dd3562;
+  background-color: #776167;
+  color: white;
+}
+
+#alert button {
+  font: inherit;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  background-color: 540218;
+  color: rgb(244, 240, 240);
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #651329;
+
+}
+```
+
+- On browser
+
+![alt text](image-21.png)
+
+- So here, both component are getting rendered. So we want only one component to render at a particular time, when we click on `delete` button, the warning card must appear and when click on `Proceed` button, again the `delete` button must appear. This type of conditional rendering can be done in multple ways.
+
+### 1. Simple If/Else Statement
+
+- Below is an example in `App.js`
+
+```
+import React from 'react';
+import indexcss from './index.css';
+
+
+
+
+function App() {
+  const [isDeleteButtonClicked, setIsDeleteButtonClicked] = React.useState(false);
+  let content = null;
+if(isDeleteButtonClicked) {
+  content =  (<div data-testid="alert" id="alert">
+    <h2>Are you sure?</h2>
+    <p>These changes can't be reverted!</p>
+    <button onClick={()=>setIsDeleteButtonClicked(false)}>Proceed</button></div>)
+}
+else{
+  content = (<button onClick={()=>setIsDeleteButtonClicked(true)}>Delete</button>)
+}
+  return (
+      <div>
+        {content}
+      </div> 
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-4.mov" title="title"></video>
+
+### 2. Ternary Operator
+
+- Below is an example in `App.js`
+
+```
+import React from 'react';
+import indexcss from './index.css';
+
+
+
+
+function App() {
+  const [isDeleteButtonClicked, setIsDeleteButtonClicked] = React.useState(false);
+
+  return (
+      <div>
+        {isDeleteButtonClicked ?
+        (<div data-testid="alert" id="alert">
+          <h2>Are you sure?</h2>
+           <p>These changes can't be reverted!</p>
+          <button onClick={()=>setIsDeleteButtonClicked(false)}>Proceed</button></div>)
+          : 
+          (<button onClick={()=>setIsDeleteButtonClicked(true)}>Delete</button>)}
+      </div> 
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-4.mov" title="title"></video>
+
+### 3. Logical Operator (`&&` or `||`)
+
+- Below is an example in `App.js`
+
+```
+import React from 'react';
+import indexcss from './index.css';
+
+function App() {
+  const [isDeleteButtonClicked, setIsDeleteButtonClicked] = React.useState(false);
+
+  return (
+      <div>
+        {isDeleteButtonClicked &&
+        (<div data-testid="alert" id="alert">
+          <h2>Are you sure?</h2>
+           <p>These changes can't be reverted!</p>
+          <button onClick={()=>setIsDeleteButtonClicked(false)}>Proceed</button></div>)}
+
+          
+          {!isDeleteButtonClicked && (<button onClick={()=>setIsDeleteButtonClicked(true)}>Delete</button>)}
+      </div> 
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-4.mov" title="title"></video>
+
+- Similarly we can also apply conditional styling 
+
+```
+//App.js
+import React from 'react';
+
+export default function App() {
+    const [isToggled, setIsToggled] = React.useState(undefined)
+    return (
+        <div>
+            <p className={isToggled}>Style me!</p>
+            <button onClick={() => setIsToggled((isToggled)? undefined:'active')}>Toggle style</button>
+        </div>
+    );
+}
+
+
+
+//index.css
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 3rem;
+    background-color: #2d2c2c;
+    color: #959090;
+    text-align: center;
+}
+
+.active {
+    color: red;
+}
+```
+
+- On browser
+
+<video controls src="2025-5.mov" title="Title"></video>
+
+## Dynamic List Rendering
+
+
+- Dynamic list content in React refers to rendering lists of items where the content or the number of items can change during the application's runtime. Instead of hardcoding list elements, React uses data-driven approaches to generate and update lists based on data changes.
+- Now consider below code 
+
+
+```
+//App.js
+
+import React from 'react';
+import Todo from './Todo'
+
+export const DUMMY_TODOS = [
+    'Learn React',
+    'Practice React',
+    'Profit!'
+];
+
+export default function App() {
+  return (
+      <div>
+      <Todo content={DUMMY_TODOS[0]}/>
+      <Todo content={DUMMY_TODOS[1]}/>
+      <Todo content={DUMMY_TODOS[2]}/>
+      </div>
+      );
+}
+
+//index.css
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 3rem;
+    background-color: #2d2c2c;
+    color: #959090;
+    text-align: center;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+    margin: 1rem;
+    padding: 1rem;
+    background-color: #8567fd;
+    color: white;
+    border: 2px solid #8567fd;
+    border-radius: 6px;
+}
+
+//Todo.js
+import React from 'react';
+
+export default function Todo({content}) {
+    return <li>{content}</li>;
+}
+```
+
+- On browser 
+
+![alt text](image-22.png)
+
+- Now if we mistakenly removed any items from the list `DUMMY_TODOS`, it would break the UI layout
+
+```
+
+//App.js
+
+import React from 'react';
+import Todo from './Todo'
+
+export const DUMMY_TODOS = [
+    'Learn React',
+    'Practice React',
+];
+
+export default function App() {
+  return (
+      <div>
+      <Todo content={DUMMY_TODOS[0]}/>
+      <Todo content={DUMMY_TODOS[1]}/>
+      <Todo content={DUMMY_TODOS[2]}/> // gives empty value
+      </div>
+      );
+}
+```
+
+- On browser
+
+![alt text](image-23.png)
+
+
+- If you add or remove an item, you have to change the code yourself. If you miss adding an item, your layout may break (missing items, wrong structure).
+- In such scenario, we can dynamically just update the data (array), UI updates automatically. Consider below code
+
+```
+//App.js
+
+import React from 'react';
+
+import Todo from './Todo'
+
+export const DUMMY_TODOS = [
+    'Learn React',
+    'Practice React',
+    'Profit!'
+];
+
+export default function App() {
+  return (
+      <div>
+      {
+          
+          DUMMY_TODOS.map(items=>(<Todo content={items}/>))
+      }
+      </div>
+      );
+}
+```
+
+- On browser
+
+
+![alt text](image-22.png)
+
+- To render dynamic lists, React utilizes the `map()` method on arrays. This method iterates through each item in an array and applies a function to transform it into a React element, typically a JSX structure.
+- If we inpsect the HTML, in the console we get below error message
+
+![alt text](image-24.png)
+
+- Each item in the list should also have a unique `key` prop to help React efficiently update the list when changes occur. `key` helps React track which item changed, added, or removed — for fast updates.
+- Example
+
+```
+function App() {
+  const users = [
+    { id: 1, name: 'John' },
+    { id: 2, name: 'Alice' },
+    { id: 3, name: 'Bob' }
+  ];
+
+  return (
+    <div>
+      <h1>Users</h1>
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
 
 ## React Router
 
