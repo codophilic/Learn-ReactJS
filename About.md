@@ -14,6 +14,9 @@
 - Traditionally , you would write several HTML, CSS and JS files. These files will be separately maintained. Any change in design or function , the corresponding CSS or JS file would be modified. This is an overhead task where developer needs to switch between these files.
 - The idea behind React is to break the page into several components. Referring above image, you will have component for menu bar, you will have component for *Read* , Similarly you will have component for *Practice* and so on.
 - Each component will have its own CSS and JS. So whenever you wanna change any part of your page, you just require to edit that particular component CSS or JS.
+
+![alt text](image-9.png)
+
 - These component can be reuse as well. Lets say in the above image, there are 3 widgets (**Read, Practice and Learn**). If you observer the styling and layout are same. Only the content and images are being varying, so you can make a generalize component of that widget and reuse it by passing the content and images. Any change require will be affected to 3 of them.
 - That's why React is a component based library. Each component is a small, reusable piece of UI that manages its own state and renders as needed.
 
@@ -22,6 +25,9 @@
 
 
 - Components are reusable and independent building blocks of a React application's user interface. They divide the UI into smaller, manageable parts, making development, testing, and maintenance easier. Each component manages its own logic and appearance, allowing for modular and organized code.
+
+![alt text](image-8.png)
+
 - Components promote reusability, reducing code duplication and development time. A component can be used multiple times throughout the application, even in different projects, ensuring consistency and efficiency. When changes are needed, updating a single component automatically reflects those changes everywhere it's used.
 - Lets start create a project using React JS.
 
@@ -757,6 +763,241 @@ export default function Navbar(props){
 - The `navTitle`, `tab1` and `tab2` are custom attributes we defined in the tag `Navbar`. The `props` is an object. `props` are passed as a single object to the child component. **Child components cannot modify the props they receive. They are immutable.**
 - `props` facilitate a top-down data flow in React applications, meaning data flows from parent components to child components. `props` allow you to create reusable components that can be customized with different data.
 
+![alt text](image-10.png)
+
+
+- In React, `props` are indeed passed as an object to a component. When multiple properties are passed, they effectively merge into a single object, where each prop name becomes a key in the object and its value becomes the corresponding value.
+
+
+![alt text](image-11.png)
+
+
+- Instead of writing `prop.attributeName (e.g prop.tab1)` we can also write `attributeName (e.g {tab1})` providing the function accepts object of attributes like below.
+
+```
+export default function Navbar({navTitle,tab1,tab2}){
+    return (
+        <>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <a className="navbar-brand" href="/">{navTitle}</a>
+        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav mr-auto">
+            <li className="nav-item active">
+                <a className="nav-link" href="/"> {tab1} <span className="sr-only">(current)</span></a>
+            </li>
+            <li className="nav-item">
+                <a className="nav-link" href="/"> {tab2} </a>
+            </li>
+            </ul>
+            <form className="form-inline my-2 my-lg-0">
+            <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
+            <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+        </nav>
+        </>
+    );
+}
+```
+
+- Object destructuring allows you to extract specific properties from the props object and assign them to variables. This makes your code cleaner and more readable, especially when dealing with multiple props.
+- Consider below code
+
+```
+// App.js
+const NavBarProps = {
+  navTitle: "Text Utilities",
+  tab1: "Home",
+  tab2: "About",
+  tab3: "Text Filtration",
+  tab4: "Timer"
+};
+
+function App() {
+  return (
+    <Router>
+      <Navbar {...NavBarProps}/>
+      <div className="container">
+        <Routes>
+          <Route path="/" element={<TextInput />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/filter" element={<TextFilters />} />
+          <Route path="/timer" element={<Timer />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+```
+
+- The spread operator can be passed to a React component, and it will automatically distribute the object's properties as attributes to the element. This functionality is a feature of JSX and is commonly used to pass props to components in a concise way.
+- The spread operator effectively unpacks the key-value pairs from the props object and applies them as attributes to the react component element. This is particularly useful when dealing with a large number of props or when you want to dynamically pass props from a parent component to a child component.
+- Similarly we can also use object destructing inside the rendering function
+
+```
+
+export default function Navbar({...NavBarProps}) {
+    const {navTitle, tab1, tab2, tab3, tab4} = NavBarProps;
+    return (
+        <>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <Link className="navbar-brand" to="/">{navTitle}</Link>
+        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav mr-auto">
+            <li className="nav-item active">
+                <Link className="nav-link" to="/"> {tab1} <span className="sr-only">(current)</span></Link>
+            </li>
+            <li className="nav-item">
+                <Link className="nav-link" to="/about"> {tab2} </Link>
+            </li>
+
+            <li className="nav-item">
+                <Link className="nav-link" to="/filter"> {tab3} </Link>
+            </li>
+            <li className="nav-item">
+                <Link className="nav-link" to="/timer"> {tab4} </Link>
+            </li>
+            </ul>
+            <form className="form-inline my-2 my-lg-0">
+            <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
+            <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+        </nav>
+        </>
+    );
+}
+```
+
+- Component Composition in React just means building bigger components by combining smaller ones — like using small LEGO pieces to build a big LEGO castle.
+- Instead of making one huge component that does everything, you make small, reusable components and then compose (put) them together.
+- React encourages composing components together, making them more reusable and easier to manage. This composition is primarily achieved by nesting components and utilizing `props`, especially the `children` prop.
+
+
+### `props.children`
+
+- In React, `props.children` is whatever you put between the opening and closing tags of a component. Let's see an simple example
+
+```
+// App.js
+
+import React from 'react';
+
+
+
+function HeaderButtons(props){
+  console.log(props.children)
+  return (<h1>{props.children}</h1>);
+}
+
+function App() {
+  return (
+    <div>
+    <HeaderButtons>
+      Hello World
+    </HeaderButtons>
+    <HeaderButtons>
+      Welcome to React
+      <p>This is a new Para</p>
+      </HeaderButtons>
+</div>
+  );
+}
+
+export default App;
+```
+
+- Here, inside `<HeaderButtons>...</ˇ>`, you placed `Hello World` and `<p>`. These elements become `props.children` inside the `HeaderButtons` component.
+
+- On browser
+
+![alt text](image-12.png)
+
+- `props.children` are content you nest inside a component when you use it.
+
+![alt text](image-14.png)
+
+
+>[!NOTE]
+> - You can also use object destructing and only pass `children` as attribute like below
+> ```
+> function HeaderButtons({children}){
+>  return (<h1>{children}</h1>);
+> }
+> ```
+
+- We can also use attributes like `<HeaderButtons content="Hello World"/>`? then why to use `props.children`? Attributes (`props` like `content="Hello World"`) are good for small, simple values. But if you **want to pass full JSX content (like HTML elements, multiple things)**, you need `props.children`.
+- Use normal `props` for small stuff, use `props.children` for passing real "content" inside components.
+
+
+![alt text](image-15.png)
+
+
+- Lets see another example, lets create a folder under `/components` and create two files `Card.jsx` & `card.css`
+
+```
+// Card.jsx
+
+import index from './card.css'
+
+export default function Card(props){
+    return(
+        <div className='card'>
+        <h2>{props.name}</h2>
+        {props.children}
+        </div>
+        
+        );
+}
+
+// App.js
+
+import Card from './components/Card/Card';
+
+
+
+function App() {
+  return (
+    <div id="app">
+      <h1>Available Experts</h1>
+      <Card name="Anthony Blake">
+        <p>
+          Blake is a professor of Computer Science at the University of
+          Illinois.
+        </p>
+        <p>
+          <a href="mailto:blake@example.com">Email Anthony</a>
+        </p>
+      </Card>
+
+      <Card name="Maria Miles">
+        <p>
+          Maria is a professor of Computer Science at the University of
+          Illinois.
+        </p>
+        <p>
+          <a href="mailto:blake@example.com">Email Maria</a>
+        </p>
+      </Card>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser 
+
+![alt text](image-13.png)
+
 ### `propTypes`
 
 - In React, `propTypes` is a library that allows you to define the types of props that a component should receive. This is helpful for validating the props that are passed to your components, ensuring that they receive the correct data types and preventing bugs. PropTypes are especially useful for larger applications where components can have many props.
@@ -867,38 +1108,6 @@ export default App;
 > ```
 
 
-- Instead of writing `prop.attributeName (e.g prop.tab1)` we can also write `attributeName (e.g {tab1})` providing the function accepts object of attributes like below.
-
-```
-export default function Navbar({navTitle,tab1,tab2}){
-    return (
-        <>
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <a className="navbar-brand" href="/">{navTitle}</a>
-        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-        </button>
-
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav mr-auto">
-            <li className="nav-item active">
-                <a className="nav-link" href="/"> {tab1} <span className="sr-only">(current)</span></a>
-            </li>
-            <li className="nav-item">
-                <a className="nav-link" href="/"> {tab2} </a>
-            </li>
-            </ul>
-            <form className="form-inline my-2 my-lg-0">
-            <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
-            <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
-        </div>
-        </nav>
-        </>
-    );
-}
-```
-
 - Here are some of the most commonly used Basic PropTypes:
     - `PropTypes.string`: A string
     - `PropTypes.number`: A number
@@ -908,6 +1117,13 @@ export default function Navbar({navTitle,tab1,tab2}){
     - `PropTypes.array`: An array
     - `PropTypes.node`: Anything that can be rendered (numbers, strings, elements, etc.)
     - `PropTypes.element`: A single React element
+
+## React Events
+
+- React Events are just React’s way of handling user interactions — like when users, Click a button, Type in an input box, Move the mouse, Press a key, Submit a form etc.
+- They enable dynamic and interactive user interfaces by allowing components to react to user input.
+- Let's see an example
+
 
 
 
