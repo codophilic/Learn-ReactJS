@@ -2226,6 +2226,152 @@ export default App;
 - You destructure custom props like `customAttribute`, icon, etc. using `{}`, `...rest` collects everything else (e.g., `onClick`, `type`, `id`, etc..)
 - You spread `...rest` on the inner DOM element to forward parent HTML attributes.
 
+## Passing JSX into Props
+
+- In React, you can pass whole JSX blocks as props. Consider below code
+
+```
+import React from 'react';
+import './App.css';
+
+function MyDiv({myJSX}){
+  return (
+    <div>{myJSX}</div>
+  );
+}
+
+function MyHeader(){
+  return (
+    <h2>I am React Developer</h2>
+  );
+}
+
+function App() {
+
+  // Only one root element is allowed in JSX
+  // So we need to wrap the elements in a fragment
+  // or a div
+  // or any other element
+  const myJSX = (
+    <>
+    <h1>Hello World</h1>
+    <h2>Hello</h2>
+    </>
+  )
+  
+  return (
+    <>
+    <MyDiv myJSX={myJSX}/>
+    <MyDiv myJSX={<MyHeader/>}/>
+    </>
+
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-33.png)
+
+- This is a common pattern for creating reusable and flexible components. A parent component can pass a JSX element (or even a whole block of JSX) as a prop to a child component, and the child can then render that passed JSX. You can create reusable components that can display different content based on the JSX passed to them.
+- This approach gives you a lot of control over the structure and content of the child component, making it adaptable to various use cases.
+
+## Passing Component Types Dynamically
+
+- What does *passing component type dynamically* mean? You pass a component itself (not its JSX), as a variable or prop, and then render it dynamically somewhere else.
+
+```
+import React from 'react';
+import './App.css';
+
+function MyHeader({componentToRender, children}){
+  const CustomComponent = componentToRender;
+  // If the componentToRender is a string, it will be rendered as a HTML element
+  // If the componentToRender is a function, it will be rendered as a React component
+  // We need to assign variable CustomComponent to the componentToRender and use it as a component or else if we use <componentToRender>
+  // it will be treated as a normal component not passed from the function but imported via somewhere.
+  // So we need to use the variable CustomComponent to render the component passed from the function
+  return (
+    <div>
+    <CustomComponent>
+    {children}
+    </CustomComponent>
+    </div>
+  );
+}
+
+function MyCustomDiv(){
+  return (
+    <h2>Hi</h2>
+  );
+}
+
+function App() {
+// Rendering a HTML/Custom element by passing the element name in the props 
+  return (
+    <>
+    <MyHeader componentToRender="h1">This Header Tag</MyHeader>
+    <MyHeader componentToRender={MyCustomDiv}></MyHeader>
+    </>
+
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-34.png)
+
+- You can pass components as variables or `props`. Helps create dynamic UIs that adapt based on conditions. 
+
+>[!IMPORTANT]
+> - One thing you should be aware of is that React components must start with a capital letter. If you want to render a component dynamically, you must assign it to a `const` with a capitalized name (e.g., `CustomComponent`) and then render it using `<CustomComponent />`.
+> - If you try to use a lowercase variable or prop name directly in JSX, React will treat it as a built-in HTML element, not a custom component — which can cause an error like `Element type is invalid`.
+>
+>
+> ![alt text](image-35.png)
+
+- We can set default value for the props , it can be HTML element or custom component like below
+
+```
+import React from 'react';
+import './App.css';
+
+// ComponentToRender = "div" or "h2" or "MyCustomDiv" providing default value
+function MyHeader({componentToRender = MyCustomDiv, children}){
+  const CustomComponent = componentToRender;
+  return (
+    <div>
+    <CustomComponent>
+    {children}
+    </CustomComponent>
+    </div>
+  );
+}
+function MyCustomDiv(){
+  return (
+    <h2>My Custom Div</h2>
+  );
+}
+function App() {
+  return (
+    <>
+    <MyHeader >This Header Tag</MyHeader>
+    </>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-36.png)
+
 
 
 ## React Router
