@@ -379,6 +379,18 @@ export default App;
 ```
 
 - Using JSX isn’t mandatory, but it’s popular because it makes React code more readable and expressive. If you don’t use JSX, you’ll need to use pure JavaScript to define elements. To make this work, React elements must be created using `React.createElement()`. Additionally, you need to defined a compiler like Babel (a JavaScript compiler) which is required to convert your code into JavaScript that the browser understands.
+- JSX code is a non-standard feature. It's not supported by the browser directly and therefore the code you write is not the code that ends up in the browser with all your custom tags.
+
+![alt text](image-26.png)
+
+- Babel, a build process that's running behind the scenes that actually transforms and potentially also optimizes our code such that it does work in the browser.
+- In theory, you could also build React apps without using JSX. You technically don't need JSX to build a React project. It's just convenient. Referring the below code
+
+![alt text](image-25.png)
+
+
+- To create component you need to use the `createElement` method exposed by `React` to create that same structure, that same HTML code in the end. For that, this `createElement` method takes the component type that should be created, so to say, as the first argument, then takes the props object you might want to pass to that component or element. And then you can also have child elements as the third argument so that you can control which content goes between the opening and closing tag of that component.
+- JSX approach is typically easier to use and definitely easier to read and understand because this non-JSX approach, of course, is pretty verbose and not necessarily intuitive.
 - Consider below **App.js** file
 
 ```
@@ -504,7 +516,16 @@ function App() {
 export default App;
 ```
 
-- when you don’t want extra `div` wrappers that might mess up your styling or create unnecessary DOM nodes. You can use **React Fragments**. A fragment lets you group multiple elements.
+- If we inspect the HTML, we can see all the HTML elements are bundled under `<div className="App">`. 
+
+![alt text](image-27.png)
+
+- However, adding unnecessary `<div>` can clutter your HTML structure and impact styling or layout. Now if you try to remove `div` you will get an compilation error.
+
+![alt text](image-28.png)
+
+- Traditionally, React components were limited to returning a single root element, leading to developers often using div as a placeholder. However, fragments enable you to group multiple elements without adding unnecessary wrapper tags to the DOM. React Fragments allow you to avoid wrapping multiple elements in a div when returning from a component.
+- React Fragments (`<></>`) allow you to group elements without adding extra nodes to the DOM. When you don’t want extra `div` wrappers that might mess up your styling or create unnecessary DOM nodes. You can use **`Fragments`**. A fragment lets you group multiple elements.
 
 ```
 import './App.css';
@@ -531,6 +552,11 @@ export default App;
 
 ![alt text](Images/image-6.png)
 
+- When we inspect the HTML, we can see there is no extra `div`.
+
+![alt text](image-29.png)
+
+- This behaves exactly like the example with `<div>`, but no extra wrapper is added to the DOM. `Fragments` make your code more readable by removing the need for an extra div in many cases. 
 - Alternatively you can use `<>..</>` short syntax for fragments.
 
 ```
@@ -589,7 +615,7 @@ export default App;
 
 ![alt text](image-4.png)
 
-- So the header and the paragraphy section, in the App component and our custom Header component are inside of that div with the id `root`. So the `createRoot` and `render` methods are responsible for rendering a single root component, the App component in this case, which then in turn may contain as many nested components as needed. And those nested components, it may include like this Header component in this case, could then contain even more child components. And with that, ultimately you end up with a component hierarchy, which is often called a tree of components, a structure of components, which is then rendered to the screen via React.
+- So the header and the paragraphy section, in the App component and our custom `Header` component are inside of that `div` with the `id` `root`. So the `createRoot` and `render` methods are responsible for rendering a single root component, the App component in this case, which then in turn may contain as many nested components as needed. And those nested components, it may include like this `Header` component in this case, could then contain even more child components. And with that, ultimately you end up with a component hierarchy, which is often called a tree of components, a structure of components, which is then rendered to the screen via React.
 
 ![alt text](image-3.png)
 
@@ -1922,10 +1948,284 @@ function App() {
           <li key={user.id}>{user.name}</li>
         ))}
       </ul>
-    </div>
+    </div>f
   );
 }
 ```
+
+## Splitting Components
+
+- In React, you need to split your component into smaller components. Splitting components in React is very important for performance, reusability, and clarity, especially when using hooks like `useState`. 
+- Breaking down React components (splitting components) is a crucial practice for creating well-organized, maintainable, and reusable code, and it's not directly related to whether `useState` will update all components. While `useState` updates only the component it's used in, component splitting helps prevent the need for unnecessary re-renders in the first place.
+- Let's see an example without splitting the component
+
+```
+//App.js
+
+import React from 'react';
+import './App.css';
+
+function App() {
+  let randomText ="";
+  const [name, setName] = React.useState('');
+  const [displayName, setDisplayName] = React.useState('');
+
+  const greetings = ["Hi", "Hello", "How are you?", "Goodbye", "See you later"];
+
+  const getRandomGreeting = () => {
+    const randomIndex = Math.floor(Math.random() * greetings.length);
+    randomText = greetings[randomIndex];
+    return randomText;
+  };
+
+  const handleInputChange = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    setDisplayName(name);
+  };
+
+  return (
+    <div className="App">
+      <h1>{getRandomGreeting()}</h1>
+      <input type="text" value={name} onChange={handleInputChange} placeholder="Enter your name" />
+      <button onClick={handleSubmit}>Submit</button>
+      {displayName && <p>Your name: {displayName}</p>}
+    </div>
+  );
+}
+
+export default App;
+```
+- On browser
+
+<video controls src="2025-6.mov" title="title"></video>
+
+- Here, all the components which are in one place, due to `useState` all components are rendered that's why the function `getRandomGreeting()` gets executed whenever `onChange` event is triggered. Now below is the code where we split these components.
+
+```
+//App.js
+
+import React from 'react';
+import './App.css';
+
+//AcceptInput component
+function AcceptInput({displayText}){
+  const [displayName, setDisplayName] = React.useState('');
+
+  const [name, setName] = React.useState('');
+
+  const handleInputChange = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    setDisplayName(name);
+  };
+  return(
+    <div>
+            <input type="text" value={name} onChange={handleInputChange} placeholder="Enter your name" />
+            <button onClick={handleSubmit}>Submit</button>
+            {displayName && <p>{displayText} {displayName}</p>}
+
+            </div>
+  )
+}
+
+//App component
+//This component will display a random greeting message
+//and accept user input
+function App() {
+  let randomText ="";
+
+  const greetings = ["Hi", "Hello", "How are you?", "Goodbye", "See you later"];
+
+  const getRandomGreeting = () => {
+    const randomIndex = Math.floor(Math.random() * greetings.length);
+    randomText = greetings[randomIndex];
+    return randomText;
+  };
+
+
+
+  return (
+    <div className="App">
+      <h1>{getRandomGreeting()}</h1>
+      <AcceptInput displayText={randomText}/>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-7.mov" title="title"> </video>
+
+- Here we have splitted up the input component, thus `onChange` event affects or render the `AceeptInput` component and not `App` Component.
+- Splitting components into smaller, single-purpose units makes your codebase easier to understand and navigate.
+
+1. Enhanced Reusability:
+    - Reusable components can be used in multiple parts of your application, reducing code duplication.
+
+2. Better Testability:
+    - Smaller, focused components are easier to test individually, leading to more reliable code.
+
+3. Reduced Complexity:
+    - By breaking down complex logic into smaller, manageable pieces, you make your application less prone to errors and easier to debug. 
+
+- Component splitting helps prevent unnecessary re-renders by ensuring that only the relevant parts of the UI are updated when necessary. This can significantly improve performance, especially in large and complex applications. 
+ 
+## Properties of HTML elements are not automatically Forwarded
+
+- Consider below code
+
+```
+//App.js
+import React from 'react';
+import './App.css';
+
+
+function App() {
+  return (
+    <div id="new-div" className="App" style={{  color: 'blue', textAlign: 'center', marginTop: '50px' }}>
+      <h1>Hello World!</h1>
+      </div>
+  );
+}
+
+export default App;
+```
+
+- On browser we get
+
+![alt text](image-30.png)
+
+- Now let's say, if we create a custom div and pass it into the `App` component
+
+```
+import React from 'react';
+import './App.css';
+
+function MyDiv(){
+  return (
+    <div>
+      <h1>Hello World!</h1>
+    </div>
+  );
+
+}
+
+function App() {
+  return (
+    <MyDiv id="new-div" className="App" style={{  color: 'blue', textAlign: 'center', marginTop: '50px' }}>
+      </MyDiv>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-31.png)
+
+- Why so? properties of HTML elements, like those set using the `innerHTML` property or passed as `props`, are not automatically forwarded to the wrapped elements within the `innerHTML` content. `props` are not automatically forwarded to inner HTML elements unless you explicitly pass them.
+- If you write a wrapper component like this:
+
+```
+function MyButton() {
+  return <button>Click me</button>;
+}
+```
+
+- And use it like this:
+
+```
+<MyButton className="primary" />
+```
+
+- The `className` prop is ignored because it is not passed to the `<button>` inside `MyButton`. You need to explicity pass it to `innerHTML`. Either you can pass it as with attribute name as we passed in fuction. 
+
+```
+function MyDiv({{id}}){
+  return (
+    <div id={id}>
+      <h1>Hello World!</h1>
+    </div>
+  );
+
+}
+```
+
+- Or else you can pass it via `props`.
+
+```
+import React from 'react';
+import './App.css';
+
+function MyDiv(props){
+  return (
+    <div {...props}>
+      <h1>Hello World!</h1>
+    </div>
+  );
+
+}
+
+function App() {
+  return (
+    <MyDiv id="new-div" className="App" style={{  color: 'blue', textAlign: 'center', marginTop: '50px' }}>
+      </MyDiv>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-30.png)
+
+- If you have any custom attributes, you need to used **Rest Operator** on `props`.
+
+```
+import React from 'react';
+import './App.css';
+
+function MyDiv({customAttribute, ...rest}){
+  return (
+    <div {...rest}>
+      <h1>{customAttribute}</h1>
+      <h1>Hello World!</h1>
+    </div>
+  );
+
+}
+
+function App() {
+  return (
+    <MyDiv id="new-div" className="App" style={{  color: 'blue', textAlign: 'center', marginTop: '50px' }} customAttribute="customValue">
+      </MyDiv>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-32.png)
+
+- When building components that accept both:
+  - Custom props (e.g., `customAttribute`) 
+  - And native HTML attributes (e.g., `className`, `onClick`, `id`, etc.)
+- You usually extract the custom ones first, and then use the rest operator (`...rest`) to pass the remaining (HTML) attributes to the underlying element.
+- You destructure custom props like `customAttribute`, icon, etc. using `{}`, `...rest` collects everything else (e.g., `onClick`, `type`, `id`, etc..)
+- You spread `...rest` on the inner DOM element to forward parent HTML attributes.
+
 
 
 ## React Router
