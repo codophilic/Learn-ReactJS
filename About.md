@@ -1549,6 +1549,7 @@ const OnClickEvent = () => {
 >[!NOTE]
 > - We cannot directly change the state mode by re-assigning new value like `inputUser="New Text"`, we need to always use the set method (`SetInputUser`)
 
+
 - Lets add more utilities like counting words and characters.
 
 ```
@@ -1582,6 +1583,112 @@ export default function TextInput(){
 - On browser
 
 ![alt text](Images/image-10.png)
+
+### Updating New State Based on Old State
+
+- When working with React’s `useState`, it’s important to understand the asynchronous nature of state update. Let's say we wanted to display the number of times a button is being clicked and along with increase the value 3 times by calling the `set` function.
+- So below is `App.jsx` code.
+
+```
+import { useState } from "react";
+function App() {
+  const [count, setCount] = useState(0);
+  const handleClick = () => {
+    //  be careful it's the old value
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+    // so if you have any functionality
+    // that relies on the latest value
+    // it will be wrong !!!
+    console.log(count);
+  };
+
+  return (
+    <div>
+      <h1>you click {count} times</h1>
+      <button onClick={handleClick}>button</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-8.mov" title="title"></video>
+
+- Here, we are calling the `setCount` method 3 times but only one gets executed properly. Why so? it is due to **React's state batching behavior**.
+
+```
+setCount(count + 1);
+setCount(count + 1);
+setCount(count + 1);
+```
+
+- You expect the count to go up by 3, but it only increases by 1. React batches state updates that happen during the same event loop (like inside an event handler). And when you call `setCount(count+1)` using the old value of `count`.
+- Assume current `count = 0`. Here’s what happens:
+
+| Call | Evaluated Expression | Scheduled New Count |
+| ---- | -------------------- | ------------------- |
+| 1    | `count + 1 = 0 + 1`  | 1                   |
+| 2    | `count + 1 = 0 + 1`  | 1 (again)           |
+| 3    | `count + 1 = 0 + 1`  | 1 (again)           |
+
+- All 3 calls use `count = 0` because React hasn’t re-rendered yet — the count value hasn’t changed in memory. So, the final state after all three `setCount` calls is just 1, because each one overwrites the previous with the same value.
+- The reason the count doesn’t increase by 3 with a single click is that the state updates in React are asynchronous. When you call `setCount`, React batches the state updates and performs them in a single batch before the next render. This is done for performance optimization.
+- So, when you call `setCount` three times in a row with the same value, React only takes the last value and performs the update. In our case, count is incremented by 1, but it's done three times sequentially, so the result is an increment of 1.
+- Solution is to use **Functional Updater**.
+
+```
+setCount((prev) => prev + 1);
+setCount((prev) => prev + 1);
+setCount((prev) => prev + 1);
+```
+
+- Now, each update will receive the latest updated value.
+
+| Call | Previous Value | New Count |
+| ---- | -------------- | --------- |
+| 1    | 0              | 1         |
+| 2    | 1              | 2         |
+| 3    | 2              | 3         |
+
+
+- Modifying `App.jsx`
+
+```
+import { useState } from "react";
+function App() {
+  const [count, setCount] = useState(0);
+  const handleClick = () => {
+    setCount((prev) => prev + 1);
+    setCount((prev) => prev + 1);
+    setCount((prev) => prev + 1);
+    console.log(count);
+  };
+
+  return (
+    <div>
+      <h1>you click {count} times</h1>
+      <button onClick={handleClick}>button</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-9.mov" title="title"></video>
+
+- Instead of directly updating the state with a new value, the `setCount` function is now called with a callback function as an argument. This callback function receives the previous value of the state as a parameter (in this case, `prev`), and it returns the new value based on the previous value.
+- Since each `setCount` call is performed separately from the previous value, the count is incremented by 1 for each call. Therefore, when you click the button, the count will increase by 3 because each `setCount` call increments the count by 1 individually.
+- Why does react do so? React may batch multiple state updates together for performance reasons (especially during concurrent rendering or inside event handlers). When this happens, the value of `count` might be stale (outdated), because it was captured when the component was first rendered.
+- React queues state updates. When using the functional form, React pulls the latest state value from the queue, ensuring your update is based on the right version.
+- Even though you call `setCount`, `console.log(count)` still prints 0 — because state updates are asynchronous and don't take effect immediately. That's why in the console, we can see the previous value rather than the update value of the page.
 
 ## Conditional Rendering
 
@@ -2371,6 +2478,36 @@ export default App;
 - On browser
 
 ![alt text](image-36.png)
+
+## `public` vs `/src/asset` folder
+
+- In `public/` Folder you can store images and then directly reference them from inside your `index.html` or `index.css` files.
+- Inside `index.html` file
+
+```
+  <body>
+    <img src="logo192.png" alt="Logo" style="width: 100px; height: 100px; position: absolute; top: 10px; left: 10px;" />
+    <div id="root"></div>
+
+  </body>
+```
+
+- On browser when we access images placed under `/public` folder
+
+![alt text](image-37.png)
+
+- The reason for that is that images (or, in general files) stored in `public/` are made publicly available by the underlying project development server & build process. Just like `index.html`, those files can directly be visited from inside the browser and can therefore also be requested by other files.
+- The `src/assets/` folder can also store images (or, actually, anywhere in the `src` folder).
+
+### So what's the difference compared to `public/`?
+
+- Any files (of any format) stored in `src` (or subfolders like `src/assets/`) are not made available to the public. They can't be accessed by website visitors. If you try loading `localhost:3000/src/assets/any-image.png/jpg`, you'll get an error.
+- Instead, files stored in `src/` (and subfolders) can be used in your code files. Images imported into code files are then picked up by the underlying build process, potentially optimized, and kind of "injected" into the `public/` folder right before serving the website. Links to those images are automatically generated and used in the places where you referenced the imported images.
+
+#### So when to use which folder?
+
+- You should use the `public/` folder for any images that should not be handled by the build process and that should be generally available. Good assets are images used directly in the `index.html` file or favicons.
+- On the other hand, images that are used inside of components should typically be stored in the `src/` folder (e.g., in `src/assets/`).
 
 
 
