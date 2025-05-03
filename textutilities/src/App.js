@@ -3,6 +3,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import About from './components/About';
 import Card from './components/Card/Card';
+import MyPara from './components/MyPara/MyPara.jsx';
 import Navbar from './components/Navbar';
 import TextFilters from './components/TextFilters';
 import TextInput from './components/TextInput';
@@ -38,7 +39,9 @@ function App() {
         </p>
          </Card>
          </div>
+         <MyPara/>
     </Router>
+    
   );
 }
 

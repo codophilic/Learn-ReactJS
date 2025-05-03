@@ -2688,6 +2688,410 @@ export default App;
 - You should use the `public/` folder for any images that should not be handled by the build process and that should be generally available. Good assets are images used directly in the `index.html` file or favicons.
 - On the other hand, images that are used inside of components should typically be stored in the `src/` folder (e.g., in `src/assets/`).
 
+## Styling in React (CSS)
+
+- It's highly recommended to organize CSS in React by component to improve code maintainability, reusability, and prevent style clashes. Let's see an example of using vanilla or plain CSS in react.
+- So here, we have our own component `MyPara.jsx` along with its `MyPara.css`
+
+```
+//MyPara.css
+
+p{
+    color: #e20b0b;
+    font-size: 2em;
+    margin: 0;
+  }
+  
+//MyPara.jsx
+
+import './MyPara.css';
+
+export default function MyPara() {
+    return (
+        <div>
+            <p>This is Paragraphy</p>
+            <p>This is another paragraph</p>
+            <p>This is a third paragraph</p>
+        </div>
+    );
+}
+
+//App.js
+
+import React from 'react';
+import MyPara from './components/MyPara/MyPara';
+function App() {
+  return (
+    <div>
+      <MyPara />
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser, we can see our styling got affected for `MyPara` component.
+
+![alt text](image-41.png)
+
+- Now let's add another paragraphy under **`App.js`**.
+
+```
+import React from 'react';
+import MyPara from './components/MyPara/MyPara';
+function App() {
+  return (
+    <div>
+      <MyPara />
+      <p> This is Paragraph under APP.JS</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser we can see, the `App,js` got the same styling for `p` written for `MyPara.css`.
+
+![alt text](image-42.png)
+
+- Vanilla CSS in React is not scoped to components, meaning it affects all components and elements on the page. This can lead to styling conflicts and difficulties in managing styles across different parts of your application.
+
+![alt text](image-43.png)
+
+- We can overcome this using **inline style css**. Like below
+
+```
+//MyPara.jsx
+
+const paraStyle={
+        color: '#e20b0b',
+        fontSize: '2em',
+        margin: 0
+        
+}
+
+export default function MyPara() {
+    return (
+        <div>
+            <p style={paraStyle}>This is Paragraphy</p>
+            <p style={{color: '#e20b0b',
+                        fontSize: '2em',
+                        margin: 0}}>
+                    This is another paragraph</p>
+            <p style={paraStyle}>This is a third paragraph</p>
+        </div>
+    );
+}
+```
+
+- On browser, the `App.js` remains unaffected from the css used for `MyPara.jsx`
+
+![alt text](image-44.png)
+
+- React uses JavaScript objects to define inline styles (`paraStyle`). CSS property names that are normally hyphenated (like `background-color`, `font-size`) need to be written in camelCase (like `backgroundColor`, `fontSize`). So a normal css
+
+```
+.myDiv {
+  background-color: red;
+  font-size: 16px;
+  margin-top: 10px;
+}
+```
+
+- In React will be like
+
+```
+<div
+  style={{
+    backgroundColor: "red",
+    fontSize: "16px",
+    marginTop: "10px"
+  }}
+>
+  Hello World
+</div>
+```
+
+- Some CSS properties that are just one word stay the same `color`, `margin`, `padding`, `border` etc..
+- React internally maps inline style objects to actual DOM styles. When you pass `style={{ backgroundColor: "red" }}`, React sets the DOM element’s `style.backgroundColor` property directly, which is JavaScript’s camelCase API for CSS.
+
+![alt text](image-45.png)
+
+
+### Conditional Rendering in Styles
+
+- We can also do conditional rendering in CSS using React
+
+```
+function App() {
+    const [h1Color,setH1Color] =React.useState('white');
+    
+    return (
+    <div id="app">
+      <h1 style={{color: h1Color}}>CSS is great!</h1>
+      <menu>
+        <li>
+          <button onClick={()=>setH1Color('green')}>Yes</button>
+        </li>
+        <li>
+          <button onClick={()=>setH1Color('red')}>No</button>
+        </li>
+      </menu>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-12.mov" title="title"></video>
+
+
+### Styling using CSS class (`className`)
+
+- CSS styling using `class` names in React is achieved by utilizing the `className` attribute within JSX. It serves the same purpose as the `class` attribute in standard HTML but is named differently due to `class` being a reserved keyword in JavaScript.
+
+```
+//App.jsx
+import React from 'react';
+
+function App() {
+
+    let [h1Color,setH1Color] = React.useState();
+    
+  return (
+    <div id="app">
+      <h1 className={h1Color}>CSS is great!</h1>
+      <menu>
+        <li>
+          <button onClick={()=>setH1Color('highlight-green')}>Yes</button>
+        </li>
+        <li>
+          <button onClick={()=>setH1Color('highlight-red')}>No</button>
+        </li>
+      </menu>
+    </div>
+  );
+}
+
+export default App;
+
+//index.css
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&family=Lato:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(#180d27, #0c0219);
+  color: #e5d9f1;
+  min-height: 100vh;
+}
+
+#app {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 30rem;
+  text-align: center;
+  border-radius: 6px;
+  background: linear-gradient(#341a89, #3a1967);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  letter-spacing: 0.15rem;
+  font-family: 'Lato', sans-serif;
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+}
+
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+menu button {
+  width: 5rem;
+  text-align: center;
+  border: none;
+  background: none;
+  color: white;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+}
+
+menu li:first-child button {
+  background: linear-gradient(#147a42, #0b7555);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+menu li:first-child button:hover {
+  background: linear-gradient(#169d75, #13954e);
+}
+
+menu li:last-child button {
+  background: linear-gradient(#ad2424, #8b2323);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+menu li:last-child button:hover {
+  background: linear-gradient(#bd4e4e, #cd3030);
+}
+
+div .highlight-green {
+  color: green;
+}
+
+/* All the class irrespective of any parent HTML will get styled *.
+.highlight-green {
+  color: green;
+}
+
+div .highlight-red {
+  color: red;
+}
+```
+
+- On browser
+
+<video controls src="2025-12.mov" title="title"></video>
+
+- So the class `highlight-green` under the `div` gets only styled when click on `YES` or `NO` button.
+
+### CSS Modules
+
+- CSS Modules in React are a way to write CSS that is scoped (local) to a specific component, so styles don’t leak or clash with other components.
+- A CSS Module lets you use CSS in a way that works only for one component, even if other components have styles with the same class name.
+- Without CSS modules (Vanilla CSS)
+
+```
+/* styles.css */
+.button {
+  background-color: red;
+}
+```
+
+- With CSS Modules 
+
+```
+/* Button.module.css */
+.button {
+  background-color: red;
+}
+```
+
+- You need to have file name as `cssFileName.modules.css`. Let's take an example
+
+```
+//MyPara.modules.css
+
+.para{
+    color: #e20b0b;
+    font-size: 2em;
+    margin: 0;
+  }
+  
+
+// MyPara.jsx
+import MyParaCSS from './MyPara.module.css';
+
+export default function MyPara() {
+    console.log(MyParaCSS); // JavaScript Object
+    return (
+        <div>
+            <p className={MyParaCSS.para}>This is Paragraphy</p>
+            <p className={MyParaCSS.para}>
+                    This is another paragraph</p>
+        </div>
+    );
+}
+
+//App.js
+
+import React from 'react';
+function App() {
+  return (
+    <div>
+      <MyPara />
+      <p> This is Paragraph under APP.JS</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-46.png)
+
+- `import MyParaCSS from './MyPara.module.css';` this line imports the CSS module file. But unlike normal CSS, it's not just imported for its side effects — it actually returns a JavaScript object. `MyParaCSS` is a JavaScript object. `MyParaCSS.para` contain your css styling class selectors which you call it (`MyPara.para`) inside the `className`.
+- When you use a CSS Module, React (actually, the build tool like Webpack or Vite) processes it and generates a unique class name.
+- Let's inspect the page.
+
+![alt text](image-47.png)
+
+- On console
+
+![alt text](image-48.png)
+
+
+#### What React/Webpack does behind the scenes?
+
+- It parses `MyPara.module.css` at build time. Converts class names into unique, hashed names.
+- Creates a JavaScript object where:
+  - Keys = your original class names
+  - Values = generated unique class names
+- So in code, MyParaCSS.para becomes a string like `MyPara_para__64P4b`. React then renders
+
+```
+<p class="MyPara_para__64P4b">This is Paragraph</p>
+```
+
+- This means, your class name is unique, even if other files have `.para`. The style applies only to this component.
+
+>[!NOTE]
+> - You typically use class selectors (`.className`) in CSS Modules. Element selectors (`div`, `p`, etc.) and ID selectors (`#id`) are not scoped, so they may still affect the global DOM and defeat the purpose of using CSS Modules.
+> - Only class selectors are treated as scoped/local.
+> 
+> ```
+> // Allowed Class Selectors
+> .button {
+>   color: white;
+> }
+> 
+> /* ❌ These won't work the way you expect in CSS Modules */
+> div {
+>   color: red;
+> }
+> 
+> #myId {
+>   background: blue;
+> }
+> ```
+
+
+- CSS Modules advantages & disadvantages
+
+![alt text](image-49.png)
+
+
 
 
 ## React Router
