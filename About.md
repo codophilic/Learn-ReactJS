@@ -1273,7 +1273,7 @@ export default App;
 ![alt text](image-17.png)
 
 
-## State
+## State (`useState`)
 
 - Consider below `App.jsx` file 
 
@@ -1689,6 +1689,185 @@ export default App;
 - Why does react do so? React may batch multiple state updates together for performance reasons (especially during concurrent rendering or inside event handlers). When this happens, the value of `count` might be stale (outdated), because it was captured when the component was first rendered.
 - React queues state updates. When using the functional form, React pulls the latest state value from the queue, ensuring your update is based on the right version.
 - Even though you call `setCount`, `console.log(count)` still prints 0 — because state updates are asynchronous and don't take effect immediately. That's why in the console, we can see the previous value rather than the update value of the page.
+
+### Two-Way Binding
+
+- When you change the input field, the state updates, and when the state changes, the input field reflects the new value.
+- Simple example
+
+```
+import { useState } from 'react';
+
+function App() {
+  const [name, setName] = useState('');
+
+  const handleChange = (e) => {
+    setName(e.target.value); // updates state from input
+  };
+
+  return (
+    <div>
+      <input type="text" value={name} onChange={handleChange} />
+      <p>Your name is: {name}</p>
+    </div>
+  );
+}
+```
+
+- On browser
+
+![alt text](image-39.png)
+
+### Updating Object's State Immutably
+
+- In React, state updates with objects can sometimes lead to unexpected behavior due to the shallow copy nature of objects.
+- Consider below code of `App.jsx`.
+
+```
+import React from 'react';
+
+function App() {
+  const [user, setUser] = React.useState({ name: 'John', age: 30 });
+
+  const incrementAge = () => {
+    user.age++; // Direct mutation of state
+    setUser(user); // Passing same object reference
+  };
+
+  return (
+    <div>
+      <p>Name: {user.name}</p>
+      <p>Age: {user.age}</p>
+      <button onClick={incrementAge}>Increment Age</button>
+    </div>
+  );
+
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-10.mov" title="title"></video>
+
+- In this example, we attempt to increment the user’s age directly by mutating the `user` object. It won't increase because inside the `setUser(user);` you are passing the same object reference even though you have change `user.age`. And react does shallow comparison of previous object and current object. Since previous object is same as current object, we don't see any changes on browser.
+- To avoid, we need to give a new object along with our changes to react.
+
+```
+  const incrementAge = () => {
+    setUser({ ...user, age: user.age + 1 });
+  };
+```
+
+- On browser
+
+<video controls src="2025-11.mov" title="title"></video>
+
+- When you're creating a new object React re-renders properly.
+
+![alt text](image-40.png)
+
+
+>[!NOTE]
+> - If any nested objects are present, you need to also copy that manually (JavaScript concept). Example
+> ```
+> const [userData, setUserData] = useState({
+>   profile: {
+>     name: 'John',
+>     age: 30,
+>     address: {
+>       street: '123 Main St',
+>       city: 'Anytown',
+>       country: 'USA'
+>     }
+>   }
+> });
+> ```
+>
+> - Copying deeply nested objects
+>
+> ```
+> setUserData(prev => ({
+>   ...prev,
+>   profile: {
+>     ...prev.profile,
+>     address: {
+>       ...prev.profile.address,
+>       city: 'New City'
+>     }
+>   }
+> }));
+> ```
+
+- Updating deeply nested objects requires traversing multiple levels of nesting, which can become cumbersome and error-prone. It also makes it challenging to track state changes and increases the risk of inadvertently mutating the state.
+- Best Practices for State Management
+  - Follow the copy-then-update approach: Always create a copy of the state object before making any updates to ensure immutability.
+  - Avoid deeply nested object structures: Flatten state whenever possible to simplify state updates and improve code readability.
+
+
+>[!TIP]
+> - It’s advisable to keep your state minimal. Only store in `useState` what cannot be computed or derived.
+> - ❌ Bad Example
+>
+> ```
+> const [firstName, setFirstName] = useState("John");
+> const [lastName, setLastName] = useState("Doe");
+> const [fullName, setFullName] = useState("John Doe"); // ❌ Unnecessary state
+> ```
+> 
+> - Here, fullName can be derived:
+> - ✅ Better
+>
+> ```
+> const fullName = `${firstName} ${lastName}`;
+> ```
+> 
+> - When number of states are minimun it is easier to debug and test, less chance of state getting out of sync and importantly it reduces number of re-renders. So manage as little state as possible and derived or compute as many values as you needed.
+> - **Only use state for data that changes over time and cannot be derived from other state or props.**
+> - **Incase of multiple components need to share or update the same piece of data, you should lift the state up to their nearest common parent, and pass the data + setters as props to the children. This keeps everything centralized, in sync, and easy to manage.**
+> - **Because React state is local to a component. So if two siblings (or a child and a parent) need to share or sync state, the state must live in a common ancestor.**
+>
+> - ❌ Wrong (Separate states = out of sync)
+>
+> ```
+> function FormA() {
+>     const [name, setName] = useState('');
+>     return <input value={name} onChange={(e) => setName(e.target.value)} />;
+>   }
+>   
+>   function SummaryB() {
+>     const [name, setName] = useState(''); // separate state — not in sync!
+>     return <p>Name is: {name}</p>;
+>   }  
+> ```
+>
+> - ✅ Correct (Lifted state in parent)
+>
+> ```
+> function Parent() {
+>     const [name, setName] = useState('');
+>   
+>     return (
+>       <>
+>         <FormA name={name} setName={setName} />
+>         <SummaryB name={name} />
+>       </>
+>     );
+>   }
+>   
+>   function FormA({ name, setName }) {
+>     return <input value={name} onChange={(e) => setName(e.target.value)} />;
+>   }
+>   
+>   function SummaryB({ name }) {
+>     return <p>Name is: {name}</p>;
+>   }
+>  ```
+>
+> - `name` state is shared and consistent. All updates go through the single source of truth in `Parent`.
+> - If the parent component owns the state, it can pass down values and setters to children, giving them access to read or modify the shared data.
+
 
 ## Conditional Rendering
 
