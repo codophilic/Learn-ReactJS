@@ -3092,6 +3092,370 @@ export default App;
 ![alt text](image-49.png)
 
 
+## Style Components (Third Party Package)
+
+- Styled Components is a popular library in ReactJS for writing CSS directly in JavaScript, using a feature called tagged template literals.
+- Styled Components is a library for React that enables the writing of CSS within JavaScript, a concept known as "CSS-in-JS." It utilizes tagged template literals to allow the creation of styled React components with standard CSS syntax. 
+- This approach encapsulates styles within the component itself, promoting reusability and preventing naming conflicts.
+- Let's install the library
+
+```
+npm install styled-components
+```
+
+- Let's see an example, currently we have `MyPara.module.css` with below styling
+
+```
+.para{
+    color: #e20b0b;
+    font-size: 2em;
+    margin: 0;
+  }
+
+  .card {
+    background-color: #f9f9f9; /* Light background */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 16px; /* Space between content and border */
+    width: 300px; /* Example width */
+    transition: box-shadow 0.3s ease; /* Smooth hover effect */
+  }
+  
+  .card:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
+  }
+```
+
+- Below is current `MyPara.jsx`.
+
+```
+import MyParaCSS from './MyPara.module.css';
+
+export default function MyPara() {
+    console.log(MyParaCSS)
+    return (
+        <div className={MyParaCSS.card}>
+            <p className={MyParaCSS.para}>This is Paragraphy</p>
+            <p className={MyParaCSS.para}>
+                    This is another paragraph</p>
+        </div>
+    );
+}
+```
+
+- Below is current `App.jsx`
+
+```
+import React from 'react';
+import MyPara from './components/MyPara/MyPara.jsx';
+function App() {
+  return (
+    <MyPara/>
+    
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-50.png)
+
+- Let's apply styled component, for `MyPara.jsx`
+
+```
+
+import styled from "styled-components";
+
+const DivStyle = styled.div`
+    background-color:rgb(139, 19, 214);
+    padding: 20px;
+    border-radius: 5px;
+    margin: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+`;
+
+const ParaStyle = styled.p`
+    color:rgb(246, 242, 242);
+    font-size: 16px;
+    line-height: 1.5;
+`;
+
+
+export default function MyPara() {
+    return (
+        <DivStyle >
+            <ParaStyle>This is Paragraphy</ParaStyle>
+            <ParaStyle>This is another Paragraphy</ParaStyle>
+        </DivStyle>
+    );
+}
+```
+
+- On browser
+
+![alt text](image-51.png)
+
+- `styled.div` is a tagged template literal that tells Styled Components to, create a new React component, apply the given styles to a `<div>`.
+- Internally generate a unique class name (like `sc-a1234`). Inject that class name and style into the DOM.
+
+![alt text](image-52.png)
+
+![alt text](image-53.png)
+
+- So `DivStyle` becomes a custom React component that renders a `div` with styles already baked in. Similarly goes for `p` html.
+- A `<div>` and two `<p>` tags are created — but with unique class names applied by Styled Components. The CSS rules (in your template literal) are added to a `<style>` tag in the HTML `<head>` at runtime.
+- In CSS Modules, we had limitations, we can't style global selectors like `h1`, `p`, or `#id` directly in `.module.css` because all selectors are scoped and transformed into unique class names but in styled Components we can target:
+  - HTML elements (`h1`, `a`, `button`, etc.)
+  - ID selectors (though rarely needed)
+  - Class selectors
+  - Even nested selectors and pseudo-elements (`::before`, `:hover`, etc.)
+- Example
+
+```
+const Wrapper = styled.div`
+  padding: 20px;
+
+  h1 {
+    color: purple;
+  }
+
+  #custom-id {
+    background: yellow;
+  }
+
+  .nested-class {
+    border: 1px solid red;
+  }
+`;
+
+
+export default function MyPara() {
+    return (
+        <>
+        <Wrapper>
+        <h1>Hello</h1>
+        <p id="custom-id">ID styled</p>
+        <div className="nested-class">Class styled</div>
+        </Wrapper>
+        </>
+    );
+}
+```
+
+- On browser
+
+![alt text](image-54.png)
+
+
+- We can also do conditional rendering in styled components and can pass props (`className`, event handlers etc..) to built-in HTML elements (like `div`, `p`, `button`, etc.) and use those props to apply conditional styles.
+
+```
+
+import React from "react";
+import styled from "styled-components";
+
+// Styled component using props
+const DivStyle = styled.div`
+    background-color: rgb(139, 19, 214);
+    padding: 20px;
+    border-radius: 5px;
+    margin: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+`;
+
+const ParaStyle = styled.p`
+    color: ${props => props.isImportant ? "yellow" : "rgb(246, 242, 242)"};
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: ${props => props.isImportant ? "bold" : "normal"}; //Conditional styling
+`;
+
+
+const Wrapper = styled.div`
+  padding: 20px;
+
+  h1 {
+    color: purple;
+  }
+
+  #custom-id {
+    background: yellow;
+  }
+
+  .nested-class {
+    border: 1px solid red;
+  }
+`;
+
+
+export default function MyPara() {
+    const [changeOnOver , setChangeOnOver] = React.useState(false);
+    return (
+        <>
+        <DivStyle >
+            <ParaStyle isImportant={changeOnOver} onMouseOver={()=>setChangeOnOver(true)} onMouseLeave={()=>setChangeOnOver(false)}>This is Paragraphy</ParaStyle>
+            <ParaStyle isImportant>This is another Paragraphy</ParaStyle>
+        </DivStyle>
+        <Wrapper>
+        <h1>Hello</h1>
+        <p id="custom-id">ID styled</p>
+        <div className="nested-class">Class styled</div>
+        </Wrapper>
+        </>
+    );
+}
+```
+
+- On browser
+
+<video controls src="2025-13.mov" title="title"></video>
+
+
+- The second `<ParaStyle isImportant>` receives a prop `isImportant={true}` (shorthand -> `IsImportant`). The `ParaStyle` definition reads that prop and:
+  - Changes color to yellow.
+  - Makes the font bold.
+- For first para, we have event handler when hovered the it gets styling of `IsImportant`.
+- Let's see an example of Pseudo selectors, nested queires and media queries using styled component.
+
+```
+//MyPara.jsx
+
+
+import React from "react";
+import styled from "styled-components";
+
+// Styled component using props
+// Parent styled div
+const DivStyle = styled.div`
+  background-color: rgb(139, 19, 214);
+  padding: 20px;
+  border-radius: 5px;
+  margin: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  // Nested styling - target all <p> inside this div
+  p {
+    margin-bottom: 10px;
+  }
+
+  // Media query: smaller padding on small screens
+  @media (max-width: 600px) {
+    padding: 10px;
+  }
+`;
+
+// Styled paragraph
+const ParaStyle = styled.p`
+  color: rgb(246, 242, 242);
+  font-size: 16px;
+  line-height: 1.5;
+  transition: all 0.3s ease;
+
+  // Pseudo-selector: Hover effect
+  &:hover {
+    color: yellow;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  // Pseudo-selector: First paragraph
+  &:first-child {
+    text-decoration: underline;
+  }
+
+  // Media query: Larger font size on big screens
+  @media (min-width: 768px) {
+    font-size: 18px;
+  }
+`;
+
+
+const Wrapper = styled.div`
+  padding: 20px;
+
+  h1 {
+    color: purple;
+  }
+
+  #custom-id {
+    background: yellow;
+  }
+
+  .nested-class {
+    border: 1px solid red;
+  }
+`;
+
+
+export default function MyPara() {
+    const [changeOnOver , setChangeOnOver] = React.useState(false);
+    return (
+        <>
+        <DivStyle >
+            <ParaStyle isImportant={changeOnOver} onMouseOver={()=>setChangeOnOver(true)} onMouseLeave={()=>setChangeOnOver(false)}>This is Paragraphy</ParaStyle>
+            <ParaStyle isImportant>This is another Paragraphy</ParaStyle>
+        </DivStyle>
+        <Wrapper>
+        <h1>Hello</h1>
+        <p id="custom-id">ID styled</p>
+        <div className="nested-class">Class styled</div>
+        </Wrapper>
+        </>
+    );
+}
+```
+
+- On browser
+
+<video controls src="2025-14.mov" title="title"></video>
+
+- The `&` symbol is very important in Styled Components. It represents the current component selector (like a placeholder for the generated class name). It allows you to apply pseudo-selectors, nested rules, and combinators relative to the component.
+- When you write this in Pseudo selectors
+
+```
+const ParaStyle = styled.p`
+  &:hover {
+    color: yellow;
+  }
+```
+- What it really means:
+
+```
+.sc-xyz123:hover {
+  color: yellow;
+}
+```
+- `&` is replaced with the generated class name for that component. Without `&`, you’d write an invalid CSS selector.
+- For Nested rules, you don't required `&`, example
+
+```
+const DivStyle = styled.div`
+  p {
+    margin-bottom: 10px;
+  }
+`;
+```
+
+- Similarly for media queries you don't require `&` , but if there pesudo selectors into it when you require `&`. Also we can write nested queries in it.
+
+```
+const Button = styled.button`
+  background: purple;
+  color: white;
+
+  @media (hover: hover) {
+    &:hover {
+      background: violet;
+    }
+  }
+`;
+```
+
+- Let's see advantages and disadvantages of styled component
+
+![alt text](image-55.png)
 
 
 ## React Router
