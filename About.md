@@ -3485,27 +3485,231 @@ const Button = styled.button`
 
   - Profile performance: see how long each component takes to render
 
-
 ![alt text](image-56.png)
 
 
-## `React.StrictMode`
+## Refs (`useRef`)
 
-- `React.StrictMode` is a useful component for highlighting potential problems in an application.
-- Strict mode is a set of development tools that help you catch potential problems in your code before they become actual bugs. When you enable strict mode in your React application, you’re essentially telling React to turn on a bunch of extra checks and warnings that are designed to help you write better code.
-- These checks and warnings can catch things like:
-  - Components with side effects
-  - Deprecated or unsafe lifecycle methods
-  - Unsafe use of certain built in functions
-  - Duplicate keys in lists
+- The `useRef` hook in React is used to create a mutable object that persists across renders. It is a reference to a value or DOM element
+- It hold mutable values that **don’t trigger re-renders when changed**. It refers the DOM elements directly.
+- Let's create a new Time Challenger Game application, so we have below our `App.jsx` a new component, `Player.jsx`.
 
-![alt text](2025-strictmode.gif)
+```
+//App.js
+
+import Player from './components/Player.jsx';
+
+function App() {
+  return (
+    <>
+      <Player />
+      <div id="challenges"></div>
+    </>
+  );
+}
+
+export default App;
+
+//Player.jsx
 
 
-https://chatgpt.com/c/6816fdbf-82a4-8009-8e6a-37ed3c5cfef1
-https://medium.com/@codeofrelevancy/what-is-strict-mode-in-react-cc8b51fb6096
+export default function Player() {
 
-TO be continue later
+  return (
+    <section id="player">
+      <h2>Welcome unknown entity</h2>
+      <p>
+        <input type="text" />
+        <button>Set Name</button>
+      </p>
+    </section>
+  );
+}
+
+//index.css - refer /timerChallengeGame folder
+```
+
+- On browser
+
+![alt text](image-57.png)
+
+- Now in this application, there are no event handlers and when we want to set our name, it should be shown after the `Welcome` word when clicked on `Set Name` button. To do this we can use `useState`.
+
+```
+// Player.jsx
+import React, { useState } from 'react';
+export default function Player() {
+
+  const [playerName, setPlayerName] = useState(null);
+  const [buttonClicked, setButtonClicked] = useState(false);
+
+
+  function handleChange(event) {
+    setButtonClicked(false);
+    setPlayerName(event.target.value);
+  }
+
+  function handleClick() {
+    setButtonClicked(true);
+  }
+
+  return (
+    <section id="player">
+      <h2>Welcome {buttonClicked? playerName : 'unknown entity'}</h2>
+      <p>
+        <input type="text" onChange={handleChange} value={playerName}/>
+        <button onClick={handleClick}>Set Name</button>
+      </p>
+    </section>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-15.mov" title="title"></video>
+
+- Here, we have use 2 `useState` which render our component unnecessarily. This add more complexity and rendering in our code. Let's use `useRef`.
+
+```
+//Player.jsx
+import React, { useRef, useState } from 'react';
+export default function Player() {
+
+  const inputPlayerName = useRef(null);
+  const [playerName, setPlayerName] = useState(null);
+
+  return (
+    <section id="player">
+      <h2>Welcome {playerName ? playerName : 'unknown entity'}</h2>
+      <p>
+        <input type="text" ref={inputPlayerName}/>
+        <button onClick={()=>{setPlayerName(inputPlayerName.current.value)}}>Set Name</button>
+      </p>
+    </section>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-16.mov" title="title"></video>
+
+- `const inputPlayerName = useRef(null);` creates a ref object using `useRef`. That object looks like `{ current: null }`. Inside the JSX `<input type="text" ref={inputPlayerName}/>`, connects the `ref` to the `<input>` element. Now, when the component renders, (`onClick` event) `inputPlayerName.current` becomes the actual DOM element of the input — like a handle to grab it.
+- Now to get the actual value, we need to do `inputPlayerName.current.value`. So you're directly reading the value typed into the `<input>` without using state or an `onChange` handler which renders the whole component unnecessarily.
+- `useRef` is used here for getting a reference to the `<input>` element. Reading its value on demand, when the button is clicked. You don’t need to update state on every keystroke entered in input text. You only care about the input once (when the user clicks `Set Name`).
+- Once `ref` is assigned to DOM element like `<input ref={myRef} />`. Then React assign `myRef.current = <input type="text" ...>  // the real DOM element`. So now you can access any HTML properties on it, like, `myRef.current.value`, `myRef.current.focus()`, `myRef.current.classList`, etc. So `useRef().current` gives you full access to the native DOM element (like `document.querySelector(...)` in plain JS).
+
+
+
+
+| Scenario                                                                                                         | Use `useState` | Use `useRef` |
+| ---------------------------------------------------------------------------------------------------------------- | -------------- | ------------ |
+| You want to **display or react to value changes** (like showing updated text on screen)?                         | ✅ Yes          | ❌ No         |
+| You want to **track a value** but **not re-render** every time it changes (e.g. timer ID, previous value, etc.)? | ❌ No           | ✅ Yes        |
+| You want to **access or control a DOM element** (like focus input, read value)?                                  | ❌ No           | ✅ Yes        |
+
+
+
+
+
+
+
+![alt text](image-59.png)
+
+
+
+- Let's see an another example of `useRef` , where we need to upload images using `click()` event of HTML `input` element.
+
+```
+//App.jsx
+
+import React from 'react';
+
+function App() {
+    const filePicker=React.useRef('');
+
+  return (
+    <div id="app">
+      <p>Please select an image</p>
+      <p>
+        <input data-testid="file-picker" type="file" accept="image/*" ref={filePicker}/>
+        <button onClick={()=>filePicker.current.click()}>Pick Image</button>
+      </p>
+    </div>
+  );
+}
+
+export default App;
+
+//index.css
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&family=Lato:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(#180d27, #0c0219);
+  color: #e5d9f1;
+  min-height: 100vh;
+}
+
+#app {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 30rem;
+  text-align: center;
+  border-radius: 6px;
+  background: linear-gradient(#341a89, #3a1967);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  letter-spacing: 0.15rem;
+  font-family: 'Lato', sans-serif;
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+}
+
+input[type='file'] {
+  display: none;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #8f05c6;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  color: #e5d9f1;
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+  background: #a80ad1;
+}
+```
+
+- On browser
+
+<video controls src="2025-17.mov" title="title"></video>
+
+- Here, we manually triggering the built-in HTML `click()` method of the `<input type="file" />` element using JavaScript. Normally the input file looks like this `<input type="file" />`
+
+![alt text](image-58.png)
+
+- It’s not easy to style, and often looks different across browsers. So instead, developers hide the actual file input and use a custom-styled button to trigger it.
+- When you assigned `<input type="file" ref={filePicker} />`, you assign a `ref` to the file input. This gives you access to the actual DOM element via f`ilePicker.current.` Then `<button onClick={() => filePicker.current.click()}>Pick Image</button>`, when the user clicks the button, you programmatically call the `.click()` method on the file input. This opens the native file dialog, as if the user clicked the input directly.
+
 
 
 ## React Router
@@ -3535,7 +3739,7 @@ TO be continue later
 npm install react-router-dom@latest
 ```
 
-- Lets create an `About` page content using a new component.
+- Continuing the text utility application, lets create an `About` page content using a new component.
 
 ```
 import React from "react";
@@ -3918,8 +4122,6 @@ export default Timer;
 
 - There are other hooks as well which can be found on internet.
 
-
-
 ## React Internal Working
 
 - The DOM, or Document Object Model, is a representation of the HTML structure that allows JavaScript to interact with and manipulate the elements on a webpage. Each HTML element is a node in the DOM tree, with parent-child relationships based on their nesting in the HTML code.
@@ -3971,6 +4173,7 @@ export default Timer;
 - Efficiency: Only updates parts of the DOM that actually changed, reducing the need for reflows and repaints.
 - Declarative UI: You describe what your UI should look like for any given state, and React takes care of making the necessary updates.
 
+
 ## Functional vs Class Component
 
 | **Functional Components**                                                            | **Class Components**                              |
@@ -3982,3 +4185,22 @@ export default Timer;
 | Constructors are not used.                                                                        | Constructor is used as it needs to store state.                                                |
 
 
+
+
+## `React.StrictMode`
+
+- `React.StrictMode` is a useful component for highlighting potential problems in an application.
+- Strict mode is a set of development tools that help you catch potential problems in your code before they become actual bugs. When you enable strict mode in your React application, you’re essentially telling React to turn on a bunch of extra checks and warnings that are designed to help you write better code.
+- These checks and warnings can catch things like:
+  - Components with side effects
+  - Deprecated or unsafe lifecycle methods
+  - Unsafe use of certain built in functions
+  - Duplicate keys in lists
+
+![alt text](2025-strictmode.gif)
+
+
+https://chatgpt.com/c/6816fdbf-82a4-8009-8e6a-37ed3c5cfef1
+https://medium.com/@codeofrelevancy/what-is-strict-mode-in-react-cc8b51fb6096
+
+TO be continue later
