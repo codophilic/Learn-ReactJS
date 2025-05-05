@@ -3709,6 +3709,58 @@ button:hover {
 
 - It’s not easy to style, and often looks different across browsers. So instead, developers hide the actual file input and use a custom-styled button to trigger it.
 - When you assigned `<input type="file" ref={filePicker} />`, you assign a `ref` to the file input. This gives you access to the actual DOM element via f`ilePicker.current.` Then `<button onClick={() => filePicker.current.click()}>Pick Image</button>`, when the user clicks the button, you programmatically call the `.click()` method on the file input. This opens the native file dialog, as if the user clicked the input directly.
+- Now let's add the gaming function in our Time challenge game. So basically, there will be 4 cards, each card will consist of time (seconds written on it). Gamer will click on start and stop exactly matching with whatever the seconds mentioned on the card. So e.g if the card has 1 second as timer, then player will click on start and exactly at 1 seconds , the gamer will click on stop to win the challenge.
+- Let's develope the code for it. So we have created a new component `TimeChallenger.jsx`
+
+```
+//TimeChallenge.jsx
+
+export default function TimeChallenge({title, targetTime}) {
+
+    return(
+        <section className="challenge">
+            <h2>{title}</h2>
+            <p className="challenge-time">
+                {targetTime} second{targetTime > 1 ? 's' : ''}
+            </p>
+            <button>
+                Start/Stop Challenge
+            </button>
+            <p>
+
+                Time is running..../Time inactive
+            </p>
+        </section>
+    )
+}
+
+// App.jsx
+
+import Player from './components/Player.jsx';
+import TimeChallenge from './components/TimeChallenge.jsx';
+
+function App() {
+  return (
+    <>
+      <Player />
+      <div id="challenges">
+        <TimeChallenge title="Easy" targetTime={1} />
+        <TimeChallenge title="Medium" targetTime={5} />
+        <TimeChallenge title="Hard" targetTime={10} />
+        <TimeChallenge title="Extreme" targetTime={20} />
+      </div>
+      
+    </>
+  );
+}
+
+export default App;
+```
+
+- On browser, currently we have added the card into the `App.jsx` file.
+
+![alt text](image-60.png)
+
 
 
 
