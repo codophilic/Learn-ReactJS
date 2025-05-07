@@ -3761,7 +3761,86 @@ export default App;
 
 ![alt text](image-60.png)
 
+- Now to calculate timer, we can use default function of JS which is `setTimeout`. So let's create a function , whenever user will click on the button, the function will execute `setTimeout`.
 
+```
+    function onStartButtonClick() {
+        const milliseconds = targetTime * 1000;
+        setTimeout(() => {
+        }
+        , milliseconds);
+    }
+```
+
+- Now, whenever user clicks on the button, we need to have an indication that timer has started. We can do it using `useState`.
+
+```
+    const [timeStarted, setTimeStarted] = useState(false);
+    function onStartButtonClick() {
+        setTimeStarted(true);
+        const milliseconds = targetTime * 1000;
+        setTimeout(() => {
+        }
+        , milliseconds);
+    }
+```
+
+- Now, the `setTimeout` will execute after some milliseconds, so we need to have a state which will tell there whether the timer execution is finished or not. So here again, we will use `useState` to know whether time has expired or not.
+
+```
+    const [timeExpired, setTimeExpired] = useState(false);
+    function onStartButtonClick() {
+        const milliseconds = targetTime * 1000;
+        setTimeout(() => {
+            setTimeExpired(true);
+            // Post click and after some milliseconds, the time expired
+        }
+        , milliseconds);
+    }
+```
+
+- Now based on `timeStarted` we need to toggle `Start` or `Stop` on button.
+
+```
+import React, { useState } from 'react';
+
+export default function TimeChallenge({title, targetTime}) {
+
+    const [timeExpired, setTimeExpired] = useState(false);
+    const [timeStarted, setTimeStarted] = useState(false);
+    function onStartButtonClick() {
+        setTimeStarted(true);
+        const milliseconds = targetTime * 1000;
+        setTimeout(() => {
+            setTimeExpired(true);
+            // Post click and after some milliseconds, the time expired
+        }
+        , milliseconds);
+    }
+
+
+    return(
+        <section className="challenge">
+            <h2>{title}</h2>
+            <p className="challenge-time">
+                {targetTime} second{targetTime > 1 ? 's' : ''}
+            </p>
+            <button onClick={onStartButtonClick}>
+                {timeStarted ? 'Stop' : 'Start'} Challenge
+            </button>
+            <p className={timeStarted ? 'active' : undefined}>
+                {timeStarted ? 'Time is running' : 'Time inactive'}
+            </p>
+        </section>
+    )
+}
+```
+
+- On browser
+
+<video controls src="2025-18.mov" title="title"></video>
+
+- We are able to start the timer, but not able to stop. So we need to define a stop function, but how will the stop function will stop the `setTimeout` timer? we will be using `useRef`.
 
 
 ## React Router
