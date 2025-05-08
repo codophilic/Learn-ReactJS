@@ -3841,7 +3841,60 @@ export default function TimeChallenge({title, targetTime}) {
 <video controls src="2025-18.mov" title="title"></video>
 
 - We are able to start the timer, but not able to stop. So we need to define a stop function, but how will the stop function will stop the `setTimeout` timer? we will be using `useRef`.
+- Now to stop the timer we will use `clearTimeout` function. It accepts the object saved for `setTimeout`.
 
+```
+//TimeChallenge.jsx
+
+import React, { useRef, useState } from 'react';
+
+export default function TimeChallenge({title, targetTime}) {
+
+    const [timeExpired, setTimeExpired] = useState(false);
+    const [timeStarted, setTimeStarted] = useState(false);
+    const timer=useRef();
+
+    function onStartButtonClick() {
+        setTimeStarted(true);
+        const milliseconds = targetTime * 1000;
+        timer.current=setTimeout(() => {
+            setTimeExpired(true);
+            // Post click and after some milliseconds, the time expired
+        }
+        , milliseconds);
+    }
+
+    function onStopButtonClick() {
+        // Clear the timer
+        clearTimeout(timer.current);
+    }
+
+
+    return(
+        <section className="challenge">
+            <h2>{title}</h2>
+            {timeExpired && <p>You lost!</p>}
+            <p className="challenge-time">
+                {targetTime} second{targetTime > 1 ? 's' : ''}
+            </p>
+            <button onClick={timeStarted ? onStopButtonClick : onStartButtonClick}>
+                {timeStarted ? 'Stop' : 'Start'} Challenge
+            </button>
+            <p className={timeStarted ? 'active' : undefined}>
+                {timeStarted ? 'Time is running' : 'Time inactive'}
+            </p>
+        </section>
+    )
+}
+```
+
+- So here we have create ref for `setTimeout` and that ref is been passed to `clearTimeout`. As ref does not gets re-rendered, we are able to retrieve the store object of `setTimeout`. It can persist across re-renders without triggering any re-render itself. Unlike `useState`, `useRef` does not cause a re-render when its value changes. This makes it ideal for storing mutable values like timer IDs or DOM references.
+- Based on the `timeStarted` we are also able to toggle `onClick` event.
+- On browser
+
+<video controls src="2025-19.mov" title="title"></video>
+
+- Here, we are still facing one issue. We are able to start the timer independently but we are not able to stop it
 
 ## React Router
 
