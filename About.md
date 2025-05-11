@@ -15,18 +15,18 @@
 - The idea behind React is to break the page into several components. Referring above image, you will have component for menu bar, you will have component for *Read* , Similarly you will have component for *Practice* and so on.
 - Each component will have its own CSS and JS. So whenever you wanna change any part of your page, you just require to edit that particular component CSS or JS.
 
-![alt text](image-9.png)
+![alt text](Images/about/image-9.png)
 
 - These component can be reuse as well. Lets say in the above image, there are 3 widgets (**Read, Practice and Learn**). If you observer the styling and layout are same. Only the content and images are being varying, so you can make a generalize component of that widget and reuse it by passing the content and images. Any change require will be affected to 3 of them.
 - That's why React is a component based library. Each component is a small, reusable piece of UI that manages its own state and renders as needed.
 
 
-![alt text](image.png)
+![alt text](Images/about/image.png)
 
 
 - Components are reusable and independent building blocks of a React application's user interface. They divide the UI into smaller, manageable parts, making development, testing, and maintenance easier. Each component manages its own logic and appearance, allowing for modular and organized code.
 
-![alt text](image-8.png)
+![alt text](Images/about/image-8.png)
 
 - Components promote reusability, reducing code duplication and development time. A component can be used multiple times throughout the application, even in different projects, ensuring consistency and efficiency. When changes are needed, updating a single component automatically reflects those changes everywhere it's used.
 - Lets start create a project using React JS.
@@ -281,7 +281,7 @@ export default App;
 
 - On browser
 
-![alt text](image-6.png)
+![alt text](Images/about/image-6.png)
 
 - We can import images or any assets in react
 
@@ -313,7 +313,7 @@ export default App;
 
 - On browser
 
-![alt text](image-7.png)
+![alt text](Images/about/image-7.png)
 
 - It is possible to import various types of assets in React, including images, and they are handled as objects. When you import an image (or other file types) in React using the `import` statement, it doesn't directly embed the file's content into your code. Instead, it creates a reference, which acts like an object containing information about the imported asset, such as its path.
 - `reactImage` becomes an object that holds the resolved path to the image file. In a React project (especially with bundlers like Webpack, Vite, Create React App), you can import not just `.js` or `.jsx` files - you can also import images, CSS files, JSON files, SVGs, and more.
@@ -346,7 +346,7 @@ export default App;
 - JSX stands for JavaScript XML. It’s a syntax that lets you write HTML-like code directly in JavaScript files. Even though it looks like HTML, it’s actually JavaScript under the hood. JSX makes it easy to combine JavaScript logic and HTML structure within your components, so your code stays readable and organized.
 
 
-![alt text](image-1.png)
+![alt text](Images/about/image-1.png)
 
 
 - JSX makes it easy to see both the structure (HTML-like) and logic (JavaScript) of your components in one place. Instead of splitting code between HTML files and JavaScript files, JSX lets you:
@@ -381,12 +381,12 @@ export default App;
 - Using JSX isn’t mandatory, but it’s popular because it makes React code more readable and expressive. If you don’t use JSX, you’ll need to use pure JavaScript to define elements. To make this work, React elements must be created using `React.createElement()`. Additionally, you need to defined a compiler like Babel (a JavaScript compiler) which is required to convert your code into JavaScript that the browser understands.
 - JSX code is a non-standard feature. It's not supported by the browser directly and therefore the code you write is not the code that ends up in the browser with all your custom tags.
 
-![alt text](image-26.png)
+![alt text](Images/about/image-26.png)
 
 - Babel, a build process that's running behind the scenes that actually transforms and potentially also optimizes our code such that it does work in the browser.
 - In theory, you could also build React apps without using JSX. You technically don't need JSX to build a React project. It's just convenient. Referring the below code
 
-![alt text](image-25.png)
+![alt text](Images/about/image-25.png)
 
 
 - To create component you need to use the `createElement` method exposed by `React` to create that same structure, that same HTML code in the end. For that, this `createElement` method takes the component type that should be created, so to say, as the first argument, then takes the props object you might want to pass to that component or element. And then you can also have child elements as the third argument so that you can control which content goes between the opening and closing tag of that component.
@@ -518,11 +518,11 @@ export default App;
 
 - If we inspect the HTML, we can see all the HTML elements are bundled under `<div className="App">`. 
 
-![alt text](image-27.png)
+![alt text](Images/about/image-27.png)
 
 - However, adding unnecessary `<div>` can clutter your HTML structure and impact styling or layout. Now if you try to remove `div` you will get an compilation error.
 
-![alt text](image-28.png)
+![alt text](Images/about/image-28.png)
 
 - Traditionally, React components were limited to returning a single root element, leading to developers often using div as a placeholder. However, fragments enable you to group multiple elements without adding unnecessary wrapper tags to the DOM. React Fragments allow you to avoid wrapping multiple elements in a div when returning from a component.
 - React Fragments (`<></>`) allow you to group elements without adding extra nodes to the DOM. When you don’t want extra `div` wrappers that might mess up your styling or create unnecessary DOM nodes. You can use **`Fragments`**. A fragment lets you group multiple elements.
@@ -554,7 +554,7 @@ export default App;
 
 - When we inspect the HTML, we can see there is no extra `div`.
 
-![alt text](image-29.png)
+![alt text](Images/about/image-29.png)
 
 - This behaves exactly like the example with `<div>`, but no extra wrapper is added to the DOM. `Fragments` make your code more readable by removing the need for an extra div in many cases. 
 - Alternatively you can use `<>..</>` short syntax for fragments.
@@ -582,7 +582,7 @@ export default App;
 
 - When we inspect the HTML file we can see all the HTML elements are containerized under the `<div id='root'>` element
 
-![alt text](image-2.png)
+![alt text](Images/about/image-2.png)
 
 - Let's create our own simple header component for `h1` which will display `Hello`.
 
@@ -613,15 +613,15 @@ export default App;
 ```
 
 
-![alt text](image-4.png)
+![alt text](Images/about/image-4.png)
 
 - So the header and the paragraphy section, in the App component and our custom `Header` component are inside of that `div` with the `id` `root`. So the `createRoot` and `render` methods are responsible for rendering a single root component, the App component in this case, which then in turn may contain as many nested components as needed. And those nested components, it may include like this `Header` component in this case, could then contain even more child components. And with that, ultimately you end up with a component hierarchy, which is often called a tree of components, a structure of components, which is then rendered to the screen via React.
 
-![alt text](image-3.png)
+![alt text](Images/about/image-3.png)
 
 - Let's inspect the HTML, can we see our own custom HTML tag which is `<Header>`?
 
-![alt text](image-5.png)
+![alt text](Images/about/image-5.png)
 
 - There you only find default HTML elements, for example, here, the `h1` tag & `div` which is the built-in header element, not our custom component, not our `<Headers>` component. We also don't see the `<App>` component in here.
 - So your tree of components is, in the end, just analyzed by React. And React then combines all the JSX code from all those components to generate the overall DOM and then these elements that are showing up on the screen.
@@ -789,13 +789,13 @@ export default function Navbar(props){
 - The `navTitle`, `tab1` and `tab2` are custom attributes we defined in the tag `Navbar`. The `props` is an object. `props` are passed as a single object to the child component. **Child components cannot modify the props they receive. They are immutable.**
 - `props` facilitate a top-down data flow in React applications, meaning data flows from parent components to child components. `props` allow you to create reusable components that can be customized with different data.
 
-![alt text](image-10.png)
+![alt text](Images/about/image-10.png)
 
 
 - In React, `props` are indeed passed as an object to a component. When multiple properties are passed, they effectively merge into a single object, where each prop name becomes a key in the object and its value becomes the corresponding value.
 
 
-![alt text](image-11.png)
+![alt text](Images/about/image-11.png)
 
 
 - Instead of writing `prop.attributeName (e.g prop.tab1)` we can also write `attributeName (e.g {tab1})` providing the function accepts object of attributes like below.
@@ -945,11 +945,11 @@ export default App;
 
 - On browser
 
-![alt text](image-12.png)
+![alt text](Images/about/image-12.png)
 
 - `props.children` are content you nest inside a component when you use it.
 
-![alt text](image-14.png)
+![alt text](Images/about/image-14.png)
 
 
 >[!NOTE]
@@ -964,7 +964,7 @@ export default App;
 - Use normal `props` for small stuff, use `props.children` for passing real "content" inside components.
 
 
-![alt text](image-15.png)
+![alt text](Images/about/image-15.png)
 
 
 - Lets see another example, lets create a folder under `/components` and create two files `Card.jsx` & `card.css`
@@ -1022,7 +1022,7 @@ export default App;
 
 - On browser 
 
-![alt text](image-13.png)
+![alt text](Images/about/image-13.png)
 
 ### `propTypes`
 
@@ -1178,7 +1178,7 @@ export default App;
 
 - On browser
 
-![alt text](image-16.png)
+![alt text](Images/about/image-16.png)
 
 
 - In React, you add event listeners directly in your JSX — similar to HTML but with a few important differences:
@@ -1270,7 +1270,7 @@ export default App;
 
 - On browser
 
-![alt text](image-17.png)
+![alt text](Images/about/image-17.png)
 
 
 ## State (`useState`)
@@ -1321,7 +1321,7 @@ export default function Card(props){
 
 - On browser when we click on the button, the value of text `Learning about React is fun!` does not gets changed to `You clicked the button!`.
 
-<video controls src="2025-1.mov" title="title"></video>
+<video controls src="Images/about/2025-1.mov" title="title"></video>
 
 
 
@@ -1368,7 +1368,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-2.mov" title="title"> </video>
+<video controls src="Images/about/2025-2.mov" title="title"> </video>
 
 
 - Here, `initialtext` is stored as state, When you call `setInitialText`, React:
@@ -1382,12 +1382,12 @@ this.initialText = "New Content" ❌
 ```
 
 
-![alt text](image-18.png)
+![alt text](Images/about/image-18.png)
 
 >[!NOTE]
 > - Rules for `useState()`
 > 
-> ![alt text](image-19.png)
+> ![alt text](Images/about/image-19.png)
 
 - Consider below JSX files
 
@@ -1447,7 +1447,7 @@ export default function Card(props){
 - When we execute it, on browser we can see
 
 
-<video controls src="2025-3.mov" title="title"></video>
+<video controls src="Images/about/2025-3.mov" title="title"></video>
 
 - Whenever we click on the button, the `Card` component also gets rendered. So does state reload the whole component?
   - ✅Yes, the entire component function runs again! But not the whole page, just this component.
@@ -1617,7 +1617,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-8.mov" title="title"></video>
+<video controls src="Images/about/2025-8.mov" title="title"></video>
 
 - Here, we are calling the `setCount` method 3 times but only one gets executed properly. Why so? it is due to **React's state batching behavior**.
 
@@ -1682,7 +1682,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-9.mov" title="title"></video>
+<video controls src="Images/about/2025-9.mov" title="title"></video>
 
 - Instead of directly updating the state with a new value, the `setCount` function is now called with a callback function as an argument. This callback function receives the previous value of the state as a parameter (in this case, `prev`), and it returns the new value based on the previous value.
 - Since each `setCount` call is performed separately from the previous value, the count is incremented by 1 for each call. Therefore, when you click the button, the count will increase by 3 because each `setCount` call increments the count by 1 individually.
@@ -1716,7 +1716,7 @@ function App() {
 
 - On browser
 
-![alt text](image-39.png)
+![alt text](Images/about/image-39.png)
 
 ### Updating Object's State Immutably
 
@@ -1749,7 +1749,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-10.mov" title="title"></video>
+<video controls src="Images/about/2025-10.mov" title="title"></video>
 
 - In this example, we attempt to increment the user’s age directly by mutating the `user` object. It won't increase because inside the `setUser(user);` you are passing the same object reference even though you have change `user.age`. And react does shallow comparison of previous object and current object. Since previous object is same as current object, we don't see any changes on browser.
 - To avoid, we need to give a new object along with our changes to react.
@@ -1762,11 +1762,11 @@ export default App;
 
 - On browser
 
-<video controls src="2025-11.mov" title="title"></video>
+<video controls src="Images/about/2025-11.mov" title="title"></video>
 
 - When you're creating a new object React re-renders properly.
 
-![alt text](image-40.png)
+![alt text](Images/about/image-40.png)
 
 
 >[!NOTE]
@@ -1874,7 +1874,7 @@ export default App;
 - Conditional rendering in React allows for displaying different UI elements or components based on certain conditions. This dynamic rendering ensures that the user interface updates in response to changes in application state or user interactions. Several approaches facilitate conditional rendering in React.
 - Let's see you need to render below image in case of, when `delete` button is clicked.
 
-![alt text](image-20.png)
+![alt text](Images/about/image-20.png)
 
 - So current **App.jsx**
 
@@ -1936,7 +1936,7 @@ body {
 
 - On browser
 
-![alt text](image-21.png)
+![alt text](Images/about/image-21.png)
 
 - So here, both component are getting rendered. So we want only one component to render at a particular time, when we click on `delete` button, the warning card must appear and when click on `Proceed` button, again the `delete` button must appear. This type of conditional rendering can be done in multple ways.
 
@@ -1975,7 +1975,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-4.mov" title="title"></video>
+<video controls src="Images/about/2025-4.mov" title="title"></video>
 
 ### 2. Ternary Operator
 
@@ -2009,7 +2009,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-4.mov" title="title"></video>
+<video controls src="Images/about/2025-4.mov" title="title"></video>
 
 ### 3. Logical Operator (`&&` or `||`)
 
@@ -2041,7 +2041,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-4.mov" title="title"></video>
+<video controls src="Images/about/2025-4.mov" title="title"></video>
 
 - Similarly we can also apply conditional styling 
 
@@ -2078,7 +2078,7 @@ body {
 
 - On browser
 
-<video controls src="2025-5.mov" title="Title"></video>
+<video controls src="Images/about/2025-5.mov" title="Title"></video>
 
 ## Dynamic List Rendering
 
@@ -2145,7 +2145,7 @@ export default function Todo({content}) {
 
 - On browser 
 
-![alt text](image-22.png)
+![alt text](Images/about/image-22.png)
 
 - Now if we mistakenly removed any items from the list `DUMMY_TODOS`, it would break the UI layout
 
@@ -2174,7 +2174,7 @@ export default function App() {
 
 - On browser
 
-![alt text](image-23.png)
+![alt text](Images/about/image-23.png)
 
 
 - If you add or remove an item, you have to change the code yourself. If you miss adding an item, your layout may break (missing items, wrong structure).
@@ -2208,12 +2208,12 @@ export default function App() {
 - On browser
 
 
-![alt text](image-22.png)
+![alt text](Images/about/image-22.png)
 
 - To render dynamic lists, React utilizes the `map()` method on arrays. This method iterates through each item in an array and applies a function to transform it into a React element, typically a JSX structure.
 - If we inpsect the HTML, in the console we get below error message
 
-![alt text](image-24.png)
+![alt text](Images/about/image-24.png)
 
 - Each item in the list should also have a unique `key` prop to help React efficiently update the list when changes occur. `key` helps React track which item changed, added, or removed — for fast updates.
 - Example
@@ -2286,7 +2286,7 @@ export default App;
 ```
 - On browser
 
-<video controls src="2025-6.mov" title="title"></video>
+<video controls src="Images/about/2025-6.mov" title="title"></video>
 
 - Here, all the components which are in one place, due to `useState` all components are rendered that's why the function `getRandomGreeting()` gets executed whenever `onChange` event is triggered. Now below is the code where we split these components.
 
@@ -2348,7 +2348,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-7.mov" title="title"> </video>
+<video controls src="Images/about/2025-7.mov" title="title"> </video>
 
 - Here we have splitted up the input component, thus `onChange` event affects or render the `AceeptInput` component and not `App` Component.
 - Splitting components into smaller, single-purpose units makes your codebase easier to understand and navigate.
@@ -2387,7 +2387,7 @@ export default App;
 
 - On browser we get
 
-![alt text](image-30.png)
+![alt text](Images/about/image-30.png)
 
 - Now let's say, if we create a custom div and pass it into the `App` component
 
@@ -2416,7 +2416,7 @@ export default App;
 
 - On browser
 
-![alt text](image-31.png)
+![alt text](Images/about/image-31.png)
 
 - Why so? properties of HTML elements, like those set using the `innerHTML` property or passed as `props`, are not automatically forwarded to the wrapped elements within the `innerHTML` content. `props` are not automatically forwarded to inner HTML elements unless you explicitly pass them.
 - If you write a wrapper component like this:
@@ -2473,7 +2473,7 @@ export default App;
 
 - On browser
 
-![alt text](image-30.png)
+![alt text](Images/about/image-30.png)
 
 - If you have any custom attributes, you need to used **Rest Operator** on `props`.
 
@@ -2503,7 +2503,7 @@ export default App;
 
 - On browser
 
-![alt text](image-32.png)
+![alt text](Images/about/image-32.png)
 
 - When building components that accept both:
   - Custom props (e.g., `customAttribute`) 
@@ -2559,7 +2559,7 @@ export default App;
 
 - On browser
 
-![alt text](image-33.png)
+![alt text](Images/about/image-33.png)
 
 - This is a common pattern for creating reusable and flexible components. A parent component can pass a JSX element (or even a whole block of JSX) as a prop to a child component, and the child can then render that passed JSX. You can create reusable components that can display different content based on the JSX passed to them.
 - This approach gives you a lot of control over the structure and content of the child component, making it adaptable to various use cases.
@@ -2610,7 +2610,7 @@ export default App;
 
 - On browser
 
-![alt text](image-34.png)
+![alt text](Images/about/image-34.png)
 
 - You can pass components as variables or `props`. Helps create dynamic UIs that adapt based on conditions. 
 
@@ -2619,7 +2619,7 @@ export default App;
 > - If you try to use a lowercase variable or prop name directly in JSX, React will treat it as a built-in HTML element, not a custom component — which can cause an error like `Element type is invalid`.
 >
 >
-> ![alt text](image-35.png)
+> ![alt text](Images/about/image-35.png)
 
 - We can set default value for the props , it can be HTML element or custom component like below
 
@@ -2656,7 +2656,7 @@ export default App;
 
 - On browser
 
-![alt text](image-36.png)
+![alt text](Images/about/image-36.png)
 
 ## `public` vs `/src/asset` folder
 
@@ -2673,7 +2673,7 @@ export default App;
 
 - On browser when we access images placed under `/public` folder
 
-![alt text](image-37.png)
+![alt text](Images/about/image-37.png)
 
 - The reason for that is that images (or, in general files) stored in `public/` are made publicly available by the underlying project development server & build process. Just like `index.html`, those files can directly be visited from inside the browser and can therefore also be requested by other files.
 - The `src/assets/` folder can also store images (or, actually, anywhere in the `src` folder).
@@ -2733,7 +2733,7 @@ export default App;
 
 - On browser, we can see our styling got affected for `MyPara` component.
 
-![alt text](image-41.png)
+![alt text](Images/about/image-41.png)
 
 - Now let's add another paragraphy under **`App.js`**.
 
@@ -2754,11 +2754,11 @@ export default App;
 
 - On browser we can see, the `App,js` got the same styling for `p` written for `MyPara.css`.
 
-![alt text](image-42.png)
+![alt text](Images/about/image-42.png)
 
 - Vanilla CSS in React is not scoped to components, meaning it affects all components and elements on the page. This can lead to styling conflicts and difficulties in managing styles across different parts of your application.
 
-![alt text](image-43.png)
+![alt text](Images/about/image-43.png)
 
 - We can overcome this using **inline style css**. Like below
 
@@ -2788,7 +2788,7 @@ export default function MyPara() {
 
 - On browser, the `App.js` remains unaffected from the css used for `MyPara.jsx`
 
-![alt text](image-44.png)
+![alt text](Images/about/image-44.png)
 
 - React uses JavaScript objects to define inline styles (`paraStyle`). CSS property names that are normally hyphenated (like `background-color`, `font-size`) need to be written in camelCase (like `backgroundColor`, `fontSize`). So a normal css
 
@@ -2817,7 +2817,7 @@ export default function MyPara() {
 - Some CSS properties that are just one word stay the same `color`, `margin`, `padding`, `border` etc..
 - React internally maps inline style objects to actual DOM styles. When you pass `style={{ backgroundColor: "red" }}`, React sets the DOM element’s `style.backgroundColor` property directly, which is JavaScript’s camelCase API for CSS.
 
-![alt text](image-45.png)
+![alt text](Images/about/image-45.png)
 
 
 ### Conditional Rendering in Styles
@@ -2848,7 +2848,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-12.mov" title="title"></video>
+<video controls src="Images/about/2025-12.mov" title="title"></video>
 
 
 ### Styling using CSS class (`className`)
@@ -2970,7 +2970,7 @@ div .highlight-red {
 
 - On browser
 
-<video controls src="2025-12.mov" title="title"></video>
+<video controls src="Images/about/2025-12.mov" title="title"></video>
 
 - So the class `highlight-green` under the `div` gets only styled when click on `YES` or `NO` button.
 
@@ -3039,17 +3039,17 @@ export default App;
 
 - On browser
 
-![alt text](image-46.png)
+![alt text](Images/about/image-46.png)
 
 - `import MyParaCSS from './MyPara.module.css';` this line imports the CSS module file. But unlike normal CSS, it's not just imported for its side effects — it actually returns a JavaScript object. `MyParaCSS` is a JavaScript object. `MyParaCSS.para` contain your css styling class selectors which you call it (`MyPara.para`) inside the `className`.
 - When you use a CSS Module, React (actually, the build tool like Webpack or Vite) processes it and generates a unique class name.
 - Let's inspect the page.
 
-![alt text](image-47.png)
+![alt text](Images/about/image-47.png)
 
 - On console
 
-![alt text](image-48.png)
+![alt text](Images/about/image-48.png)
 
 
 #### What React/Webpack does behind the scenes?
@@ -3089,7 +3089,7 @@ export default App;
 
 - CSS Modules advantages & disadvantages
 
-![alt text](image-49.png)
+![alt text](Images/about/image-49.png)
 
 
 ## Style Components (Third Party Package)
@@ -3160,7 +3160,7 @@ export default App;
 
 - On browser
 
-![alt text](image-50.png)
+![alt text](Images/about/image-50.png)
 
 - Let's apply styled component, for `MyPara.jsx`
 
@@ -3195,14 +3195,14 @@ export default function MyPara() {
 
 - On browser
 
-![alt text](image-51.png)
+![alt text](Images/about/image-51.png)
 
 - `styled.div` is a tagged template literal that tells Styled Components to, create a new React component, apply the given styles to a `<div>`.
 - Internally generate a unique class name (like `sc-a1234`). Inject that class name and style into the DOM.
 
-![alt text](image-52.png)
+![alt text](Images/about/image-52.png)
 
-![alt text](image-53.png)
+![alt text](Images/about/image-53.png)
 
 - So `DivStyle` becomes a custom React component that renders a `div` with styles already baked in. Similarly goes for `p` html.
 - A `<div>` and two `<p>` tags are created — but with unique class names applied by Styled Components. The CSS rules (in your template literal) are added to a `<style>` tag in the HTML `<head>` at runtime.
@@ -3246,7 +3246,7 @@ export default function MyPara() {
 
 - On browser
 
-![alt text](image-54.png)
+![alt text](Images/about/image-54.png)
 
 
 - We can also do conditional rendering in styled components and can pass props (`className`, event handlers etc..) to built-in HTML elements (like `div`, `p`, `button`, etc.) and use those props to apply conditional styles.
@@ -3310,7 +3310,7 @@ export default function MyPara() {
 
 - On browser
 
-<video controls src="2025-13.mov" title="title"></video>
+<video controls src="Images/about/2025-13.mov" title="title"></video>
 
 
 - The second `<ParaStyle isImportant>` receives a prop `isImportant={true}` (shorthand -> `IsImportant`). The `ParaStyle` definition reads that prop and:
@@ -3409,7 +3409,7 @@ export default function MyPara() {
 
 - On browser
 
-<video controls src="2025-14.mov" title="title"></video>
+<video controls src="Images/about/2025-14.mov" title="title"></video>
 
 - The `&` symbol is very important in Styled Components. It represents the current component selector (like a placeholder for the generated class name). It allows you to apply pseudo-selectors, nested rules, and combinators relative to the component.
 - When you write this in Pseudo selectors
@@ -3455,7 +3455,7 @@ const Button = styled.button`
 
 - Let's see advantages and disadvantages of styled component
 
-![alt text](image-55.png)
+![alt text](Images/about/image-55.png)
 
 ## React Developer Tools
 
@@ -3485,7 +3485,7 @@ const Button = styled.button`
 
   - Profile performance: see how long each component takes to render
 
-![alt text](image-56.png)
+![alt text](Images/about/image-56.png)
 
 
 ## Refs (`useRef`)
@@ -3531,7 +3531,7 @@ export default function Player() {
 
 - On browser
 
-![alt text](image-57.png)
+![alt text](Images/about/image-57.png)
 
 - Now in this application, there are no event handlers and when we want to set our name, it should be shown after the `Welcome` word when clicked on `Set Name` button. To do this we can use `useState`.
 
@@ -3567,7 +3567,7 @@ export default function Player() {
 
 - On browser
 
-<video controls src="2025-15.mov" title="title"></video>
+<video controls src="Images/about/2025-15.mov" title="title"></video>
 
 - Here, we have use 2 `useState` which render our component unnecessarily. This add more complexity and rendering in our code. Let's use `useRef`.
 
@@ -3593,7 +3593,7 @@ export default function Player() {
 
 - On browser
 
-<video controls src="2025-16.mov" title="title"></video>
+<video controls src="Images/about/2025-16.mov" title="title"></video>
 
 - `const inputPlayerName = useRef(null);` creates a ref object using `useRef`. That object looks like `{ current: null }`. Inside the JSX `<input type="text" ref={inputPlayerName}/>`, connects the `ref` to the `<input>` element. Now, when the component renders, (`onClick` event) `inputPlayerName.current` becomes the actual DOM element of the input — like a handle to grab it.
 - Now to get the actual value, we need to do `inputPlayerName.current.value`. So you're directly reading the value typed into the `<input>` without using state or an `onChange` handler which renders the whole component unnecessarily.
@@ -3615,7 +3615,7 @@ export default function Player() {
 
 
 
-![alt text](image-59.png)
+![alt text](Images/about/image-59.png)
 
 
 
@@ -3701,11 +3701,11 @@ button:hover {
 
 - On browser
 
-<video controls src="2025-17.mov" title="title"></video>
+<video controls src="Images/about/2025-17.mov" title="title"></video>
 
 - Here, we manually triggering the built-in HTML `click()` method of the `<input type="file" />` element using JavaScript. Normally the input file looks like this `<input type="file" />`
 
-![alt text](image-58.png)
+![alt text](Images/about/image-58.png)
 
 - It’s not easy to style, and often looks different across browsers. So instead, developers hide the actual file input and use a custom-styled button to trigger it.
 - When you assigned `<input type="file" ref={filePicker} />`, you assign a `ref` to the file input. This gives you access to the actual DOM element via f`ilePicker.current.` Then `<button onClick={() => filePicker.current.click()}>Pick Image</button>`, when the user clicks the button, you programmatically call the `.click()` method on the file input. This opens the native file dialog, as if the user clicked the input directly.
@@ -3759,7 +3759,7 @@ export default App;
 
 - On browser, currently we have added the card into the `App.jsx` file.
 
-![alt text](image-60.png)
+![alt text](Images/about/image-60.png)
 
 - Now to calculate timer, we can use default function of JS which is `setTimeout`. So let's create a function , whenever user will click on the button, the function will execute `setTimeout`.
 
@@ -3838,7 +3838,7 @@ export default function TimeChallenge({title, targetTime}) {
 
 - On browser
 
-<video controls src="2025-18.mov" title="title"></video>
+<video controls src="Images/about/2025-18.mov" title="title"></video>
 
 - We are able to start the timer, but not able to stop. So we need to define a stop function, but how will the stop function will stop the `setTimeout` timer? we will be using `useRef`.
 - Now to stop the timer we will use `clearTimeout` function. It accepts the object saved for `setTimeout`.
@@ -3892,7 +3892,7 @@ export default function TimeChallenge({title, targetTime}) {
 - Based on the `timeStarted` we are also able to toggle `onClick` event.
 - On browser
 
-<video controls src="2025-19.mov" title="title"></video>
+<video controls src="Images/about/2025-19.mov" title="title"></video>
 
 - Here, we are still facing one issue. We are able to start the timer independently but we are not able to show whether player lost or won the game. On click of stop we need to show the result whether player has won or lost the game. So let's create a `Result` component. The `Result` component will give a dialog box showing whether player has won or lost the game.
 
@@ -3942,7 +3942,7 @@ export default function Result({ result , targetTime }) {
 - On browser
 
 
-<video controls src="2025-20.mov" title="title"></video>
+<video controls src="Images/about/2025-20.mov" title="title"></video>
 
 - The `<dialog>` tag is a native HTML element introduced in HTML5. It’s used to display modal dialogs or popup boxes. `Result` component accepts two props:
   - `result` → e.g., `won` or `lost`
@@ -3953,7 +3953,7 @@ export default function Result({ result , targetTime }) {
 - Now when the `dailog` pop-ups, we can still interact with the elements behind the dailog. We wanted to make those element invisible and it must not be interactive. To do so we have `showModal()`. The `showModal()` method in HTML is used to display a `<dialog>` element as a modal, blocking interaction with the rest of the page until the dialog is closed. It's a simple and effective way to create modal dialogs without needing much JavaScript.
 - See below example of `showModal()` in plain HTML.
 
-<video controls src="2025-21.mov" title="title"></video>
+<video controls src="Images/about/2025-21.mov" title="title"></video>
 
 - Now to use this in React component? using `useRef`. `useRef` in React is a hook that creates a mutable value, which can be used to store any kind of data (string, boolean etc..), including references to DOM elements or HTML native methods like `showModal()`. The `current` property of the `useRef` object is where you store the value, and you can link it to a React element using the `ref` attribute. Let's create `ref` for `showModal()`.
 
@@ -4029,7 +4029,7 @@ export default function Result({  ref, result , targetTime}) {
 
 - On browser
 
-<video controls src="2025-22.mov" title="title"></video>
+<video controls src="Images/about/2025-22.mov" title="title"></video>
 
 - Here, we are forwarding `ref` to the `Result.jsx`.
 
@@ -4060,7 +4060,7 @@ export default ResultModal;
 
 - On browser
 
-<video controls src="2025-22.mov" title="title"></video>
+<video controls src="Images/about/2025-22.mov" title="title"></video>
 
 - By default, refs do not pass through custom components. If you try to attach a ref to a component you created, React doesn't automatically know where to apply it in the rendered DOM. `forwardRef` solves this by explicitly forwarding the ref down to the desired child.
 
@@ -4207,7 +4207,7 @@ body {
 
 - On browser
 
-![alt text](image-61.png)
+![alt text](Images/about/image-61.png)
 
 - Here, `React.forwardRef(...)` allows the `Input` component to accept a `ref` from its parent (`App`) and pass that `ref` directly to the `<input>` DOM element inside.
 - So now `ref.current === <input>`. This enables the parent (`App`) to directly access `name` and `email`.
@@ -4319,7 +4319,7 @@ export default function TimeChallenge({title, targetTime}) {
 
 - On browser
 
-<video controls src="2025-22.mov" title="title"></video>
+<video controls src="Images/about/2025-22.mov" title="title"></video>
 
 - With `useImperativeHandle` you choose exactly what to expose to the parent, which function or value. When you build reusable components (like timers, animations, or form inputs) and you want the parent to trigger methods on them directly but not expose the entire DOM node.
 - When a parent component uses a ref on a child component wrapped in `forwardRef`, it typically gains access to the child's DOM node. However, `useImperativeHandle` allows the child to selectively expose only certain functions or values, creating a controlled API for the parent. This is useful for abstracting away implementation details and preventing the parent from directly manipulating the child's internal state or DOM structure in unintended ways.
@@ -4486,7 +4486,7 @@ form input {
 
 - On browser
 
-<video controls src="2025-23.mov" title="title"></video>
+<video controls src="Images/about/2025-23.mov" title="title"></video>
 
 
 - You want a parent component (`App`) to be able to:
@@ -4593,7 +4593,7 @@ export default function TimeChallenge({title, targetTime}) {
 
 - On browser
 
-<video controls src="2025-24.mov" title="title"></video>
+<video controls src="Images/about/2025-24.mov" title="title"></video>
 
 ## Portals
 
@@ -4662,7 +4662,7 @@ export default App;
 
 - On browser & console
 
-![alt text](image-62.png)
+![alt text](Images/about/image-62.png)
 
 - `createPortal` helps render components outside normal parent hierarchy. It’s mostly used for UI elements like modals, tooltips, dropdowns. Maintains React state and event bubbling, even though it’s outside the DOM tree.
 - **`createPortal` must use a real DOM node (not a React element)**
@@ -4696,7 +4696,7 @@ export default App;
 
 - On browser we get an error
 
-![alt text](image-63.png)
+![alt text](Images/about/image-63.png)
 
 - You can also add real dom element using javascript `document` object.
 
@@ -4729,7 +4729,7 @@ export default App;
 
 - On browser
 
-![alt text](image-64.png)
+![alt text](Images/about/image-64.png)
 
 - `createPortal` only works with real DOM nodes, like those from `document.getElementById()` or `document.createElement()`. Using a JSX tag as the container (like `<div></div>`) won’t work — it’s just a virtual React element at that point.
 
@@ -5206,23 +5206,3 @@ export default Timer;
 | Constructors are not used.                                                                        | Constructor is used as it needs to store state.                                                |
 
 
-
-
-
-## `React.StrictMode`
-
-- `React.StrictMode` is a useful component for highlighting potential problems in an application.
-- Strict mode is a set of development tools that help you catch potential problems in your code before they become actual bugs. When you enable strict mode in your React application, you’re essentially telling React to turn on a bunch of extra checks and warnings that are designed to help you write better code.
-- These checks and warnings can catch things like:
-  - Components with side effects
-  - Deprecated or unsafe lifecycle methods
-  - Unsafe use of certain built in functions
-  - Duplicate keys in lists
-
-![alt text](2025-strictmode.gif)
-
-
-https://chatgpt.com/c/6816fdbf-82a4-8009-8e6a-37ed3c5cfef1
-https://medium.com/@codeofrelevancy/what-is-strict-mode-in-react-cc8b51fb6096
-
-TO be continue later
