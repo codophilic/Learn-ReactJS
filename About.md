@@ -3709,7 +3709,7 @@ button:hover {
 
 - It’s not easy to style, and often looks different across browsers. So instead, developers hide the actual file input and use a custom-styled button to trigger it.
 - When you assigned `<input type="file" ref={filePicker} />`, you assign a `ref` to the file input. This gives you access to the actual DOM element via f`ilePicker.current.` Then `<button onClick={() => filePicker.current.click()}>Pick Image</button>`, when the user clicks the button, you programmatically call the `.click()` method on the file input. This opens the native file dialog, as if the user clicked the input directly.
-- Now let's add the gaming function in our Time challenge game. So basically, there will be 4 cards, each card will consist of time (seconds written on it). Gamer will click on start and stop exactly matching with whatever the seconds mentioned on the card. So e.g if the card has 1 second as timer, then player will click on start and exactly at 1 seconds , the gamer will click on stop to win the challenge.
+- Now let's add the gaming function in our Time challenge game. So basically, there will be 4 cards, each card will consist of time (seconds written on it). Gamer will click on start and stop, if the stop button is clicked within the time interval mentioned on the card the player wins. So e.g if the card has 1 second as timer, then player will click on start and within 1 seconds of interval the player has to click on stop button to win the challenge.
 - Let's develope the code for it. So we have created a new component `TimeChallenger.jsx`
 
 ```
@@ -3894,7 +3894,844 @@ export default function TimeChallenge({title, targetTime}) {
 
 <video controls src="2025-19.mov" title="title"></video>
 
-- Here, we are still facing one issue. We are able to start the timer independently but we are not able to stop it
+- Here, we are still facing one issue. We are able to start the timer independently but we are not able to show whether player lost or won the game. On click of stop we need to show the result whether player has won or lost the game. So let's create a `Result` component. The `Result` component will give a dialog box showing whether player has won or lost the game.
+
+```
+//Result.jsx
+
+
+export default function Result({ result , targetTime }) {
+  return (
+    <dialog className="result-modal" open>
+      <h2>You {result}</h2>
+      <p>
+        The target time was <strong>{targetTime} seconds.</strong>
+      </p>
+      <form method="dialog">
+        <button>Close</button>
+      </form>
+    </dialog>
+  );
+};
+
+//TimeChallenge.jsx
+
+.......(Same as previous snippet)
+
+
+    return(
+        <>
+        {timeExpired && <Result targetTime={targetTime} result="lost"/>} 
+        <section className="challenge">
+            <h2>{title}</h2>
+            {timeExpired && <p>You lost!</p>}
+            <p className="challenge-time">
+                {targetTime} second{targetTime > 1 ? 's' : ''}
+            </p>
+            <button onClick={timeStarted ? onStopButtonClick : onStartButtonClick}>
+                {timeStarted ? 'Stop' : 'Start'} Challenge
+            </button>
+            <p className={timeStarted ? 'active' : undefined}>
+                {timeStarted ? 'Time is running' : 'Time inactive'}
+            </p>
+        </section>
+        </>
+    )
+```
+
+- On browser
+
+
+<video controls src="2025-20.mov" title="title"></video>
+
+- The `<dialog>` tag is a native HTML element introduced in HTML5. It’s used to display modal dialogs or popup boxes. `Result` component accepts two props:
+  - `result` → e.g., `won` or `lost`
+  - `targetTime` → e.g., 10 seconds
+- Under the popup, we have shown a `Close` button, which is under `form` tag. `<form method="dialog">` tells the browser when the button is clicked, close the dialog automatically. It’s a special feature built into the `<dialog>` tag.
+- `open` is required to show up the dialog box after the timer as expired. 
+- In `App.jsx`, `{timeExpired && <Result targetTime={targetTime} result="lost"/>}` when the time gets expired the `Result` component is called.
+- Now when the `dailog` pop-ups, we can still interact with the elements behind the dailog. We wanted to make those element invisible and it must not be interactive. To do so we have `showModal()`. The `showModal()` method in HTML is used to display a `<dialog>` element as a modal, blocking interaction with the rest of the page until the dialog is closed. It's a simple and effective way to create modal dialogs without needing much JavaScript.
+- See below example of `showModal()` in plain HTML.
+
+<video controls src="2025-21.mov" title="title"></video>
+
+- Now to use this in React component? using `useRef`. `useRef` in React is a hook that creates a mutable value, which can be used to store any kind of data (string, boolean etc..), including references to DOM elements or HTML native methods like `showModal()`. The `current` property of the `useRef` object is where you store the value, and you can link it to a React element using the `ref` attribute. Let's create `ref` for `showModal()`.
+
+```
+//TimeChallenge.jsx
+
+import React, { useRef, useState } from 'react';
+import Result from './Result';
+export default function TimeChallenge({title, targetTime}) {
+
+    const timer=useRef();
+    const dailogRef=useRef();
+    
+    const [timeExpired, setTimeExpired] = useState(false);
+    const [timeStarted, setTimeStarted] = useState(false);
+
+
+    function onStartButtonClick() {
+        setTimeStarted(true);
+        const milliseconds = targetTime * 1000;
+        timer.current=setTimeout(() => {
+            setTimeExpired(true);
+            dailogRef.current.showModal();
+            // Post click and after some milliseconds, the time expired
+        }
+        , milliseconds);
+    }
+
+    function onStopButtonClick() {
+        // Clear the timer
+        clearTimeout(timer.current);
+    }
+
+
+    return(
+        <>
+        <Result ref={dailogRef} targetTime={targetTime} result="lost" />
+        <section className="challenge">
+            <h2>{title}</h2>
+            {timeExpired && <p>You lost!</p>}
+            <p className="challenge-time">
+                {targetTime} second{targetTime > 1 ? 's' : ''}
+            </p>
+            <button onClick={timeStarted ? onStopButtonClick : onStartButtonClick}>
+                {timeStarted ? 'Stop' : 'Start'} Challenge
+            </button>
+            <p className={timeStarted ? 'active' : undefined}>
+                {timeStarted ? 'Time is running' : 'Time inactive'}
+            </p>
+        </section>
+        </>
+    )
+}
+
+//Result.jsx
+
+import React from "react";
+export default function Result({  ref, result , targetTime}) {
+
+  return (
+    <dialog ref={ref} className="result-modal">
+      <h2>You {result}</h2>
+      <p>
+        The target time was <strong>{targetTime} seconds.</strong>
+      </p>
+      <form method="dialog">
+        <button>Close</button>
+      </form>
+    </dialog>
+  );
+};
+```
+
+- On browser
+
+<video controls src="2025-22.mov" title="title"></video>
+
+- Here, we are forwarding `ref` to the `Result.jsx`.
+
+### `forwardRef`
+
+- In older versions of React (before React 19), you needed to import `forwardRef` from React to pass refs to functional components. However, in React 19 and later, this is no longer necessary. You can now directly pass the `ref` prop to functional components without using `forwardRef`.
+- Let's see example for the time challenging game
+
+```
+import { forwardRef } from 'react';
+
+const ResultModal = forwardRef(function ResultModal({ result, targetTime }, ref) {
+  return (
+    <dialog ref={ref} className="result-modal">
+      <h2>You {result}</h2>
+      <p>
+        The target time was <strong>{targetTime} seconds.</strong>
+      </p>
+      <form method="dialog">
+        <button>Close</button>
+      </form>
+    </dialog>
+  );
+})
+
+export default ResultModal;
+```
+
+- On browser
+
+<video controls src="2025-22.mov" title="title"></video>
+
+- By default, refs do not pass through custom components. If you try to attach a ref to a component you created, React doesn't automatically know where to apply it in the rendered DOM. `forwardRef` solves this by explicitly forwarding the ref down to the desired child.
+
+<br/>
+<br/>
+<details>
+
+<summary> Another example of forwardRef </summary>
+
+
+- Let's say you are building a custom input component. The `Input` component, takes lable name, any type of input like `text`, 
+
+```
+
+//Input.jsx
+
+import React from 'react';
+ 
+const Input = React.forwardRef(function Input({ label, ...props }, ref) {
+  return (
+    <p className="control">
+      <label>{label}</label>
+      <input ref={ref} {...props} />
+    </p>
+  );
+});
+ 
+export default Input;
+
+//App.jsx
+
+import React from 'react';
+ 
+import Input from './Input';
+ 
+export const userData = {
+  name: '',
+  email: '',
+};
+ 
+export function App() {
+  const name = React.useRef();
+  const email = React.useRef();
+ 
+  function handleSaveData() {
+    const enteredName = name.current.value;
+    const enteredEmail = email.current.value;
+ 
+    userData.name = enteredName;
+    userData.email = enteredEmail;
+ 
+    console.log(userData);
+  }
+ 
+  return (
+    <div id="app">
+      <Input type="text" label="Your Name" ref={name} />
+      <Input type="email" label="Your E-Mail" ref={email} />
+      <p id="actions">
+        <button onClick={handleSaveData}>Save Data</button>
+      </p>
+    </div>
+  );
+}
+
+//index.css
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&family=Lato:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(#180d27, #0c0219);
+  color: #e5d9f1;
+  min-height: 100vh;
+}
+
+#app {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 30rem;
+  text-align: center;
+  border-radius: 6px;
+  background: linear-gradient(#341a89, #3a1967);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.control {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.control label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  color: #e5d9f1;
+}
+
+.control input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-family: 'Lato', sans-serif;
+  border: 1px solid #e5d9f1;
+  border-radius: 4px;
+  background: transparent;
+  color: #e5d9f1;
+}
+
+#actions {
+  text-align: right;
+}
+
+#actions button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: #e5d9f1;
+  cursor: pointer;
+}
+
+#actions button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+```
+
+
+- On browser
+
+![alt text](image-61.png)
+
+- Here, `React.forwardRef(...)` allows the `Input` component to accept a `ref` from its parent (`App`) and pass that `ref` directly to the `<input>` DOM element inside.
+- So now `ref.current === <input>`. This enables the parent (`App`) to directly access `name` and `email`.
+
+```
+name.current.value  // gets the current value of the name input
+email.current.value // gets the current value of the email input
+```
+
+- This helps to access the value inside custom `Input` components from the parent `App` component that's why to achieve this, `name` & `email` should point to the actual `<input>` HTML DOM elements, so that you can read their current values.
+- Think of `forwardRef` as a tunnel that allows a parent to reach inside a custom component and touch an internal DOM element directly.
+
+
+</details>
+<br/>
+<br/>
+
+
+- `useRef` is a flexible tool, and what current refers to depends on how and where you use it. When you attach it to a `<dialog>` via `ref={ref}`, `ref.current` becomes that `dialog`. And that’s why you can then call `ref.current.showModal()` like you're using native HTML/JS.
+- `useRef` gives you a container. React fills that container with the DOM element you point it at using `ref={...}`. Once filled, you can call native methods like `.focus()`, `.showModal()`, `.scrollIntoView()`, etc. It’s like putting a label on an HTML tag and using that label to control it later.
+
+### `UseImperativeHook`
+
+- `UseImperativeHook` hook allows the child component to expose certain values (like methods or variables) to the parent component, which can then use these values. It’s a React hook that lets you customize what a `ref` exposes to the parent component when using `forwardRef`.
+
+```
+//Result.jsx
+
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+
+const ResultModal = forwardRef(function ResultModal({ result, targetTime }, ref) {
+
+  const dialog = useRef();
+
+  // Exposing only the open method to the parent component
+  // This is done to prevent the parent from accessing the dialog element directly
+  // and to keep the component encapsulated
+  useImperativeHandle(ref, () => ({
+    open: () => {
+      dialog.current.showModal();
+    }
+  }));
+  return (
+    <dialog ref={dialog} className="result-modal">
+      <h2>You {result}</h2>
+      <p>
+        The target time was <strong>{targetTime} seconds.</strong>
+      </p>
+      <form method="dialog">
+        <button>Close</button>
+      </form>
+    </dialog>
+  );
+})
+
+export default ResultModal;
+
+// TimeChallenge.jsx
+
+import React, { useRef, useState } from 'react';
+import Result from './Result';
+export default function TimeChallenge({title, targetTime}) {
+
+    const timer=useRef();
+    const dailogRef=useRef();
+    
+    const [timeExpired, setTimeExpired] = useState(false);
+    const [timeStarted, setTimeStarted] = useState(false);
+
+
+    function onStartButtonClick() {
+        setTimeStarted(true);
+        const milliseconds = targetTime * 1000;
+        timer.current=setTimeout(() => {
+            setTimeExpired(true);
+            dailogRef.current.open();
+            // Post click and after some milliseconds, the time expired
+        }
+        , milliseconds);
+    }
+
+    function onStopButtonClick() {
+        // Clear the timer
+        clearTimeout(timer.current);
+    }
+
+
+    return(
+        <>
+        <Result ref={dailogRef} targetTime={targetTime} result="lost" />
+        <section className="challenge">
+            <h2>{title}</h2>
+            {timeExpired && <p>You lost!</p>}
+            <p className="challenge-time">
+                {targetTime} second{targetTime > 1 ? 's' : ''}
+            </p>
+            <button onClick={timeStarted ? onStopButtonClick : onStartButtonClick}>
+                {timeStarted ? 'Stop' : 'Start'} Challenge
+            </button>
+            <p className={timeStarted ? 'active' : undefined}>
+                {timeStarted ? 'Time is running' : 'Time inactive'}
+            </p>
+        </section>
+        </>
+    )
+}
+```
+
+
+- On browser
+
+<video controls src="2025-22.mov" title="title"></video>
+
+- With `useImperativeHandle` you choose exactly what to expose to the parent, which function or value. When you build reusable components (like timers, animations, or form inputs) and you want the parent to trigger methods on them directly but not expose the entire DOM node.
+- When a parent component uses a ref on a child component wrapped in `forwardRef`, it typically gains access to the child's DOM node. However, `useImperativeHandle` allows the child to selectively expose only certain functions or values, creating a controlled API for the parent. This is useful for abstracting away implementation details and preventing the parent from directly manipulating the child's internal state or DOM structure in unintended ways.
+
+<br/>
+<br/>
+<details>
+
+<summary>Another example of useImperativeHandle</summary>
+
+
+- Your working on a part of an application that contains a form which should be resettable from outside that form.
+
+```
+//App.js
+
+import Form from './Form';
+import React from 'react';
+
+// Don't change the name of the 'App' 
+// function and keep it a named export
+
+export function App() {
+const formRef=React.useRef();
+
+  function handleRestart() {
+      formRef.current.clear();
+  }
+
+  return (
+    <div id="app">
+      <button onClick={handleRestart}>Restart</button>
+      <Form ref={formRef}/>
+    </div>
+  );
+}
+
+
+//Form.js
+
+import React from 'react';
+ 
+const Form = React.forwardRef(function Form(props, ref) {
+  const form = React.useRef();
+
+----------------------------------
+
+  React.useImperativeHandle(ref, () => {
+    return {
+      clear() {
+        form.current.reset();
+      },
+    };
+  });
+
+------------ OR ------------------
+
+  React.useImperativeHandle(ref, () => ({
+      clear: ()=>{
+          form.current.reset();
+      }
+  }));
+
+----------------------------------
+ 
+  return (
+    <form ref={form}>
+      <p>
+        <label>Name</label>
+        <input type="text" />
+      </p>
+ 
+      <p>
+        <label>Email</label>
+        <input type="email" />
+      </p>
+      <p id="actions">
+        <button>Save</button>
+      </p>
+    </form>
+  );
+});
+ 
+export default Form;
+
+//index.css
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&family=Lato:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(#180d27, #0c0219);
+  color: #e5d9f1;
+  min-height: 100vh;
+}
+
+#app {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 30rem;
+  text-align: center;
+  border-radius: 6px;
+  background: linear-gradient(#341a89, #3a1967);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+button {
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border: 1px solid white;
+  border-radius: 6px;
+  background: none;
+  color: #e5d9f1;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+form button {
+  background: linear-gradient(#9e21c8, #8b179c);
+  border: none;
+}
+
+form {
+  width: 90%;
+  max-width: 40rem;
+  margin: 3rem auto;
+}
+
+form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  text-align: left;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+}
+
+form input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e5d9f1;
+  border-radius: 6px;
+  background: none;
+  color: #e5d9f1;
+  font-size: 1rem;
+  font-family: 'Lato', sans-serif;
+  margin-bottom: 1rem;
+}
+
+#actions {
+  text-align: right;
+}
+```
+
+- On browser
+
+<video controls src="2025-23.mov" title="title"></video>
+
+
+- You want a parent component (`App`) to be able to:
+  - Click a `Restart` button
+  - And have that trigger a method inside a child component (Form)
+  - That method (`clear()`) should reset the form
+- Because without `useImperativeHandle`, the parent would not be able to directly access or control anything inside the Form component. `useImperativeHandle` allows us to expose only the `clear()` method to the parent.
+
+
+</details>
+<br/>
+<br/>
+
+
+- Now let's completed our game challenge for win logic
+
+```
+//Result.jsx
+
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+
+const ResultModal = forwardRef(function ResultModal({ result, targetTime, message }, ref) {
+
+  const dialog = useRef();
+
+  // Exposing only the open method to the parent component
+  // This is done to prevent the parent from accessing the dialog element directly
+  // and to keep the component encapsulated
+  useImperativeHandle(ref, () => ({
+    open: () => {
+      dialog.current.showModal();
+    }
+  }));
+  return (
+    <dialog ref={dialog} className="result-modal">
+      <h2>You {result}</h2>
+      
+        <p>The target time was <strong>{targetTime}</strong> seconds and you {message} within the <strong>{targetTime} seconds.</strong></p>      
+      <form method="dialog">
+        <button>Close</button>
+      </form>
+    </dialog>
+  );
+})
+
+export default ResultModal;
+
+//TimeChallenge.jsx
+
+import React, { useRef, useState } from 'react';
+import Result from './Result';
+export default function TimeChallenge({title, targetTime}) {
+
+    const timer=useRef();
+    const dailogRef=useRef();
+    
+    const [timeExpired, setTimeExpired] = useState(null);
+    const [timeStarted, setTimeStarted] = useState(null);
+
+
+    function onStartButtonClick() {
+        setTimeStarted(true);
+        setTimeExpired(null); // Reset for new challenge
+        const milliseconds = targetTime * 1000;
+        timer.current=setTimeout(() => {
+            setTimeExpired(true); // Timer ran out before stop
+            dailogRef.current.open();
+            setTimeStarted(null)
+            // Post click and after some milliseconds, the time expired
+        }
+        , milliseconds);
+    }
+
+    function onStopButtonClick() {
+        // Clear the timer
+        clearTimeout(timer.current);
+        // If timeExpired is false, user stopped before timeout
+        dailogRef.current.open();
+        setTimeStarted(false);
+    }
+
+
+    return(
+        <>
+        <Result ref={dailogRef} targetTime={targetTime} result={timeExpired ? "Lost": "Win"}  message={timeExpired ? "did not stop": "clicked"}/>
+        <section className="challenge">
+            <h2>{title}</h2>
+            {timeExpired && <p>You lost!</p>}
+            {timeExpired!=null && timeStarted!=null && !timeExpired && !timeStarted && <p>You won!</p>}
+            <p className="challenge-time">
+                {targetTime} second{targetTime > 1 ? 's' : ''}
+            </p>
+            <button onClick={timeStarted ? onStopButtonClick : onStartButtonClick}>
+                {timeStarted ? 'Stop' : 'Start'} Challenge
+            </button>
+            <p className={timeStarted ? 'active' : undefined}>
+                {timeStarted ? 'Time is running' : 'Time inactive'}
+            </p>
+        </section>
+        </>
+    )
+}
+```
+
+- On browser
+
+<video controls src="2025-24.mov" title="title"></video>
+
+## Portals
+
+- `createPortal` in React is a function used to render a child component into a DOM node that exists outside the parent component’s DOM hierarchy.
+- In React, `createPortal` is a function provided by react-dom that enables rendering children into a different part of the DOM tree, outside of the parent component's hierarchy. It offers a way to "teleport" or "escape" the normal DOM flow, allowing elements to be rendered in a different location while still maintaining their React behavior.
+- Consider below code
+
+```
+//Model.jsx
+import ReactDOM from 'react-dom';
+
+function Modal({ children }) {
+  return ReactDOM.createPortal(
+      {children}
+    ,
+    document.getElementById('appComponent')
+  );
+}
+
+export default Modal;
+
+//App.jsx
+import React from 'react';
+import './App.css';
+import Model from './components/Modal.jsx';
+
+function App() {
+  return (
+<>
+      <Model>
+        <p>This is Model Component</p>
+
+      </Model>
+      </>
+  );
+}
+
+export default App;
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <title>Text Utilities</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  </head>
+  <body>
+    <div id="root"></div>
+    <div id="appComponent"></div>
+  </body>
+</html>
+```
+
+- On browser & console
+
+![alt text](image-62.png)
+
+- `createPortal` helps render components outside normal parent hierarchy. It’s mostly used for UI elements like modals, tooltips, dropdowns. Maintains React state and event bubbling, even though it’s outside the DOM tree.
+- **`createPortal` must use a real DOM node (not a React element)**
+
+```
+ReactDOM.createPortal(child, container)
+```
+
+- `child`: ✅ Can be a React element.
+- `container`: ❗Must be a real DOM element, not a React component or JSX with DOM element like `div`, `p` etc..
+- DOM element in JSX
+
+```
+//App.jsx
+import React from 'react';
+import './App.css';
+import Model from './components/Modal.jsx';
+
+function App() {
+  return (
+<div id="appComponent">
+      <Model>
+        <p>This is Model Component</p>
+      </Model>
+      </div>
+  );
+}
+
+export default App;
+```
+
+- On browser we get an error
+
+![alt text](image-63.png)
+
+- You can also add real dom element using javascript `document` object.
+
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './App.css';
+import Model from './components/Modal.jsx';
+
+
+const container = document.createElement('div');
+container.id = 'appComponent';
+document.body.appendChild(container);
+
+ReactDOM.createPortal(<div>Text</div>, container); // ✅
+
+
+function App() {
+  return (
+
+      <Model>
+        <p>This is Model Component</p>
+
+      </Model>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-64.png)
+
+- `createPortal` only works with real DOM nodes, like those from `document.getElementById()` or `document.createElement()`. Using a JSX tag as the container (like `<div></div>`) won’t work — it’s just a virtual React element at that point.
 
 ## React Router
 
@@ -4367,6 +5204,7 @@ export default Timer;
 | Also known as Stateless components                                                                | Also known as Stateful components                                                              |
 | React lifecycle methods (for example, componentDidMount) cannot be used in functional components.  | React lifecycle methods can be used inside class components (for example, componentDidMount).  |
 | Constructors are not used.                                                                        | Constructor is used as it needs to store state.                                                |
+
 
 
 
