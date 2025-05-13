@@ -1,5 +1,209 @@
 # React Concepts
 
+## Prop Drilling
+
+- Prop drilling in React refers to the process of passing data down through multiple levels of nested components via props, even when intermediate components do not need the data themselves. It arises when a deeply nested child component requires access to data held by a distant ancestor component.
+
+![alt text](image.png)
+
+
+- For example, the app component might render a Shop and Header component and these components has child Components and other nested Components. You'll also need to manage some state and if the value is being used by your child component you then need to share it through props and also update it with help of props. This often means that you need to pass that shared data through multiple layers of Components. And that is something that's called prop drilling.
+- You are passing props through multiple Components, even though most Components don't directly need that data. They just pass it on to some child component. And that can be a problem because this it makes your Components a bit less reusable because they always must be used in a place where they can get that shared data. And it also means that you have to write a lot of extra boilerplate code because you need to accept and destructure a prop in a component and then forward it to a component just to then maybe repeat that entire process.
+
+
+### Component Composition
+
+- So consider below nester component code.
+
+```
+//App.jsx
+
+import React from 'react';
+import MyComponent from './components/MyComponent';
+function App() {
+
+  function onClickHandler() {
+    console.log('Function handler called!');
+  }
+  return (
+<MyComponent onClickHandler={onClickHandler} >
+
+</MyComponent> 
+  );
+}
+
+export default App;
+
+//MyComponent.jsx
+
+import ChildComponentOfMyComponent from './ChildComponentOfMyComponent.jsx';
+export default function MyComponent({ onClickHandler }) {
+  return (
+    <div>
+      <h1>My Component</h1>
+      <p>This is a simple component that uses a function handler.</p>
+      <ChildComponentOfMyComponent onClickHandler={onClickHandler}></ChildComponentOfMyComponent>
+    </div>
+  );
+}
+
+// ChildComponentOfMyComponent.jsx
+
+export default function MyComponent({ onClickHandler }) {
+    return (
+        <div>
+        <button onClick={()=>onClickHandler()}>Click me!</button>
+        </div>
+    );
+}
+```
+
+- On browser
+
+<video controls src="2025-1.mov" title="title"></video>
+
+
+- Here, we are passing the `onClickHandler` to `MyComponent` which does not uses it. This is a scenario of prop drilling. To solve it let's use component composition.
+
+```
+//App.js
+
+import React from 'react';
+import ChildComponentOfMyComponent from './components/ChildComponentOfMyComponent.jsx';
+import MyComponent from './components/MyComponent';
+function App() {
+
+  function onClickHandler() {
+    console.log('Function handler called!');
+  }
+  return (
+<MyComponent>
+{
+  <ChildComponentOfMyComponent onClickHandler={onClickHandler}></ChildComponentOfMyComponent>
+}
+</MyComponent> 
+  );
+}
+
+export default App;
+
+// MyComponent.jsx
+
+import ChildComponentOfMyComponent from './ChildComponentOfMyComponent.jsx';
+export default function MyComponent({ children }) {
+  return (
+    <div>
+      <h1>My Component</h1>
+      <p>This is a simple component that uses a function handler.</p>
+      {children}
+    </div>
+  );
+}
+
+// ChildComponentOfMyComponent.jsx
+
+export default function MyComponent({ onClickHandler }) {
+    return (
+        <div>
+        <button onClick={()=>onClickHandler()}>Click me!</button>
+        </div>
+    );
+}
+```
+
+
+- On browser
+
+<video controls src="2025-1.mov" title="title"></video>
+
+- Composition means you build components by combining other components — passing elements or components as `children` or as props.
+- Instead of deeply nested props, you can use composition components to avoid prop drilling by injecting components or behavior into a container component.
+- Instead of passing data through every level, you can compose components in such a way that the needed logic or UI is provided directly where it's used.
+- You typically don't want to use this composition for all your component layers. Because it would mean that in the end, all your components just end up in the app component and all the other components are just wrapper components.
+
+
+### Context API
+
+- The Context API is a feature in React that allows you to share data (like a global variable) across your entire app — without passing `props` manually at every level.
+- It’s like saying *Hey React, here’s some data (like a theme mode or user). Any component that wants it can just grab it — no need to drill it down*.
+- Simple analogy could be thinking context api as Wi-fi. Instead of giving internet access (props) through a long wire (prop drilling) to each device (component), you just turn on the Wi-Fi (Context) and now any device (component) in the range can connect directly.
+
+![alt text](image-1.png)
+
+
+- Let's create a folder `/store`. In React's Context API, a `store` is used to hold the data that you want to share across multiple components. It is essentially a container for your application's state.
+
+>[!NOTE]
+> - `/store` is just a convention followed in most react applications. You can give any name whatever you like.
+
+- `MyContext.jsx`
+
+```
+import { createContext } from "react";
+
+export const MyContext = createContext()
+```
+
+- Now inside `createContext` the value of it can be anything, string, boolean, arrays, object or function etc... Let's create an object.
+
+```
+import { createContext } from "react";
+
+export const MyContext = createContext({
+    items:[]
+});
+```
+
+- The next step now is to provide it to this application and to our components. We need to provide this context to our application and we need to wrap it around parts of that application, parts of our component tree, so that those wrapped components can access this value which we're providing here.
+-  And then as a next step, you should go to a component that contains all the other components that will need to use this context. So therefore the `App.jsx` component is a great place to wrap header and shop with our context so that those components or their child components can use that context.
+
+```
+//App.js
+
+import React from 'react';
+import ChildComponentOfMyComponent from './components/ChildComponentOfMyComponent.jsx';
+import MyComponent from './components/MyComponent';
+import { MyContext } from './components/store/MyContext.jsx';
+function App() {
+
+  function onClickHandler() {
+    console.log('Function handler called!');
+  }
+  return (
+    <MyContext>
+      <MyComponent>
+      {
+        <ChildComponentOfMyComponent onClickHandler={onClickHandler}></ChildComponentOfMyComponent>
+      }
+      </MyComponent> 
+    </MyContext>
+  );
+}
+
+export default App;
+```
+
+- So we have wrapped `MyContext` component on the `App`.
+
+>[!NOTE]
+> - For older react version (<19). We need to wrap the component using `Provider` to access a nested property. Below is an example of if
+>
+>```
+>    <MyContext.Provider>
+>      <MyComponent>
+>      {
+>        <ChildComponentOfMyComponent onClickHandler={onClickHandler}></ChildComponentOfMyComponent>
+>      }
+>      </MyComponent> 
+>    </MyContext.Provider>
+>  );
+> ```
+>
+> - The `Provider` property also works for the latest react version
+
+
+https://chatgpt.com/c/6820dd00-8794-8009-a528-0caaf69f9e2b
+
 
 
 ## `React.StrictMode`
