@@ -201,8 +201,133 @@ export default App;
 >
 > - The `Provider` property also works for the latest react version
 
+- Now we have created conrext, let's start to consume it.
 
-https://chatgpt.com/c/6820dd00-8794-8009-a528-0caaf69f9e2b
+```
+//ChildComponentOfMyComponent.jsx
+
+import { useContext } from "react";
+import { MyContext } from "./store/MyContext";
+
+export default function ChildComponentOfMyComponent({ onClickHandler }) {
+    const { items } = useContext(MyContext); //Destructure items from context
+    return (
+        <div>
+            {items.length > 0 ? (
+                <ul>
+                    {items.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No items available</p>
+            )}
+        <button onClick={()=>onClickHandler()}>Click me!</button>
+        </div>
+    );
+}
+```
+
+- Now to use context, we need to use `useContext` hook. `useContext` is a React Hook that enables functional components to access `context` values. It consumes the context object returned by `React.createContext` and subscribes the component to context changes. When the context value updates, React re-renders the component, ensuring it always has the latest data.
+- Alternatively, you can also use `use` hook.
+
+```
+//ChildComponentOfMyComponent.jsx
+import { use } from "react";
+import { MyContext } from "./store/MyContext";
+
+export default function ChildComponentOfMyComponent() {
+    const { items } = use(MyContext); //Destructure items from context
+    return (
+        <div>
+            {items.length > 0 ? (
+                <ul>
+                    {items.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No items available</p>
+            )}
+        </div>
+    );
+}
+```
+
+- The difference between `use` and `useContext` is that, `useContext` hook cannot be used under conditional statements whereas `use` can.
+
+```
+// Cannot do this using useContext ❌
+    if(true){
+        const { items } = useContext(MyContext); //Destructure items from context
+    }
+```
+
+>[!NOTE]
+> - `use` hook is available on react 19+ version.
+
+- Now below is `App.jsx` and `MyComponent.jsx`.
+
+```
+//App.jsx
+
+import React from 'react';
+import MyComponent from './components/MyComponent';
+import { MyContext } from './components/store/MyContext.jsx';
+function App() {
+
+  return (
+    <MyContext.Provider>
+      <MyComponent>
+      </MyComponent>
+    </MyContext.Provider>
+  );
+}
+
+export default App;
+
+//MyComponent.jsx
+import ChildComponentOfMyComponent from './ChildComponentOfMyComponent.jsx';
+export default function MyComponent() {
+  return (
+    <div>
+      <h1>My Component</h1>
+      <p>This is a simple component that uses a function handler.</p>
+      <ChildComponentOfMyComponent />
+    </div>
+  );
+}
+
+//
+```
+
+- On browser
+
+![alt text](image-2.png)
+
+- Why do we need to add `value` inside the provider? Why Not Just `createContext()` and Expect Auto-Data? when we create context
+
+```
+export const MyContext = createContext({});
+```
+
+- We just define the context, react doesn't know:
+  - What state you're managing?
+  - What functions you want to share?
+
+- The `value` prop in a context provider is what will be available to components that call `useContext(MyContext)`. So you must include:
+  - Any state (like `items`) you want to share
+  - Any function you want others to use
+- This tells React *These are the things I want to share globally.*
+- When you create a Context object with a default shape (i.e., you provide key attributes like items, etc.), you enable autocompletion and type hints in most modern code editors (like VS Code).
+
+```
+export const MyContext = createContext({
+    items:[]
+});
+```
+
+- It does not defined value of state or function.
 
 
 

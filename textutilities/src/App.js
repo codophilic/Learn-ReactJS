@@ -8,11 +8,8 @@ function App() {
     console.log('Function handler called!');
   }
   return (
-    <MyContext.Provider>
+    <MyContext.Provider value={{ items: ['Item 1', 'Item 2', 'Item 3'] }}> 
       <MyComponent>
-      {
-        <ChildComponentOfMyComponent onClickHandler={onClickHandler}></ChildComponentOfMyComponent>
-      }
       </MyComponent> 
     </MyContext.Provider>
   );
