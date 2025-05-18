@@ -748,6 +748,107 @@ const newState = reducer(currentState, action);
 - It gets the latest state from React's internal system.
 - `dispatch` doesn't know about rendering directly. It just triggers the reducer function, and React takes care of the rest. If the state changes, React re-renders that component.
 
+## Side Effect & `useEffect`
+
+- Side effects in React refer to actions or operations performed within a component that interact with the outside world or affect other parts of the application beyond the component's own scope.
+- Examples of Side Effects are
+
+| Side Effect                               | Uses Browser API? | Example APIs Used                                   |
+| ----------------------------------------- | ----------------- | --------------------------------------------------- |
+| **Fetching data from an API**             | ✅ Yes             | `fetch()`, `XMLHttpRequest`, etc.                   |
+| **Changing the DOM manually**             | ✅ Yes             | `document.querySelector()`, `innerHTML`             |
+| **Setting a timer**                       | ✅ Yes             | `setTimeout()`, `setInterval()`                     |
+| **Working with local storage or cookies** | ✅ Yes             | `localStorage`, `sessionStorage`, `document.cookie` |
+| **Subscribing to events or sockets**      | ✅ Yes             | `WebSocket`, `EventSource`, `addEventListener()`    |
+
+- React wants to keep rendering pure — which means
+  - Rendering should only depend on `props` and `state`.
+  - It should not directly talk to the outside world.
+
+### Infinite Rendering Loop
+
+- An infinite rendering loop in React occurs when a component continuously re-renders itself without stopping, eventually leading to a crash. This usually happens when a state update triggers a re-render, and the re-render, in turn, causes another state update, creating a cycle.
+- Example
+
+```
+import React, { useState } from 'react';
+
+function InfiniteLoopComponent() {
+  const [count, setCount] = useState(0);
+
+  // Problem: Updating state directly in the component body
+  setCount(count + 1); 
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+    </div>
+  );
+}
+
+export default InfiniteLoopComponent;
+```
+
+- In this example, the `setCount(count + 1)` line is executed every time the component renders. This updates the `count` state, which then triggers a re-render. This creates an infinite loop of renders and state updates.
+- To handle scenarios like the one described above, React provides a powerful hook called `useEffect`
+
+### `useEffect`
+
+- `useEffect` is a hook in React that allows you to perform side effects in function components. `useEffect` function takes two arguments:, a function containing the code for the side effect, and an optional array of dependencies. Let's see an example
+
+```
+import React from 'react'
+import {useState, useEffect} from 'react'
+
+export default function App() {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    console.log('Then UseEffect gets Executed')
+    setCount(count + 1)
+  }, [])
+
+  console.log('First Component Renders')
+  return (
+    <div>
+      <p>Count: {count}</p>
+    </div>
+  )
+}
+```
+
+- On browser
+
+![alt text](image-5.png)
+
+- The `useEffect()` runs after the first render. You can safely do side effects here without breaking React’s rendering.
+- `useEffect` function takes two arguments:
+
+1. Effect function
+    -  The first argument of `useEffect` is a function containing the code for the side effect. This function, commonly referred to as the "effect function," is executed after the component renders for the first time and after every subsequent render.
+    - The `useEffect` hook ensures that the data fetching operation only occurs once, when the component mounts, preventing the infinite rendering loop (due to the empty dependency array `[]`)
+
+```
+useEffect(() => {
+  // Only runs once on first render
+  fetchData();
+}, []); // Empty array = run once
+```
+
+2. Dependency array
+    - The second argument of `useEffect` is an optional array of dependencies. It specifies the values (variables or state) that the effect function depends on. When any of the dependencies change between renders, the effect function will be re-executed.
+
+```
+useEffect(() => {
+  if (count < 5) {
+    setCount(count + 1);
+  }
+}, [count]);
+```
+
+
+
+
 
 
 
