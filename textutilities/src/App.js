@@ -1,18 +1,53 @@
 import React from 'react';
-import ChildComponentOfMyComponent from './components/ChildComponentOfMyComponent.jsx';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import './App.css';
+import About from './components/About';
+import Card from './components/Card/Card';
 import MyComponent from './components/MyComponent';
-import { MyContext } from './components/store/MyContext.jsx';
-function App() {
+import MyPara from './components/MyPara/MyPara.jsx';
+import Navbar from './components/Navbar';
+import { MyProviderValue } from './components/store/MyContext.jsx';
+import TextFilters from './components/TextFilters';
+import TextInput from './components/TextInput';
+import Timer from './components/Timer';
 
-  function onClickHandler() {
-    console.log('Function handler called!');
-  }
+export const NavBarProps = {
+  navTitle: "Text Utilities",
+  tab1: "Home",
+  tab2: "About",
+  tab3: "Text Filtration",
+  tab4: "Timer"
+};
+
+function App() {
   return (
-    <MyContext.Provider value={{ items: ['Item 1', 'Item 2', 'Item 3'] }}> 
+    <Router>
+      <Navbar {...NavBarProps}/>
+      <div className="container">
+        <Routes>
+          <Route path="/" element={<TextInput />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/filter" element={<TextFilters />} />
+          <Route path="/timer" element={<Timer />} />
+        </Routes>
+      </div>
+      <div>
+      <Card name="Harsh Pandya">
+        <p>
+          Learning React and building a text utility app.
+        </p>
+        <p>
+          <a href="mailto:blake@example.com">Email Harsh</a>
+        </p>
+         </Card>
+         </div>
+         <MyPara/>
+         <MyProviderValue>
       <MyComponent>
-      </MyComponent> 
-    </MyContext.Provider>
-  );
+      </MyComponent>
+      </MyProviderValue>
+    </Router>
+    );
 }
 
 export default App;

@@ -328,6 +328,256 @@ export const MyContext = createContext({
 ```
 
 - It does not defined value of state or function.
+- Now since we have added `items: ['Item 1', 'Item 2', 'Item 3']` , we can only read it's value. Let's create a state of if, so whenever button is clicked, items will be added into the `items` array.
+
+```
+//App.js
+
+import React from 'react';
+import MyComponent from './components/MyComponent';
+import { MyContext } from './components/store/MyContext.jsx';
+function App() {
+
+  // Create state to hold the items
+  const [items, setItems] = React.useState(['Item 1', 'Item 2', 'Item 3']);
+
+  // Create a function to handle on click event and add a new item
+  function onClickHandler() {
+    setItems((prevItems) => {
+      return [...prevItems, `Item ${prevItems.length + 1}`];
+    });
+  }
+  return (
+    <MyContext.Provider value={{ items: ['Item 1', 'Item 2', 'Item 3'] }}> 
+      <MyComponent>
+      </MyComponent> 
+    </MyContext.Provider>
+  );
+}
+
+export default App;
+```
+
+- Now, let's add the new state `items` which has `useState` and `onClickHandler` function into context value. Now in the `ChildComponentOfMyComponent` we are displaying list of items, so now add a button there.
+
+```
+import { use, useContext } from "react";
+import { MyContext } from "./store/MyContext";
+
+export default function ChildComponentOfMyComponent() {
+    const { items } = useContext(MyContext); //Destructure items from context
+    return (
+        <div>
+            <button onClick={onClickHandler}>Add Item</button>
+            {items.length > 0 ? (
+                <ul>
+                    {items.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No items available</p>
+            )}
+        </div>
+    );
+}
+```
+
+- Now we need to use context value and call the function `onClickHandler`. But when we see the auto suggestion while typing in `ChildComponentOfMyComponent`, we cannot see the `onClickHandler`
+
+![alt text](image-3.png)
+
+- Now let's update context
+
+```
+//MyContext.jsx
+
+import { createContext } from "react";
+
+export const MyContext = createContext({
+    items:[],
+    onClickHandler: () => {},
+});
+```
+
+- Now we can see the function name in the suggestion
+
+![alt text](image-4.png)
+
+- Updating the `onClickHandler` into the provider value.
+
+```
+//App.jsx
+
+import React from 'react';
+import MyComponent from './components/MyComponent';
+import { MyContext } from './components/store/MyContext.jsx';
+function App() {
+
+  // Create state to hold the items
+  const [items, setItems] = React.useState(['Item 1', 'Item 2', 'Item 3']);
+
+  // Create a function to handle on click event and add a new item
+  function onClickHandler() {
+    setItems((prevItems) => {
+      return [...prevItems, `Item ${prevItems.length + 1}`];
+    });
+  }
+  return (
+    <MyContext.Provider value={{ items, onClickHandler }}>
+      <MyComponent>
+      </MyComponent> 
+    </MyContext.Provider>
+  );
+}
+
+export default App;
+
+//MyComponent.jsx
+
+import ChildComponentOfMyComponent from './ChildComponentOfMyComponent.jsx';
+export default function MyComponent() {
+  return (
+    <div>
+      <h1>My Component</h1>
+      <p>This is a simple component that uses a function handler.</p>
+      <ChildComponentOfMyComponent />
+    </div>
+  );
+}
+
+//ChildComponentOfMyComponent.jsx
+
+import { useContext } from "react";
+import { MyContext } from "./store/MyContext";
+
+export default function ChildComponentOfMyComponent() {
+    const { items } = useContext(MyContext); //Destructure items from context
+    const { onClickHandler } = useContext(MyContext); //Destructure onClickHandler from context
+    return (
+        <div>
+            <button onClick={()=>onClickHandler()}>Add Item</button>
+            {items.length > 0 ? (
+                <ul>
+                    {items.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No items available</p>
+            )}
+        </div>
+    );
+}
+```
+
+
+- On browser
+
+<video controls src="2025-2.mov" title="title"></video>
+
+- This is how we link our state with context and use state via context. There is an alternative way to use context that is using `Context_Name.Consumer`.
+- The React Context Consumer is a component that allows you to subscribe to context changes within a React application. It is used in conjunction with the Context Provider to access data that has been shared across the component tree.
+
+```
+import { MyContext } from "./store/MyContext";
+
+export default function ChildComponentOfMyComponent() {
+    return (
+        <MyContext.Consumer>
+            {(context) => {
+                const { items, onClickHandler } = context;
+                return (
+                    <div>
+                        <button onClick={() => onClickHandler()}>Add Item</button>
+                        {items.length > 0 ? (
+                            <ul>
+                                {items.map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No items available</p>
+                        )}
+                    </div>
+                );
+            }}
+        </MyContext.Consumer>
+    );
+}
+// This component uses the MyContext.Consumer to access the context values.
+```
+
+- On browser
+
+<video controls src="2025-2.mov" title="title"></video>
+
+- The Context Consumer expects a function as its child. This function receives the current context value  (`context`) as its argument and returns the JSX that should be rendered.
+
+>[!TIP]
+> - Using `Consumer` approach may be cumbersome so many react applications uses the standard approach i.e using `useContext`.
+
+- **React context re-renders the component which consumes the context**. When the value passed to `<MyContext.Provider value={...}>` changes (by identity).
+- All components using u`seContext(MyContext)` or `<MyContext.Consumer>` will re-render if the value they receive from the context is different.
+- Also every time the parent re-renders, a new object is created, so context consumers re-render too — even if `items` and `onClickHandler` are the same.
+- In your `App` component, there could be a possibilities that you might have different state values that should be shared through those different contexts. And you would therefore end up with a lot of logic in your app component since that is typically your root component and has access to all the components. 
+- There could be multiple context as well also each context will have its own different state. So managing all these in one single `App` component can be cumbersome.
+- And therefore there is an alternative approach an alternative pattern, which you'll see in many React projects, which allows you to get all this context related data management out of the app component into a separate context component.
+- So insider our context, we can share component function as well like below
+
+```
+//MyContext.jsx
+
+import React, { createContext } from "react";
+
+export const MyContext = createContext({
+    items:[],
+    onClickHandler: () => {},
+});
+
+
+export const MyProviderValue = ({ children }) => {
+    // Create state to hold the items
+    const [items, setItems] = React.useState(['Item 1', 'Item 2', 'Item 3']);
+
+    // Create a function to handle on click event and add a new item
+    function onClickHandler() {
+        setItems((prevItems) => {
+            return [...prevItems, `Item ${prevItems.length + 1}`];
+        });
+    }
+    return (
+        <MyContext.Provider value={{ items, onClickHandler }}>
+            {children}
+        </MyContext.Provider>
+    );
+}
+
+//App.jsx
+import React from 'react';
+import MyComponent from './components/MyComponent';
+import { MyProviderValue } from './components/store/MyContext.jsx';
+function App() {
+
+  return (
+    <MyProviderValue>
+      <MyComponent>
+      </MyComponent>
+      </MyProviderValue>
+    );
+}
+
+export default App;
+```
+
+- On browser works the same way
+
+<video controls src="2025-2.mov" title="title"></video>
+
+
+
+## `useMemo` for Context API for unncessary Re-rendering
+
 
 
 
