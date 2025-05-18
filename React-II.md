@@ -576,6 +576,182 @@ export default App;
 
 
 
+## Reducer Hook (`useReducer`)
+
+- Imagine you're building a counter app:
+  - `+` button increases the count.
+  - `-` button decreases the count.
+  - `Reset` button resets the count.
+- You could use multiple `useState` like below.
+
+```
+import React, { useState } from 'react';
+import './App.css';
+
+const buttonStyle = {
+  backgroundColor: '#4CAF50', /* Green */
+  border: 'none',
+  color: 'white',
+  padding: '15px 32px',
+  textAlign: 'center',
+  textDecoration: 'none',
+  display: 'inline-block',
+  fontSize: '16px',
+  margin: '4px 10px',
+  cursor: 'pointer',
+};
+
+const h2Style = {
+  color: '#4CAF50',
+  fontSize: '24px',
+  margin: '20px 0',
+};
+function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h2 style={h2Style}>Count: {count}</h2>
+      <button style={buttonStyle} onClick={() => setCount(count + 1)}>+</button>
+      <button style={buttonStyle} onClick={() => setCount(count - 1)}>-</button>
+      <button style={buttonStyle} onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-3.mov" title="title"></video>
+
+
+
+- Now let's say during the increment button (`+`) if the count exceeds greater than than 10, we need to reset the value to 0, such logic needs to be implemented.
+
+```
+      <button style={buttonStyle} onClick={() => (count<10?setCount(count + 1): setCount(0))}>+</button>
+```
+
+- Here, if the value is greater than 10 we are setting it to 0. So our **next state of `count` depends on previous state of `count`**.
+- Now let's say if there is more complex logic for increment, like doubling the value or adding more complex logic. Such things were need to embedded within a function handler. Now if multiple states are there and each state as complex logic, we need to create different functions and composed those logic into it.
+- `useReducer` is a React hook that helps manage complex state logic in your component. It's like an upgraded version of `useState`, especially useful when:
+  - The next state depends on the previous state.
+  - You have multiple related pieces of state.
+  - You want to make state updates more structured and predictable.
+- `useReducer` gives you one place to manage all those state with their corresponding logic. It is an alternative to `useState` and is particularly useful when the next state depends on the previous state or when dealing with multiple sub-values.
+- `useReducer` accepts a reducer function and an initial state as arguments and returns the current state and a dispatch function. The dispatch function is used to send actions to the reducer, which then calculates the new state based on the current state and the action type.
+
+```
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+- The reducer function takes the current state and an action as arguments and returns the new state based on logic. Let's see example
+
+```
+//App.jsx
+import React, { useReducer } from 'react';
+import './App.css';
+
+const buttonStyle = {
+  backgroundColor: '#4CAF50', /* Green */
+  border: 'none',
+  color: 'white',
+  padding: '15px 32px',
+  textAlign: 'center',
+  textDecoration: 'none',
+  display: 'inline-block',
+  fontSize: '16px',
+  margin: '4px 10px',
+  cursor: 'pointer',
+};
+
+const h2Style = {
+  color: '#4CAF50',
+  fontSize: '24px',
+  margin: '20px 0',
+};
+
+// All Logic for each state is in the reducer function
+function countReducer(state, action) {
+  if (state.count >= 10 && action.type === 'increment') {
+    return { count: 0 };
+  }
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    case 'reset':
+      return { count: 0 };
+    default:
+      throw new Error();
+  }
+}
+
+function App() {
+  const [state, countDispatch] = useReducer(countReducer, {count: 0});
+
+  return (
+    <div>
+      <h2 style={h2Style}>Count: {state.count}</h2>
+      <button style={buttonStyle} onClick={()=>countDispatch({type: 'increment'})}>+</button>
+      <button style={buttonStyle} onClick={() => countDispatch({type: 'decrement'})}>-</button>
+      <button style={buttonStyle} onClick={() => countDispatch({type:'reset'})}>Reset</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-4.mov" title="title"></video>
+
+
+- `countReducer` is a reducer and it is a pure function (no side effects) that takes the current state and an action, and returns a new state.
+- `useReducer`:
+  - Takes the reducer function and initial state (`{ count: 0 }`).
+  - Returns:
+    - `state`: current state value.
+    - `countDispatch`: function used to send actions like `increment`, `decrement`, etc.
+- You call `dispatch({ type: 'increment' })` to tell the reducer what to do. dispatch() to send an action to the reducer.
+The action is usually an object with a `type` field, and sometimes a `payload` or any attribute you want.
+
+```
+dispatch({ type: 'increment' });
+dispatch({ type: 'set-name', payload: 'Alice' });
+dispatch({ anything: 'increment'});
+```
+- The reducer sees this action and decides how to update the state.
+- `useReducer` keeps your state logic in one place and makes the code more maintainable as the app grows.
+
+### How does dispatch know that render should be called? How is the state passed and it gets updated?
+
+- Under the hood when we write
+
+```
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+- React remembers:
+  - The current state
+  - The reducer function bind to that state
+- When you call `dispatch(action)` react calls your reducer function with the current state and the action:
+
+```
+const newState = reducer(currentState, action);
+```
+- React compares the old state vs the new state. If the state has changed, React re-renders the component with the new state. Your component function runs again.
+- It gets the latest state from React's internal system.
+- `dispatch` doesn't know about rendering directly. It just triggers the reducer function, and React takes care of the rest. If the state changes, React re-renders that component.
+
+
+
+
+
 ## `useMemo` for Context API for unncessary Re-rendering
 
 
