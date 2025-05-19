@@ -840,11 +840,87 @@ useEffect(() => {
 
 ```
 useEffect(() => {
+    setCount(count + 1); // This changes state
+  }, [count]); // ...which triggers the effect again! And this repeats forever 🔁 = Infinite Loop, so add condition on it
+
+
+useEffect(() => {
   if (count < 5) {
     setCount(count + 1);
   }
 }, [count]);
 ```
+
+- Another example of dependency array is let’s say you have a component that receives a `userId` and you want to fetch that user’s details only when the userId changes.
+
+```
+import React, { useState, useEffect } from "react";
+
+function UserProfile({ userId }) {
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    // ✅ Run this effect only when `userId` changes
+    if (!userId) return;
+
+    // Side effect: Fetch user data
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+      .then((res) => res.json())
+      .then((data) => setUserData(data))
+      .catch((error) => console.error("Error fetching user:", error));
+  }, [userId]); // 🔁 Dependency array
+
+  return (
+    <div>
+      <h2>User Profile</h2>
+      {userData ? (
+        <div>
+          <p><strong>Name:</strong> {userData.name}</p>
+          <p><strong>Email:</strong> {userData.email}</p>
+        </div>
+      ) : (
+        <p>Loading user data...</p>
+      )}
+    </div>
+  );
+}
+```
+
+- It runs the first time when the component mounts (if `userId` exists). It runs again only when the `userId` value changes.
+
+
+| Line                                  | What it's doing                                     |
+| ------------------------------------- | --------------------------------------------------- |
+| `useEffect(() => { ... }, [userId]);` | This runs the effect **only when `userId` changes** |
+| `if (!userId) return;`                | Avoid fetching if userId is `null` or `undefined`   |
+| `fetch(...)`                          | This is the side effect — using a browser API       |
+| `setUserData(data)`                   | Updates state → triggers re-render                  |
+
+
+
+>[!IMPORTANT]
+> ### Not all side effects need `useEffect`.
+> - Some code can (and should) run inside event handlers or functions, not as effects. Let's take an example
+> - The side effect (saving to `localStorage`) only happens when the button is clicked. No need to use `useEffect`.
+>
+> ```
+> function SaveName() {
+>   const [name, setName] = useState("");
+> 
+>   const handleSave = () => {
+>     localStorage.setItem("username", name); // SIDE EFFECT!
+>   };
+> 
+>   return (
+>     <>
+>       <input value={name} onChange={(e) => setName(e.target.value)} />
+>       <button onClick={handleSave}>Save</button>
+>     </>
+>   );
+> }
+> ```
+>
+> - If side effects can be resolve using event handler or functions, then **avoid `useEffect`**.
 
 
 
