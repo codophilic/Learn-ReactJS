@@ -923,6 +923,98 @@ function UserProfile({ userId }) {
 > - If side effects can be resolve using event handler or functions, then **avoid `useEffect`**.
 
 
+### `useEffect` clean up function
+
+#### Analogy
+
+- You're throwing a party at your house (your React component). At the start of the party, you hire a DJ (your side effect).
+- If you forget to tell the DJ to stop when the party ends (component unmounts), the DJ will keep playing music forever, bothering your neighbors (causing memory leaks or unexpected behavior).
+- But if you tell the DJ, “Thanks, we’re done!” (cleanup function), everything ends smoothly.
+- When you use `useEffect`, sometimes you start something (like a timer, event listener, or subscription). A cleanup function is used to stop that thing when your component is no longer active.
+- 🤯 What Happens Without a Cleanup Function? Let’s say you add a `setInterval` to print something every second.
+
+```
+useEffect(() => {
+  setInterval(() => {
+    console.log("Tick");
+  }, 1000);
+}, []);
+```
+
+- It keeps ticking every second. Even if your component is removed, the interval is still running! This uses memory and may cause multiple intervals stacking up (memory leak).
+- So using cleanup function we can remove the interval
+
+```
+useEffect(() => {
+  const intervalId = setInterval(() => {
+    console.log("Tick");
+  }, 1000);
+
+  // ✅ Cleanup function to stop the interval
+  return () => {
+    clearInterval(intervalId);
+  };
+}, []);
+```
+
+- When the component is removed or effect re-runs, the interval is cleared. No memory leaks or weird logs happening after the component is gone.
+- Another example that can cause memory leaks is adding an event listener
+
+```
+❌ Without Clean up Function
+
+useEffect(() => {
+  window.addEventListener('resize', () => {
+    console.log('Window resized!');
+  });
+}, []);
+```
+
+- You add a new listener every time the component mounts. If the component is mounted/unmounted multiple times (e.g., in a tabbed app), you’ll get many listeners attached = memory leak.
+
+```
+✅ With Clean up Function
+useEffect(() => {
+  const handleResize = () => {
+    console.log('Window resized!');
+  };
+  
+  window.addEventListener('resize', handleResize);
+
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, []);
+```
+
+- Now every time the component unmounts, it removes the listener. No leak, no multiple console logs.
+
+1. Component loads for the first time
+    - The `useEffect` runs after render.
+    - You set up an interval, event listener, or something similar.
+
+2. Component is removed from the screen (unmounts)
+    - If you don’t use a cleanup function, the interval or listener keeps running → 💥 memory leak or buggy behavior.
+    - If you do use a cleanup function (inside r`eturn () => {...}`), React automatically runs it to stop those side effects → ✅ safe and clean.
+
+3. Component is shown again (re-mount) 
+    - `useEffect` runs again.
+    - If you didn’t clean up before, now you’ve added a second interval or listener (and it stacks).
+    - If you did clean up, everything starts fresh.
+
+
+- **So when our React component loads, useEffect runs. Since it won't re-run without any dependencies, it may cause memory leaks when the component unmounts, as the interval or listener remains active. So the cleanup function helps clean those up when the component unmounts.**
+
+>[!IMPORTANT]
+> - Even if the component doesn’t unmount, but the dependencies change (in the useEffect dependency array), React will:
+>   - Run the cleanup function first.
+>   - Then run the `useEffect` again with new values.
+> - So cleanup also runs when the effect re-runs, not just on unmount.
+
+
+
+
+
 
 
 
