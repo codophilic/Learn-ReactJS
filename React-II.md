@@ -1013,7 +1013,45 @@ useEffect(() => {
 
 
 
+#### Problem with Objects and Functions in `useEffect` dependencies
 
+- When you use an object or function in the dependency array of useEffect, it may cause the effect to run more often than expected or ended up in infinite loop
+- Now consider below code
+
+```
+//App.jsx
+
+import React from 'react';
+import MyComponent from '/MyComponent';
+
+export default function App(){
+  const objectName = {name: "Harsh"}
+
+  return (
+    <div>
+      <MyComponent name=objectName/>
+      <button onClick={()=>console.log("App Component Rendered")}>
+    </div>
+  )
+}
+
+//MyComponent.jsx
+
+export default function MyComponent({name}){
+
+useEffect(()=>{
+  console.log("Hello")
+},[name])
+}
+
+return (
+  <div>
+  <h1>Hello my name is {name.name}<h1>
+  </div>
+)
+```
+
+- Here whenever the `App` component is rendered, a new object is created and that new object is passed to the `MyComponent` and since this new object as new memory address , the `useEffect` executed again.
 
 
 
