@@ -995,7 +995,7 @@ useEffect(() => {
 
 2. Component is removed from the screen (unmounts)
     - If you don’t use a cleanup function, the interval or listener keeps running → 💥 memory leak or buggy behavior.
-    - If you do use a cleanup function (inside r`eturn () => {...}`), React automatically runs it to stop those side effects → ✅ safe and clean.
+    - If you do use a cleanup function (inside `return () => {...}`), React automatically runs it to stop those side effects → ✅ safe and clean.
 
 3. Component is shown again (re-mount) 
     - `useEffect` runs again.
@@ -1003,10 +1003,10 @@ useEffect(() => {
     - If you did clean up, everything starts fresh.
 
 
-- **So when our React component loads, useEffect runs. Since it won't re-run without any dependencies, it may cause memory leaks when the component unmounts, as the interval or listener remains active. So the cleanup function helps clean those up when the component unmounts.**
+- **So when our React component loads, `useEffect` runs. Since it won't re-run without any dependencies, it may cause memory leaks when the component unmounts, as the interval or listener remains active. So the cleanup function helps clean those up when the component unmounts.**
 
 >[!IMPORTANT]
-> - Even if the component doesn’t unmount, but the dependencies change (in the useEffect dependency array), React will:
+> - Even if the component doesn’t unmount, but the dependencies change (in the `useEffect` dependency array), React will:
 >   - Run the cleanup function first.
 >   - Then run the `useEffect` again with new values.
 > - So cleanup also runs when the effect re-runs, not just on unmount.
