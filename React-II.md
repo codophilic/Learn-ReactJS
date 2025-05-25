@@ -1020,46 +1020,369 @@ useEffect(() => {
 
 ```
 //App.jsx
+import { useEffect, useState } from 'react';
+function MyComponent({objName}){
 
-import React from 'react';
-import MyComponent from '/MyComponent';
+useEffect(()=>{
+  console.log("Always we get a new reference of the object in useEffect if object is passed as a dependency");
+  // JavaScript does not provide a way to get the memory address or unique id of an object.
+  // You can use a workaround to show that the reference changes:
+  console.log('Object reference:', objName);
+  console.log('Reference identity (===):', objName === window._lastObjName);
+  window._lastObjName = objName;
+},[objName])
 
-export default function App(){
+return (
+  <div>
+  <h1>Hello my name is {objName.name}</h1>
+  </div>
+)
+}
+
+function App(){
   const objectName = {name: "Harsh"}
+  const [changingState,setChangingState]=useState(true)  
 
   return (
     <div>
-      <MyComponent name=objectName/>
-      <button onClick={()=>console.log("App Component Rendered")}>
+      <MyComponent objName={objectName}/>
+      <div>
+      <button onClick={()=>{
+        if(changingState){
+          console.log("App Component Rendered by useState "+changingState)
+          setChangingState(false)
+        }
+        else{
+          console.log("App Component Rendered by useState "+changingState)
+          setChangingState(true)
+        }
+      }
+      }> Click Me</button>
+      </div>
     </div>
   )
 }
 
-//MyComponent.jsx
-
-export default function MyComponent({name}){
-
-useEffect(()=>{
-  console.log("Hello")
-},[name])
-}
-
-return (
-  <div>
-  <h1>Hello my name is {name.name}<h1>
-  </div>
-)
+export default App;
 ```
 
 - Here whenever the `App` component is rendered, a new object is created and that new object is passed to the `MyComponent` and since this new object as new memory address , the `useEffect` executed again.
 
 
+![alt text](image-6.png)
+
+- Even though `{ name: "Harsh" }` looks the same on every render, it's a new object in memory, so React thinks the dependency changed, and re-runs the effect.
+- Similarly functions are also at the end object, because objects and functions are reference types in JavaScript. Even if their content is the same, their reference is new every time the component renders.
+
+```
+useEffect(() => {
+  console.log("Effect ran");
+}, [() => console.log("hello")]); // 👈 New function reference every time
+```
+
+- Whenever component is rendered, new function with same structure is created thus giving a new reference object.
+- JavaScript does not treat functions as equal even though they have the same code and that's the case for objects as well.
+
+### `useCallback`
+
+- If you pass these functions to child components or include them in `useEffect` dependencies, it can cause unnecessary re-renders or side effects.
+- `useCallback` is a React Hook that returns a memoized (cached) version of a function — one that only changes if its dependencies change.
+- `useCallback` tells React *Only recreate this function if something inside it changes.*
+
+```
+
+//App.jsx
+import { useCallback, useEffect, useState } from 'react';
+function MyComponent({objName}){
+
+  
+
+useEffect(()=>{
+  console.log("Always we get a new reference of the object in useEffect if object is passed as a dependency");
+  // JavaScript does not provide a way to get the memory address or unique id of an object.
+  // You can use a workaround to show that the reference changes:
+  console.log('Object reference:', objName);
+  console.log('Reference identity (===):', objName === window._lastObjName);
+  window._lastObjName = objName;
+},[objName])
+
+return (
+  <div>
+  <h1>Hello my name is {objName.name}</h1>
+  </div>
+)
+}
+
+function App(){
+  const objectName = useCallback({name: "Harsh"},[])
+  const [changingState,setChangingState]=useState(true)  
+
+  return (
+    <div>
+      <MyComponent objName={objectName}/>
+      <div>
+      <button onClick={()=>{
+        if(changingState){
+          console.log("App Component Rendered by useState "+changingState)
+          setChangingState(false)
+        }
+        else{
+          console.log("App Component Rendered by useState "+changingState)
+          setChangingState(true)
+        }
+      }
+      }> Click Me</button>
+      </div>
+    </div>
+  )
+}
+
+export default App;
+```
 
 
+- On browser
+
+![alt text](image-7.png)
+
+- Here, the `useEffect` does not gets executed when the `App` component gets re-rendered.
+- Similarly we can use `useCallback` on function as well
+
+```
+function MyComponent() {
+  const handleClick = useCallback(() => {
+    console.log("Clicked!");
+  }, []); // 👈 no dependencies, so function stays the same
+
+  useEffect(() => {
+    console.log("Effect runs");
+  }, [handleClick]); // ✅ Runs only once now
+  
+  return <button onClick={handleClick}>Click</button>;
+}
+```
+
+- `useCallback` also takes dependencies array just like `useEffect`.
 
 
+## `memo`
 
-## `useMemo` for Context API for unncessary Re-rendering
+- Consider below `App` component example
+
+```
+import { useState } from 'react';
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <Child name="John" />
+    </>
+  );
+}
+
+function Child({ name }) {
+  console.log('Child rendered');
+  return <div>{name}</div>;
+}
+
+function App() {
+
+  return (
+    <Parent />
+    );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-8.png)
+
+- `Parent` re-renders because count changes. Since `Child` is a normal component, it also re-renders — even though its props (`name="John"`) didn’t change.
+- If there are multiple child components, those component will also get re-rendered even though the value of props are same. We can avoid this using `memo`.
+
+```
+import { memo, useState } from 'react';
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <Child name="John" />
+    </>
+  );
+}
+
+const Child = memo(function Child({ name }) {
+  console.log('Child rendered');
+  return <div>{name}</div>;
+});
+
+
+function App() {
+
+  return (
+    <Parent />
+    );
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-9.png)
+
+- Even, if we clicked the `increment` button, the `Child` component won't get executed because it is wrapped in `memo`.
+- `memo()` is a higher-order component provided by React that memoizes a functional component. It prevents unnecessary re-renders by reusing the last rendered result if the `props` haven't changed. So it compares the previous prop value and current one and then if the value is not changed then it does not re-rendered that component.
+- Internally, `memo()` does a **shallow comparison** of props. If the previous and next props are shallowly equal, React skips the re-render.
+- So if you pass a object or array, the changes inside them won't be detected.
+
+```
+<MyComponent data={{name: 'John'}} />
+```
+
+### Disadvantage of `memo`
+
+![alt text](image-10.png)
+
+
+>[!NOTE]
+> - `memo` only works with component function and not with normal functions.
+
+## `useMemo`
+
+- `useMemo` is a React Hook that memoizes a calculated value. It only recalculates the value when its dependencies change.
+- Let's see an example
+
+```
+import { memo, useState, useMemo } from 'react';
+
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  // useMemo to memoize a function or object
+  const greeting = useMemo(() => {
+    console.log('greeting function created');
+    return () => `Hello, John`;
+  }, []); // only re-created if dependencies change (none here)
+
+  return (
+    <>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      {/* Pass memoized function as prop */}
+      <Child name="John" greet={greeting} />
+    </>
+  );
+}
+
+const Child = memo(function Child({ name, greet }) {
+  console.log('Child rendered');
+  return (
+    <div>
+      {name} - {greet()}
+    </div>
+  );
+});
+
+function App() {
+  return <Parent />;
+}
+
+export default App;
+```
+
+- On browser
+
+![alt text](image-11.png)
+
+- `Parent` re-renders on `count` change. `greeting` is memoized using `useMemo`. `Child` is wrapped with `memo()`, so it only re-renders if props change.
+- Because `greet` (a function) is memoized, its reference stays the same — so `Child` doesn't re-render. If you remove `useMemo`, the greet function is recreated on every render, and `Child` re-renders even though the behavior is the same.
+- `useMemo` function also take dependency, based on dependency it gets executed.
+
+```
+import React, { useState, useMemo } from 'react';
+
+function ExpensiveComponent({ number }) {
+  const expensiveResult = useMemo(() => {
+    console.log('Calculating...');
+    let total = 0;
+    for (let i = 0; i < 100000000; i++) {
+      total += i;
+    }
+    return total + number;
+  }, [number]);  // only recalculates if number changes
+
+  return <div>Result: {expensiveResult}</div>;
+}
+```
+
+- Without `useMemo`, the loop runs on every render. With `useMemo`, it only runs when number changes.
+
+
+| Feature    | `React.memo()`                                    | `useMemo()`                                           |
+| ---------- | ------------------------------------------------- | ----------------------------------------------------- |
+| Type       | Higher-order component (HOC)                      | React Hook                                            |
+| Used for   | Prevent **re-rendering of functional components** | Prevent **re-calculating expensive values**           |
+| Works with | Components (function only)                        | Any **value**: object, array, number, function result |
+| Focus      | Controls **component rendering**                  | Controls **value recomputation**                      |
+
+
+- When NOT to use `useMemo`
+  - The computation is expensive
+  - The value or object is reused across renders
+  - Using it everywhere adds unnecessary complexity
+
+>[!NOTE]
+> - We can use `useMemo` for Context API for unnecessary Re-rendering also for `useEffect` dependency when object or function is passed as dependencies
+
+### `useMemo` vs `useCallback`
+
+
+| Feature                 | `useMemo()`                                                           | `useCallback()`                                               |
+| ----------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **Purpose**             | Memoizes a **value** (e.g., array, object, number, function result)   | Memoizes a **function reference**                             |
+| **Returns**             | The **result** of a function                                          | The **function itself**                                       |
+| **Used for**            | Avoid recalculating **expensive values**                              | Avoid recreating **inline functions** on every render         |
+| **Return type**         | Any **computed value**                                                | A **function**                                                |
+| **Common usage**        | When passing **memoized data** to children/components                 | When passing **functions** to `memo()`-ized child components  |
+| **Syntax**              | `useMemo(() => computeValue(), [deps])`                               | `useCallback(() => { ... }, [deps])`                          |
+| **Optimization target** | Value recomputation                                                   | Function recreation                                           |
+| **Equivalent to**       | `const value = useMemo(...)`                                          | `const func = useCallback(...)`                               |
+| **Main use case**       | Avoid re-running **heavy computation** or **object/array recreation** | Avoid re-creating **callback props** causing child re-renders |
+
+
+- Example of `useMemo`
+
+```
+const memoizedValue = useMemo(() => {
+  return expensiveCalculation(a, b);
+}, [a, b]);
+```
+
+- Avoids re-calculating the value unless `a` or `b` change.
+
+- Example of `useCallback`
+
+```
+const handleClick = useCallback(() => {
+  console.log("Clicked");
+}, []);
+```
+
+- Function reference stays the same unless dependencies change — great for passing to child components
+
+
+| Use Case                             | Hook              |
+| ------------------------------------ | ------------------- |
+| Need a **value**, like array/object? | Use `useMemo()`     |
+| Need a **function reference**?       | Use `useCallback()` |
+
+
 
 
 
