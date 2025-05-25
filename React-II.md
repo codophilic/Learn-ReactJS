@@ -1383,6 +1383,279 @@ const handleClick = useCallback(() => {
 | Need a **function reference**?       | Use `useCallback()` |
 
 
+## State Management based on Position and Component
+
+- React manages component state based on component type and position. Let's understand this via example, consider below code
+
+```
+import "./App.css";
+
+function Item({ value, isSelected }) {
+  return (
+    <div
+      style={{
+        border: "2px solid",
+        borderColor: isSelected ? "blue" : "gray",
+        padding: "10px",
+        marginBottom: "8px",
+        borderRadius: "6px",
+        backgroundColor: isSelected ? "#e0f0ff" : "white"
+      }}
+    >
+      <input
+        value={value}
+        style={{ width: "200px" }}
+      />
+    </div>
+  );
+}
+
+export default function App() {
+
+  return (
+    <div className="App">
+      <h2>List</h2>
+      <div style={{ marginTop: "20px" }}>
+      <Item value="Item1" isSelected={true}/>
+      <Item value="Item2" isSelected={false}/>
+      </div>
+    </div>
+  );
+}
+```
+
+- On browser
+
+![alt text](image-12.png)
+
+- Here, when we say Component Type, we mean, the function or class that defines what the component looks like and how it behaves. This is the `Item` component
+
+```
+function Item({ value, isSelected}) {
+  return (...);
+}
+```
+
+- The use case is like
+
+```
+      <Item value="Item1" isSelected={true}/>
+      <Item value="Item2" isSelected={false}/>
+```
+
+- React says *I’m rendering two components of the same type: `Item` and `Item`.* So both `<Item />` components are the same type.
+- Render position means the order in which components appear in the tree (or list).
+
+```
+<Item value="Item1" isSelected={true}/>  // position 0
+<Item value="Item2" isSelected={false}/>  // position 1
+```
+
+- Even though they’re the same type (`Item`), they are in different positions.
+- React tracks state using:
+  - Component Type ✅
+  - Component Position in the render tree ✅
+- If two components have the same type and same position, React reuses the same internal state. But if position changes (e.g., you insert a new item at the top), React reuses the component in that position, which may cause state mismatch.
+- Now consider below code
+
+```
+import { useState } from "react";
+import "./App.css";
+
+function Item({ value, isSelected, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        border: "2px solid",
+        borderColor: isSelected ? "blue" : "gray",
+        padding: "10px",
+        marginBottom: "8px",
+        borderRadius: "6px",
+        backgroundColor: isSelected ? "#e0f0ff" : "white"
+      }}
+    >
+      <input
+        value={value}
+        style={{ width: "200px" }}
+      />
+    </div>
+  );
+}
+
+export default function App() {
+  const [items, setItems] = useState([
+    "Item 1",
+    "Item 2"
+  ]);
+
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  const addItem = () => {
+    setItems(["Item "+(items.length+1), ...items]);
+  };
+
+  return (
+    <div className="App">
+      <h2>Editable List</h2>
+      <button onClick={addItem}>Add Item at Top</button>
+      <div style={{ marginTop: "20px" }}>
+        {items.map((item, index) => (
+          <Item
+            value={item}
+            isSelected={selectedIndex === index}
+            onClick={() => setSelectedIndex(index)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-5.mov" title="title"></video>
+
+- Here, the render position of component type `Item` is (consider from `Item 3`)
+
+| Render Position (index) | Component Type | Props Given        |
+| ----------------------- | -------------- | ------------------ |
+| 0                       | `<Item />`     | value = `"Item 3"`  |
+| 1                       | `<Item />`     | value = `"Item 1"` |
+| 2                       | `<Item />`     | value = `"Item 2"` |
+
+- Now if we select a item, and add a new item , the highlighted position of the item does not gets change, instead the item value gets changed. If render positions change (e.g., by adding/removing/reordering items), then React assumes the same component at the same position is still the same one — which can cause bugs if the actual item data has changed.
+- Render Position is the order a component appears during render. React reuses components based on their type and position. If you change the order, React may reuse a component at the wrong position, unless you give it a `key`.
+- React only uses a `key` (a default component attribute) when you explicitly pass it in a list context — like when rendering multiple components using `.map()`.
+- If you forget to provide a `key`, React will show a warning in the console.
+
+![alt text](image-13.png)
+
+- Let's use `index` of `.map()`.
+
+```
+import { useState } from "react";
+import "./App.css";
+
+function Item({ value, isSelected, onClick}) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        border: "2px solid",
+        borderColor: isSelected ? "blue" : "gray",
+        padding: "10px",
+        marginBottom: "8px",
+        borderRadius: "6px",
+        backgroundColor: isSelected ? "#e0f0ff" : "white"
+      }}
+    >
+      <input readOnly={true}
+        value={value}
+        style={{ width: "200px" }}
+      />
+    </div>
+  );
+}
+
+export default function App() {
+  const [items, setItems] = useState([
+    "Item 1",
+    "Item 2"
+  ]);
+
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  const addItem = () => {
+    setItems(["Item "+(items.length+1), ...items]);
+  };
+
+  return (
+    <div className="App">
+      <h2>Editable List</h2>
+      <button onClick={addItem}>Add Item at Top</button>
+      <div style={{ marginTop: "20px" }}>
+        {items.map((item, index) => (
+          <Item
+            value={item}
+            key={index}
+            isSelected={selectedIndex === index}
+            onClick={() => setSelectedIndex(index)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+- On browser (issue still persist)
+
+<video controls src="2025-5.mov" title="title"></video>
+
+- Why so, because `.map()` index gives position of the component and not the **position of the data**. So we are selecting **position of component** and not the data that's why the data gets dynamically change into the same position. Now to give unique id to the data and `key` prop. Let's modify our value to object like below.
+
+```
+import { useState } from "react";
+import "./App.css";
+
+function Item({ value, isSelected, onClick}) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        border: "2px solid",
+        borderColor: isSelected ? "blue" : "gray",
+        padding: "10px",
+        marginBottom: "8px",
+        borderRadius: "6px",
+        backgroundColor: isSelected ? "#e0f0ff" : "white"
+      }}
+    >
+      <input readOnly={true}
+        value={value}
+        style={{ width: "200px" }}
+      />
+    </div>
+  );
+}
+
+export default function App() {
+  const [items, setItems] = useState([
+    {id: 0, text: "Item 1"},
+    {id: 1, text: "Item 2"},
+  ]);
+
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  const addItem = () => {
+    setItems([{id: (items.length+1), text: "Item "+(items.length+1)}, ...items]);
+  };
+
+  return (
+    <div className="App">
+      <h2>Editable List</h2>
+      <button onClick={addItem}>Add Item at Top</button>
+      <div style={{ marginTop: "20px" }}>
+        {items.map((item, index) => (
+          <Item
+            value={item.text}
+            key={item.id}
+            isSelected={selectedIndex === item.id}
+            onClick={() => setSelectedIndex(item.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-6.mov" title="title"></video>
+
 
 
 
