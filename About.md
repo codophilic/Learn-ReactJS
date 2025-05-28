@@ -4906,7 +4906,7 @@ export default App;
 
 ### Class Components
 
-- Class-based components are JavaScript ES6 classes that extend from `React.Component`. They have access to state and lifecycle methods and are traditionally used when complex logic and state management are needed.
+- Class-based components are JavaScript ES6 classes that extend from `React.Component`. They have access to state, `props` and lifecycle methods and are traditionally used when complex logic and state management are needed.
 - A class-based component must extend `React.Component` (or `React.PureComponent` for optimized rendering).
 - They include a `render()` method, which returns JSX elements.
 - Lets create a new tab as `TextFilters` on our Navigation bar using class based component.
@@ -5004,6 +5004,26 @@ You can also initialize state directly using class property .
 - On browser
 
 ![alt text](Images/image-12.png)
+
+- There is another way to get `props` from your parent component without creating constructor. When we extend `Component` class it gives `props` properties, which we can use using `this` reference. Example
+
+```
+import React, { Component } from "react";
+
+class ABC extends Component{
+
+  render(){
+    <h1> My name is {this.props.name} </h1>
+  }
+}
+```
+
+
+>[!NOTE]
+> - The Class-Based Components exist because they were required in the past. In the past, which means prior to React 16.8 there were scenarios and use cases where you needed Class-Based Components. Specifically when dealing with State and with side effects, you had to use Class-Based Components.
+> - Traditionally, prior to React 16.8, you could not change State in Functional Components and you couldn't really handle side effects there either. That changed with React 16.8 because that React version introduced a concept called React Hooks.
+> - These are functions for Functional Components, which bring features to Functional Components, which previously were reserved for Class-Based Components. And indeed, Class-Based Components can't use React Hooks.
+
 
 ## Lifecycle of Component
 
@@ -5206,3 +5226,5 @@ export default Timer;
 | Constructors are not used.                                                                        | Constructor is used as it needs to store state.                                                |
 
 
+
+![alt text](Images/about/image-65.png)
