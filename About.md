@@ -4984,7 +4984,7 @@ class TextFilters extends Component {
 export default TextFilters;
 ```
 
-- **In class-based components, state is typically initialized in the constructor. You define `state` as an object where each property represents a piece of state the component will manage**. For example:
+- **In class-based components, state is typically initialized in the constructor. You define `state` as an object where each property represents a piece of state the component will manage and `your state will always be an object unlike in function component we can defined boolean, int etc..`**. For example:
 
 ```
 constructor(props) {
@@ -4997,6 +4997,7 @@ constructor(props) {
 ```
 
 - **You define all the variables that will hold the component's state inside the `this.state` object in the constructor**. This is how you set up the component's internal state, which can be changed over time based on user interactions or lifecycle events.
+- To change the value you need to always use `this.setState` in class component. It accepts a new object with the new state value.
 You can also initialize state directly using class property .
 - While it's common to pass `props` to a class component, you do not always need to use them. Props are used to pass data from a parent component to a child component. If your component needs to access `props`, you'll pass them into the constructor.
 - `this.props` in your constructor, you must pass `props` to `super().` However, if you're not using `props`, you can still call `super()` without arguments, but it’s a good practice to include it to ensure proper initialization.
@@ -5025,14 +5026,17 @@ class ABC extends Component{
 > - These are functions for Functional Components, which bring features to Functional Components, which previously were reserved for Class-Based Components. And indeed, Class-Based Components can't use React Hooks.
 
 
-## Lifecycle of Component
+>[!IMPORTANT]
+> - Class based components can generate side effects based on lifecycle of component. Unlike function component, it can't use hooks like `useEffect`.
+
+## Lifecycle of Class Component
 
 - In React, a component lifecycle refers to the series of stages a component goes through from when it's created to when it’s removed from the DOM. These stages include initialization, updating, and unmounting. Understanding the lifecycle is important because it allows you to manage state and side effects at specific points in a component's existence.
 - The lifecycle of a class component can be broken down into three main phases:
 
 - **Mounting**: This phase occurs when the component is being created and inserted into the DOM.
   - **Constructor**: This is where you initialize state and bind methods.
-  - `componentDidMount()`: This method is called immediately after the component is added to the DOM. It's often used for fetching data or setting up subscriptions.
+  - `componentDidMount()`: This method is called immediately after the component is added to the DOM. It's often used for fetching data or setting up subscriptions. It
 
 - **Updating**: This phase happens when a component's state or props change. This can occur due to user actions, network responses, or parent component updates.
   - `componentDidUpdate(prevProps, prevState)`: This method is called immediately after updating occurs. It receives the previous props and state, allowing you to compare and respond accordingly.
@@ -5040,7 +5044,14 @@ class ABC extends Component{
   - `getSnapshotBeforeUpdate(prevProps, prevState)`: This method allows you to capture some information (like scroll position) from the DOM right before the changes are applied.
 
 - **Unmounting**: This phase occurs when a component is being removed from the DOM.
+
   - `componentWillUnmount()`: This method is called right before the component is removed from the DOM. It's often used for cleanup tasks, such as invalidating timers or canceling network requests.
+
+
+- We can correlate these lifecycle with React hook `useEffect`
+
+![alt text](Images/about/image-66.png)
+
 
 - Lets see example in class component.
 
@@ -5228,3 +5239,8 @@ export default Timer;
 
 
 ![alt text](Images/about/image-65.png)
+
+
+## Which to prefer? Functional or Class?
+
+![alt text](Images/about/image-67.png)
