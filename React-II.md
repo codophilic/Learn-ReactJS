@@ -1656,8 +1656,161 @@ export default function App() {
 
 <video controls src="2025-6.mov" title="title"></video>
 
+## Build Custom Hooks
+
+- Now to build our custom hooks, we need to follow the below rules.
+
+![alt text](image-14.png)
 
 
+-  Custom hooks follow the same rules as built-in hooks:
+
+1. Must start with `use`. Example, `useFetchData`, `useForm`, `useAuth`. It is basically a rule in React projects that functions that start with `use` are treated as hooks and React projects typically look for functions that start with `use` and enforce certain rules on such functions.
+
+2. Must be called only at the top level of a functional component or another custom hook. ❌ Don’t call them inside loops, conditions, or nested functions.
+
+3. Must only be called from React functions. ✅ Call inside a functional component or another custom hook.
+
+
+### Why do we require custom hooks?
+
+- A Custom Hook in React is a reusable function that allows you to extract and share logic that would otherwise be repetitive across multiple components.
+- Custom hooks are required to promote code reusability, maintainability, and cleaner code organization.
+- Let's take an example, suppose an `useEffect` function is being used to call external API in multiple components, you can create a custom hook with `useEffect` promoting reusability.
+- Instead of duplicating logic (like `useState`, `useEffect`, etc.) in multiple components, you can extract it into a custom hook.
+
+<br></br>
+
+- Let's create our custom hook which gives width of the window. All your custom hooks should be present under the folder `/hooks`
+
+```
+// useWindowWidth.js
+import { useState, useEffect } from 'react';
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return width;
+}
+
+export default useWindowWidth;
+
+//App.jsx
+import useWindowWidth from './hooks/useWindowWidth';
+function App() {
+  const width = useWindowWidth();
+
+  return (
+   <div>Window width: {width}px</div>
+    );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-7.mov" title="title"></video>
+
+
+- Custom hook function can return anything, it can be number, string , array or object as well. It can take input and give output.
+- We can also expose the in-build hooks used inside our custom hooks.
+
+
+>[!NOTE]
+> - Changing the state in one component will not affect the state of other components even if they use the same custom hook.
+
+- Another example of custom hooks for form validation
+
+```
+import { useState } from 'react';
+
+function useForm(initialValues, validate) {
+  const [values, setValues] = useState(initialValues);
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues((prev) => ({ ...prev, [name]: value }));
+
+    if (validate) {
+      const validationErrors = validate({ ...values, [name]: value });
+      setErrors(validationErrors);
+    }
+  };
+
+  const resetForm = () => {
+    setValues(initialValues);
+    setErrors({});
+  };
+
+  return {
+    values,
+    errors,
+    handleChange,
+    resetForm,
+  };
+}
+
+export default useForm;
+```
+
+- We can use this hook into our own components
+
+```
+import React from 'react';
+import useForm from './useForm';
+
+function validate(values) {
+  const errors = {};
+  if (!values.name) errors.name = 'Name is required';
+  if (!values.email) errors.email = 'Email is required';
+  else if (!/\S+@\S+\.\S+/.test(values.email)) errors.email = 'Email is invalid';
+  return errors;
+}
+
+function MyFormComponent() {
+  const {
+    values,
+    errors,
+    handleChange,
+    resetForm,
+  } = useForm({ name: '', email: '' }, validate);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (Object.keys(errors).length === 0) {
+      alert(`Submitting: ${JSON.stringify(values)}`);
+      resetForm();
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Name: </label>
+        <input name="name" value={values.name} onChange={handleChange} />
+        <p style={{ color: 'red' }}>{errors.name}</p>
+      </div>
+      <div>
+        <label>Email: </label>
+        <input name="email" value={values.email} onChange={handleChange} />
+        <p style={{ color: 'red' }}>{errors.email}</p>
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+export default MyFormComponent;
+```
 
 
 ## `React.StrictMode`

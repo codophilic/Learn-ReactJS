@@ -12,6 +12,7 @@ import { MyProviderValue } from './components/store/MyContext.jsx';
 import TextFilters from './components/TextFilters';
 import TextInput from './components/TextInput';
 import Timer from './components/Timer';
+import useWindowWidth from './hooks/useWindowWidth';
 
 export const NavBarProps = {
   navTitle: "Text Utilities",
@@ -59,6 +60,8 @@ function countReducer(state, action) {
 }
 
 function App() {
+  const width = useWindowWidth();
+
   const [state, countDispatch] = useReducer(countReducer, {count: 0});
 
   return (
@@ -104,6 +107,7 @@ function App() {
       {/* This part of the UI won't crash if BuggyComponent fails */}
       <p>This part of the UI is safe.</p>
     </div>
+       <div>Window width: {width}px</div>
     </Router>
     );
 }
