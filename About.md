@@ -5244,3 +5244,153 @@ export default Timer;
 ## Which to prefer? Functional or Class?
 
 ![alt text](Images/about/image-67.png)
+
+## Error Boundaries for Class based Components
+
+- Error boundaries are React components that catch JavaScript errors occurring anywhere in their child component tree. They log these errors and display a fallback UI instead of the component tree that crashed. This prevents the entire application from crashing due to an error in one component.
+- An Error Boundary is a React component that catches JavaScript runtime errors anywhere in its child component tree, logs the error, and displays a fallback UI instead of crashing the whole application.
+- Let's consider a simple example what happens when we don't use Error boundaries.
+
+```
+//App.jsx
+
+import BuggyComponent from './components/BuggyComponent';
+
+function App() {
+  return (
+    <div>
+      <h1>React Error Boundary Demo</h1>
+
+      {/* The risky component which throws error*/}
+        <BuggyComponent />
+    </div>
+  );
+}
+
+export default App;
+
+//BuggyComponent.jsx
+
+import React, { useState } from 'react';
+
+function BuggyComponent() {
+  const [triggerError, setTriggerError] = useState(false);
+
+  if (triggerError) {
+    // Simulate a render-time error
+    throw new Error("I crashed!");
+  }
+
+  return (
+    <div>
+      <h3>This is a buggy component</h3>
+      <button onClick={() => setTriggerError(true)}>Crash Me</button>
+    </div>
+  );
+}
+
+export default BuggyComponent;
+```
+
+- On browser
+
+<video controls src="Images/about/2025-error-boundary.mov" title="title"></video>
+
+- By writing `throw new Error("I crashed!");` we are generating an error and this error bubble up the call stack. So we pass it through all these components, and if it's not handled anywhere, this will crash our application.
+- We can't handle like normal `try-catch` block at it works only for a functions in javascript. Now to resolve this we will use Error Boundary. So let's create a component for Error boundary.
+
+```
+// ErrorBoundary.jsx
+import React from 'react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  // Catch errors in children
+  componentDidCatch(error, errorInfo) {
+    this.setState({
+      hasError: true,
+      error: error,
+      errorInfo: errorInfo
+    });
+
+    // You can also log to an error reporting service here
+    console.error("Caught by ErrorBoundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 20, backgroundColor: '#fdd' }}>
+          <h2>Something went wrong.</h2>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+
+    return this.props.children; // Render children if no error
+  }
+}
+
+export default ErrorBoundary;
+
+//App.jsx
+import ErrorBoundary from './components/ErrorBoundary';
+import BuggyComponent from './components/BuggyComponent';
+
+function App() {
+  return (
+    <div>
+      <h1>React Error Boundary Demo</h1>
+
+      {/* Wrap only the risky component */}
+      <ErrorBoundary>
+        <BuggyComponent />
+      </ErrorBoundary>
+
+      {/* This part of the UI won't crash if BuggyComponent fails */}
+      <p>This part of the UI is safe.</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="Images/about/2025-error-boundary1.mov" title="title"></video>
+
+
+
+| Concept               | Meaning                                                                     |
+| --------------------- | --------------------------------------------------------------------------- |
+| **Error Boundary**    | React component that handles JavaScript errors in child components          |
+| **`componentDidCatch`** | Lifecycle method to log errors and update state. It gets triggered when the child component throws error                            |
+| **Fallback UI**       | Displayed when an error is caught based on chaging the state via `componentDidCatch`                                      |
+
+
+- You can create multiple `ErrorBoundarys` around different components for more granular error handling.
+
+
+>[!NOTE]
+> - Why do we get this below react error UI image even after adding error boundary?
+>
+> ![alt text](Images/about/image-68.png)
+>
+> - In development mode, React uses a special tool called "React Error Overlay" (in Create React App and other tools like Vite) to visibly show developers that a runtime error has occurred. This is intended behavior during development so you can:
+> 1. Immediately spot the issue
+> 2. View detailed stack traces
+> 3. Debug efficiently
+> - That’s why, even with a proper ErrorBoundary, you still see the red screen during development.
+> - In production builds, this red overlay does NOT appear. Instead:
+>   - The error is caught silently by your ErrorBoundary
+>   - Only the fallback UI you defined in the `render()` method is shown to the user
+

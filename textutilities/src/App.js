@@ -2,7 +2,9 @@ import { useReducer } from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import About from './components/About';
+import BuggyComponent from './components/BuggyComponent';
 import Card from './components/Card/Card';
+import ErrorBoundary from './components/ErrorBoundary';
 import MyComponent from './components/MyComponent';
 import MyPara from './components/MyPara/MyPara.jsx';
 import Navbar from './components/Navbar';
@@ -90,6 +92,17 @@ function App() {
       <button style={buttonStyle} onClick={()=>countDispatch({type: 'increment'})}>+</button>
       <button style={buttonStyle} onClick={() => countDispatch({type: 'decrement'})}>-</button>
       <button style={buttonStyle} onClick={() => countDispatch({type:'reset'})}>Reset</button>
+    </div>
+        <div>
+      <h1>React Error Boundary Demo</h1>
+
+      {/* Wrap only the risky component */}
+      <ErrorBoundary>
+        <BuggyComponent />
+      </ErrorBoundary>
+
+      {/* This part of the UI won't crash if BuggyComponent fails */}
+      <p>This part of the UI is safe.</p>
     </div>
     </Router>
     );
