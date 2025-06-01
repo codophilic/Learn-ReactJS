@@ -1812,6 +1812,178 @@ function MyFormComponent() {
 export default MyFormComponent;
 ```
 
+## Form
+
+- Consider below form application page under `forms` folder.
+
+```
+//App.jsx
+
+import Header from './components/Header.jsx';
+import Login from './components/Login.jsx';
+
+function App() {
+  return (
+    <>
+      <Header />
+      <main>
+        <Login />
+      </main>
+    </>
+  );
+}
+
+export default App;
+
+//Header.jsx
+import logoImg from '../assets/logo.jpg';
+
+export default function Header() {
+  return (
+    <header>
+      <img src={logoImg} alt="A form and a pencil" />
+      <h1>React Forms</h1>
+    </header>
+  );
+}
+
+
+//Login.jsx
+export default function Login() {
+
+  return (
+    <form>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" />
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password" />
+        </div>
+      </div>
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+![alt text](image-15.png)
+
+- This is a simple form page. Here, we have use `htmlFor` this label element. This is the react equivalent to the `for` attribute, which you would set in native HTML. Sames goes for `class` which helps to add CSS classes. So react equivalent is `className`.
+- Now let's create a `onClick` handleron login button and log something into it.
+
+```
+export default function Login() {
+
+  function onClickHandler(){
+    console.log('Login button clicked');
+  }
+
+  return (
+    <form>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" />
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password" />
+        </div>
+      </div>
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button" onClick={onClickHandler}>
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-8.mov" title="title"></video>
+
+
+- If we notice, the `onClickHandler` gets executed but the page is also refreshed and we could see query parameters added into our url which is `/?email=&password=`. This is the default behavior of the browser for form submission. Technically that means that an HTTP request is created and is sent to the backend server that's serving the website.
+
+![alt text](image-16.png)
+
+
+![alt text](image-17.png)
+
+
+- This automatic behavior can be a problem. In many React applications this automatic behavior might be a problem. Because here, the server that's serving this React website on this address is actually a pure development server. Here, we are not validating the input data as well. So how can we prevent the default behavior? using  a prop called `type='button'` on button element. This type won't submit the the form. The default type is `type='submit'`.
+
+![alt text](image-18.png)
+
+- When we set `type='button'`, we can see on click the page does not gets reloaded. We make sure that this button is no longer submitting the form.
+
+![alt text](image-19.png)
+
+- Another way to do so, which is more is by using `onSubmit` handler and `event.preventDefault()`.
+
+```
+export default function Login() {
+
+  function onClickHandler(event){
+    event.preventDefault();
+    console.log('Login button clicked');
+  }
+
+  return (
+    <form onSubmit={onClickHandler}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" />
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password" />
+        </div>
+      </div>
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+![alt text](image-19.png)
+
+- The form here will actually trigger a submit event. We get such an `event` object for every event that's being triggered for click events, just like for change events or the submit event. But this event object now has a special method which we can call, the `preventDefault` method. And this method does what the name implies, it prevents the default browser behavior, which would be to generate and send this HTTP request. And that is indeed therefore a pattern which you will see in many React applications.
+- In React, we can get and set these input form values with help of state or refs hooks. But there is a more better approach which is `FormData`.
+
 
 ## `React.StrictMode`
 
