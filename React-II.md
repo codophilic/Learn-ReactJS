@@ -1984,6 +1984,236 @@ export default function Login() {
 - The form here will actually trigger a submit event. We get such an `event` object for every event that's being triggered for click events, just like for change events or the submit event. But this event object now has a special method which we can call, the `preventDefault` method. And this method does what the name implies, it prevents the default browser behavior, which would be to generate and send this HTTP request. And that is indeed therefore a pattern which you will see in many React applications.
 - In React, we can get and set these input form values with help of state or refs hooks. But there is a more better approach which is `FormData`.
 
+### `FormData`
+
+- In HTML, `FormData` is a browser API object that allows you to construct a set of key/value pairs representing form data. It's essentially a way to gather and organize data from HTML form elements before sending it to a server via HTTP requests.
+- `FormData` objects provide a way to collect the values of form fields (like text inputs, select boxes, etc.) and associate them with their corresponding names.
+- Let's see an example
+
+```
+export default function Login() {
+
+  function onClickHandler(event){
+    event.preventDefault();
+    console.log('Login button clicked');
+
+    const formDataValues = new FormData(event.target);
+    console.log('Email:', formDataValues.get('email'));
+    console.log('Password:', formDataValues.get('password'));
+
+    // If you want to log all form data as an object
+    console.log('Form data:', Object.fromEntries(formDataValues.entries()));
+  }
+
+  return (
+    <form onSubmit={onClickHandler}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" />
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password" />
+        </div>
+      </div>
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+
+- On browser
+
+![alt text](image-20.png)
+
+- Every form input element is associated with the prop `name` (like `<input id="email" type="email" name="email" />`) which gives keys and their input as value for the Object. It converts the form data into a plain JavaScript object. To access particular value we can use the `get()` method.
+- `.entries()` returns an iterator of all key-value pairs in the `FormData` object. `.entries()` does not shows multi-select input values. Let's see an example.
+
+```
+export default function Login() {
+
+  function onClickHandler(event){
+    event.preventDefault();
+    console.log('Login button clicked');
+
+    const formDataValues = new FormData(event.target);
+    console.log('Email:', formDataValues.get('email'));
+    console.log('Password:', formDataValues.get('password'));
+
+    // If you want to log all form data as an object
+    console.log('Form data:', Object.fromEntries(formDataValues.entries()));
+  }
+
+  return (
+    <form onSubmit={onClickHandler}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" />
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password" />
+        </div>
+      </div>
+    <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+![alt text](image-21.png)
+
+- In such case we can retrieve all selected option by prop `name` and using `getAll()`.
+
+```
+export default function Login() {
+
+  function onClickHandler(event){
+    event.preventDefault();
+    console.log('Login button clicked');
+
+    const formDataValues = new FormData(event.target);
+    console.log('Email:', formDataValues.get('email'));
+    console.log('Password:', formDataValues.get('password'));
+
+    // If you want to log all form data as an object
+    const AllFormData=Object.fromEntries(formDataValues.entries());
+
+    const CheckBoxes = formDataValues.getAll('acquisition');
+    AllFormData.acquisition = CheckBoxes;
+    console.log('All Form Data:', AllFormData);
+    // You can now use AllFormData to send to your server or process further
+  }
+
+  return (
+    <form onSubmit={onClickHandler}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" />
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password" />
+        </div>
+      </div>
+    <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+![alt text](image-22.png)
+
+- We can add validation with helps of state but HTML provided by built-in validation props like `required`, `type`, `min`, `max` etc.. These are [built-in validation props](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Form_validation#using_built-in_form_validation) provided by HTML.
+
+```
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email"  required/>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password" minLength={5} required/>
+        </div>
+      </div>
+```
+
+- On browser when we enter a invalid data
+
+![alt text](image-23.png)
+
+![alt text](image-24.png)
+
+
 
 ## `React.StrictMode`
 
