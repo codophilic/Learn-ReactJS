@@ -1,24 +1,16 @@
 export default function Login() {
 
-  function onClickHandler(event){
-    event.preventDefault();
-    console.log('Login button clicked');
-
-    const formDataValues = new FormData(event.target);
-    console.log('Email:', formDataValues.get('email'));
-    console.log('Password:', formDataValues.get('password'));
-
-    // If you want to log all form data as an object
-    const AllFormData=Object.fromEntries(formDataValues.entries());
-
-    const CheckBoxes = formDataValues.getAll('acquisition');
-    AllFormData.acquisition = CheckBoxes;
-    console.log('All Form Data:', AllFormData);
-    // You can now use AllFormData to send to your server or process further
+  function onClickHandler(formDataObject){
+    const email= formDataObject.get('email');
+    const password = formDataObject.get('password');
+    const acquisition = formDataObject.getAll('acquisition');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Acquisition:', acquisition); // Array of checked values
   }
 
   return (
-    <form onSubmit={onClickHandler}>
+    <form action={onClickHandler}>
       <h2>Login</h2>
 
       <div className="control-row">

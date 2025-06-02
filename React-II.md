@@ -2213,6 +2213,91 @@ export default function Login() {
 
 ![alt text](image-24.png)
 
+## Form Action (React 19+)
+
+>[!NOTE]
+> - Form Actions feature is available in React version 19 or higher. So if you're working in a React project that uses an older version of React, you can't use this feature.
+
+- We can handle form submissions by adding this `onSubmit` prop to the `form` element. And then you can point at a function that should be executed when that form is submitted. This approach being used in many React projects.
+- You can also set this pointing function as a value for the `action` prop on the `form` element. Form elements support the `action` prop or the `action` attribute no matter if you are using React or not.
+- Similarly like `submit` button, this action attribute here would be used to define the path or the URL to which the browser sends the form data when the form is submitted. So that would be the default behavior for **non-react based projects**.
+- Now, in React, when adding the `action` prop to a form element, this is not what will happen. Instead, React kind of overrides this attribute, this prop, and React will make sure that any function pass to the `action` prop which receive a `formData` object by default and it also call `preventDefault`. You won't get an `event` object.
+- Let's see an example
+
+```
+export default function Login() {
+
+  function onClickHandler(formDataObject){
+    const email= formDataObject.get('email');
+    const password = formDataObject.get('password');
+    const acquisition = formDataObject.getAll('acquisition');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Acquisition:', acquisition); // Array of checked values
+  }
+
+  return (
+    <form action={onClickHandler}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" required/>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password" minLength={5} required/>
+        </div>
+      </div>
+    <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-9.mov" title="title"></video>
+
+
+- Now, when using this form actions feature, this formData object (`formDataObject`) is created automatically for you by React. And this formData object then will contain all the submitted data, so all the submitted input values in that form.
+- You also might notice that the form was reset, the email field was cleared because that's also something React does automatically for you.
+
+
 
 
 ## `React.StrictMode`
