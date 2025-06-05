@@ -1,27 +1,44 @@
+import { useActionState } from "react";
+
 export default function Login() {
 
-  function onClickHandler(formDataObject){
+  function onClickHandler(prevStateObj,formDataObject){
     const email= formDataObject.get('email');
     const password = formDataObject.get('password');
     const acquisition = formDataObject.getAll('acquisition');
     console.log('Email:', email);
     console.log('Password:', password);
     console.log('Acquisition:', acquisition); // Array of checked values
+
+    const errorObject = {errors: []};
+    if (!email) {
+      errorObject.errors.push('Email is required');
+    }
+    if (!password || password.length < 5) {
+      errorObject.errors.push("Password must be at least 5 characters long");
+    }
+    if(errorObject.errors.length > 0) {
+      return errorObject;
+    }else{
+      return {errors: null};
+    }
   }
 
+  const [formActionHandler, onClickHandlerUpdatedFunction] = useActionState(onClickHandler,{errors: null});
+
   return (
-    <form action={onClickHandler}>
+    <form action={onClickHandlerUpdatedFunction}>
       <h2>Login</h2>
 
       <div className="control-row">
         <div className="control no-margin">
           <label htmlFor="email">Email</label>
-          <input id="email" type="email" name="email" required/>
+          <input id="email" type="email" name="email"/>
         </div>
 
         <div className="control no-margin">
           <label htmlFor="password">Password</label>
-          <input id="password" type="password" name="password" minLength={5} required/>
+          <input id="password" type="password" name="password"/>
         </div>
       </div>
     <fieldset>
@@ -51,6 +68,15 @@ export default function Login() {
           <label htmlFor="other">Other</label>
         </div>
       </fieldset>
+      {formActionHandler.errors && formActionHandler.errors.length > 0 && (
+        <div className="error">
+          <ul>
+            {formActionHandler.errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <p className="form-actions">
         <button className="button button-flat">Reset</button>
         <button className="button">

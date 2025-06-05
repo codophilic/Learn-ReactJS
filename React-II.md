@@ -2294,8 +2294,154 @@ export default function Login() {
 <video controls src="2025-9.mov" title="title"></video>
 
 
-- Now, when using this form actions feature, this formData object (`formDataObject`) is created automatically for you by React. And this formData object then will contain all the submitted data, so all the submitted input values in that form.
+- Now, when using this form actions feature, this `formData` object (`formDataObject`) is created automatically for you by React. And this `formData` object then will contain all the submitted data, so all the submitted input values in that form.
 - You also might notice that the form was reset, the email field was cleared because that's also something React does automatically for you.
+- Now suppose, you wanted to display an error message, whether the input email id is invalid or password length is too short etc.. you can return any object or any data type value (returning is optional in form action) from your function `onClickHandler`. Like below
+
+```
+  function onClickHandler(formDataObject){
+    const email= formDataObject.get('email');
+    const password = formDataObject.get('password');
+    const acquisition = formDataObject.getAll('acquisition');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Acquisition:', acquisition); // Array of checked values
+
+    const errorObject = {errors: []};
+    if (!email) {
+      errorObject.errors.push('Email is required');
+    }
+    if (!password || password.length < 5) {
+      errorObject.errors.push("Password must be at least 5 characters long");
+    }
+    if(errorObject.errors.length > 0) {
+      return errorObject;
+    }else{
+      return {errors: null};
+    }
+  }
+```
+
+### `useActionState`
+
+- Now we will receive an object from the function `onClickHandler` now to display this error on UI, we need to use `useActionState`. So `useActionState` hook helps in handling form submissions and updating UI state based on function returned response or server returned response — all in one place. This hook helps you to manage forms related state or actions related states.
+- Let's see its example.
+
+```
+import { useActionState } from "react";
+
+export default function Login() {
+
+  function onClickHandler(prevStateObj,formDataObject){
+    const email= formDataObject.get('email');
+    const password = formDataObject.get('password');
+    const acquisition = formDataObject.getAll('acquisition');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Acquisition:', acquisition); // Array of checked values
+
+    const errorObject = {errors: []};
+    if (!email) {
+      errorObject.errors.push('Email is required');
+    }
+    if (!password || password.length < 5) {
+      errorObject.errors.push("Password must be at least 5 characters long");
+    }
+    if(errorObject.errors.length > 0) {
+      return errorObject;
+    }else{
+      return {errors: null};
+    }
+  }
+
+  const [formActionHandler, onClickHandlerUpdatedFunction] = useActionState(onClickHandler,{errors: null});
+
+  return (
+    <form action={onClickHandlerUpdatedFunction}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email"/>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password"/>
+        </div>
+      </div>
+    <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+      {formActionHandler.errors && formActionHandler.errors.length > 0 && (
+        <div className="error">
+          <ul>
+            {formActionHandler.errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+![alt text](image-25.png)
+
+
+- `useActionState` takes two parameters.
+
+```
+const [formActionHandler, onClickHandlerUpdatedFunction] = useActionState(onClickHandler, { errors: null });
+```
+
+- `onClickHandler` — your action function, this is called whenever the form is submitted.
+- `{ errors: null }` — your initial state of the returned value (the `formActionHandler` starts from this value).
+- It returns:
+  - `formActionHandler`: the current state after the action runs and it consist of the returned value
+  - `onClickHandlerUpdatedFunction`: a wrapped version of your `onClickHandler` that React can use in the form `<form action={...}>`. It triggers your `onClickHandler` on form submit, sends the `FormData`, and automatically updates the `formActionHandler` state with the return value. You can’t just pass `onClickHandler` directly — React wraps it to `onClickHandlerUpdatedFunction` to track results and re-render when needed.
+- The function `function onClickHandler(prevStateObj,formDataObject)` uses `prevStateObj` because React calls your handler with:
+  - `prevStateObj`: the previous state returned (initially `{ errors: null }`)
+  - `formDataObject`: the form data
+- So this lets you:
+  - Access and validate form input values
+  - Use or mutate past state if needed (e.g., count attempts). Based on past state you can validate and return your new state.
+  - Return updated state (usually an object like `{ errors: [...] }`)
+- `formActionHandler` has the latest state returned by your action function (`onClickHandler`)
 
 
 
