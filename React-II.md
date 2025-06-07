@@ -2442,9 +2442,503 @@ const [formActionHandler, onClickHandlerUpdatedFunction] = useActionState(onClic
   - Use or mutate past state if needed (e.g., count attempts). Based on past state you can validate and return your new state.
   - Return updated state (usually an object like `{ errors: [...] }`)
 - `formActionHandler` has the latest state returned by your action function (`onClickHandler`)
+- If you notice, the form values gets reset on submit, the entered input values gets disappeared, its gets reset if any validation errors are found. Now to prevent this we can use the `defaultValue` or `defaultChecked` (in case of multi select checkbox) of the `input` element.
+
+```
+import { useActionState } from "react";
+
+export default function Login() {
+
+  function onClickHandler(prevStateObj,formDataObject){
+    const email= formDataObject.get('email');
+    const password = formDataObject.get('password');
+    const acquisition = formDataObject.getAll('acquisition');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Acquisition:', acquisition); // Array of checked values
+
+    const errorObject = {errors: []};
+    if (!email) {
+      errorObject.errors.push('Email is required');
+    }
+    if (!password || password.length < 5) {
+      errorObject.errors.push("Password must be at least 5 characters long");
+    }
+    if(errorObject.errors.length > 0) {
+      // Storing the user's entered values in the enteredValues object
+      errorObject.enteredValues= {email, password, acquisition}
+      return errorObject;
+    }else{
+      return {errors: null};
+    }
+  }
+
+  const [formActionHandler, onClickHandlerUpdatedFunction] = useActionState(onClickHandler,{errors: null});
+
+  return (
+    <form action={onClickHandlerUpdatedFunction}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" defaultValue={formActionHandler.enteredValues?.email}/>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password"/>
+        </div>
+      </div>
+    <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('google')}
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('friend')}
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('other')} />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+      {formActionHandler.errors && formActionHandler.errors.length > 0 && (
+        <div className="error">
+          <ul>
+            {formActionHandler.errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">
+          Login
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-10.mov" title="title"></video>
 
 
+- `objectname.key?.value` is equivalent to `objectname && objectname.key ? objectname.key.value : undefined`. Example
 
+```
+const myObject = {
+  key: {
+    value: "Hello"
+  }
+};
+
+const result1 = myObject.key?.value; // result1 is "Hello"
+const result2 = myObject.nonexistentKey?.value; // result2 is undefined
+const result3 = myObject.key?.nonexistentValue; // result3 is undefined
+```
+
+- This is a combination of optional chaining and property access in JavaScript.
+- Here, if the form input data are valid then value of `enteredValues` is `undefined`, so example `<input id="email" type="email" name="email" defaultValue={formActionHandler.enteredValues?.email}/>` , `formActionHandler.enteredValues?.email` will be `undefined` and the input on UI will be blank but in case of value it will display that value.
+
+
+>![NOTE]
+> - The function `onClickHandler` can be moved out of the react component, as it does not use any state or any hooks, so it is safe to remove it out and make the `Login` component look less dense and leaner.
+
+
+### `useFormStatus`.
+
+- Suppose, we wanted to disable our `Submit` button or wanna display any other thing so that user does not click twice while submitting the form. We can use `useFormStatus`. 
+- `useFormStatus` is a React Hook that provides information about the status of the last form submission. It is designed to work with the `<form>` element in React.
+- `useFormStatus` hook actually can't be used in the component that contains the form and the `formAction` but instead it must be used in some nested component.
+- Let's create a new `SubmitBtn` component.
+
+```
+//SubmitBtn.jsx
+
+import { useFormStatus } from 'react-dom';
+
+export default function SubmitBtn(){
+
+    const {pending} = useFormStatus();
+    console.log('SubmitBtn', pending);
+    return (
+        <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button disabled={pending} className="button">
+        {pending ? 'Submitting...' : 'Submit'}
+        </button>
+        </p>
+    );
+}
+
+// Login.jsx 
+
+import { useActionState } from "react";
+import SubmitBtn from "./SubmitBtn";
+
+  async function onClickHandler(prevStateObj,formDataObject){
+    const email= formDataObject.get('email');
+    const password = formDataObject.get('password');
+    const acquisition = formDataObject.getAll('acquisition');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Acquisition:', acquisition); // Array of checked values
+
+    const errorObject = {errors: []};
+    if (!email) {
+      errorObject.errors.push('Email is required');
+    }
+    if (!password || password.length < 5) {
+      errorObject.errors.push("Password must be at least 5 characters long");
+    }
+    if(errorObject.errors.length > 0) {
+      // Storing the user's entered values in the enteredValues object
+      errorObject.enteredValues= {email, password, acquisition}
+      return errorObject;
+    }else{
+      // Setting a timeout to simulate a network request
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Form submitted successfully');
+
+      return {errors: null};
+    }
+  }
+
+export default function Login() {
+
+
+  const [formActionHandler, onClickHandlerUpdatedFunction] = useActionState(onClickHandler,{errors: null});
+
+  return (
+    <form action={onClickHandlerUpdatedFunction}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" defaultValue={formActionHandler.enteredValues?.email}/>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password"/>
+        </div>
+      </div>
+    <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('google')}
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('friend')}
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('other')} />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+      {formActionHandler.errors && formActionHandler.errors.length > 0 && (
+        <div className="error">
+          <ul>
+            {formActionHandler.errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+        <SubmitBtn />
+      
+    </form>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-11.mov" title="title"></video>
+
+- `useFormStatus` returns 4 key properties
+
+```
+const { pending, data, method, action } = useFormStatus();
+```
+
+1. `pending` (boolean):
+    - `true` while the form is currently submitting. Can be used to disable buttons or show loading indicators.
+
+2. `data` (`FormData` or null):
+    - Contains the form's FormData `object` when submitting. Helpful if you want to inspect or manipulate the values being submitted.
+
+3. `method` (string):
+    - The HTTP method used to submit the form (e.g., `post`, `get`).
+
+4. `action` (string or function):
+    - The form's action attribute, i.e., the function or URL where the form is being submitted.
+
+>[!NOTE]
+> - `useFormStatus` must be used inside a component that's inside the `<form>` and it is available in React 19+ version.
+
+### `pending` in `useFormAction`
+
+- To use `useFormStatus` we need to keep maintain a separate component having that button and it returns a `pending` state which is a boolean value. The `pending` value is also provided by `useFormAction`.
+
+```
+import { useActionState } from "react";
+
+  async function onClickHandler(prevStateObj,formDataObject){
+    const email= formDataObject.get('email');
+    const password = formDataObject.get('password');
+    const acquisition = formDataObject.getAll('acquisition');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Acquisition:', acquisition); // Array of checked values
+
+    const errorObject = {errors: []};
+    if (!email) {
+      errorObject.errors.push('Email is required');
+    }
+    if (!password || password.length < 5) {
+      errorObject.errors.push("Password must be at least 5 characters long");
+    }
+    if(errorObject.errors.length > 0) {
+      // Storing the user's entered values in the enteredValues object
+      errorObject.enteredValues= {email, password, acquisition}
+      return errorObject;
+    }else{
+      // Setting a timeout to simulate a network request
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Form submitted successfully');
+
+      return {errors: null};
+    }
+  }
+
+export default function Login() {
+
+  const [formActionHandler, onClickHandlerUpdatedFunction, pending] = useActionState(onClickHandler,{errors: null});
+
+  return (
+    <form action={onClickHandlerUpdatedFunction}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" defaultValue={formActionHandler.enteredValues?.email}/>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password"/>
+        </div>
+      </div>
+    <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('google')}
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('friend')}
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('other')} />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+      {formActionHandler.errors && formActionHandler.errors.length > 0 && (
+        <div className="error">
+          <ul>
+            {formActionHandler.errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button disabled={pending} className="button">
+        {pending ? 'Submitting...' : 'Submit'}
+        </button>
+        </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-11.mov" title="title"></video>
+
+
+### Register Multiple Form Actions
+
+- Form Actions can be not only set for `form` HTML element but also for `button` element as well And that then of course allows you to trigger different form actions for different buttons.
+
+```
+import { useActionState } from "react";
+
+  async function onClickHandler(prevStateObj,formDataObject){
+    const email= formDataObject.get('email');
+    const password = formDataObject.get('password');
+    const acquisition = formDataObject.getAll('acquisition');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Acquisition:', acquisition); // Array of checked values
+
+    const errorObject = {errors: []};
+    if (!email) {
+      errorObject.errors.push('Email is required');
+    }
+    if (!password || password.length < 5) {
+      errorObject.errors.push("Password must be at least 5 characters long");
+    }
+    if(errorObject.errors.length > 0) {
+      // Storing the user's entered values in the enteredValues object
+      errorObject.enteredValues= {email, password, acquisition}
+      return errorObject;
+    }else{
+      // Setting a timeout to simulate a network request
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Form submitted successfully');
+
+      return {errors: null};
+    }
+  }
+
+export default function Login() {
+
+  function Button1(){
+    console.log('Button1 clicked');
+  }
+
+  function Button2(){
+    console.log('Button2 clicked');
+  }
+
+  const [formActionHandler, onClickHandlerUpdatedFunction] = useActionState(onClickHandler,{errors: null});
+
+  return (
+    <form action={onClickHandlerUpdatedFunction}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" defaultValue={formActionHandler.enteredValues?.email}/>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" name="password"/>
+        </div>
+      </div>
+    <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('google')}
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('friend')}
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('other')} />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+      {formActionHandler.errors && formActionHandler.errors.length > 0 && (
+        <div className="error">
+          <ul>
+            {formActionHandler.errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p className="form-actions">
+      <button formAction={Button1} className="button button-flat">Button 1</button>
+      <button formAction={Button2} className="button button-flat">Button 2</button>
+      </p>
+    </form>
+  );
+}
+```
+
+- On browser
+
+<video controls src="2025-12.mov" title="title"></video>
+
+- Based on button different form action function get invoked.
 
 ## `React.StrictMode`
 

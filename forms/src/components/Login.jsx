@@ -1,8 +1,6 @@
 import { useActionState } from "react";
 
-export default function Login() {
-
-  function onClickHandler(prevStateObj,formDataObject){
+  async function onClickHandler(prevStateObj,formDataObject){
     const email= formDataObject.get('email');
     const password = formDataObject.get('password');
     const acquisition = formDataObject.getAll('acquisition');
@@ -18,13 +16,29 @@ export default function Login() {
       errorObject.errors.push("Password must be at least 5 characters long");
     }
     if(errorObject.errors.length > 0) {
+      // Storing the user's entered values in the enteredValues object
+      errorObject.enteredValues= {email, password, acquisition}
       return errorObject;
     }else{
+      // Setting a timeout to simulate a network request
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Form submitted successfully');
+
       return {errors: null};
     }
   }
 
-  const [formActionHandler, onClickHandlerUpdatedFunction] = useActionState(onClickHandler,{errors: null});
+export default function Login() {
+
+  function Button1(){
+    console.log('Button1 clicked');
+  }
+
+  function Button2(){
+    console.log('Button2 clicked');
+  }
+
+  const [formActionHandler, onClickHandlerUpdatedFunction, pending] = useActionState(onClickHandler,{errors: null});
 
   return (
     <form action={onClickHandlerUpdatedFunction}>
@@ -33,7 +47,7 @@ export default function Login() {
       <div className="control-row">
         <div className="control no-margin">
           <label htmlFor="email">Email</label>
-          <input id="email" type="email" name="email"/>
+          <input id="email" type="email" name="email" defaultValue={formActionHandler.enteredValues?.email}/>
         </div>
 
         <div className="control no-margin">
@@ -49,6 +63,7 @@ export default function Login() {
             id="google"
             name="acquisition"
             value="google"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('google')}
           />
           <label htmlFor="google">Google</label>
         </div>
@@ -59,12 +74,13 @@ export default function Login() {
             id="friend"
             name="acquisition"
             value="friend"
+            defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('friend')}
           />
           <label htmlFor="friend">Referred by friend</label>
         </div>
 
         <div className="control">
-          <input type="checkbox" id="other" name="acquisition" value="other" />
+          <input type="checkbox" id="other" name="acquisition" value="other" defaultChecked={formActionHandler.enteredValues?.acquisition?.includes('other')} />
           <label htmlFor="other">Other</label>
         </div>
       </fieldset>
@@ -77,12 +93,18 @@ export default function Login() {
           </ul>
         </div>
       )}
+
+      {/* <p className="form-actions">
+      <button formAction={Button1} className="button button-flat">Button 1</button>
+      <button formAction={Button2} className="button button-flat">Button 2</button>
+      </p> 
+      <SubmitBtn/>*/}
       <p className="form-actions">
         <button className="button button-flat">Reset</button>
-        <button className="button">
-          Login
+        <button disabled={pending} className="button">
+        {pending ? 'Submitting...' : 'Submit'}
         </button>
-      </p>
+        </p>
     </form>
   );
 }
