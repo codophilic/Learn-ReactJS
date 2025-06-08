@@ -5394,3 +5394,5 @@ export default App;
 >   - The error is caught silently by your ErrorBoundary
 >   - Only the fallback UI you defined in the `render()` method is shown to the user
 
+
+- Learn more concepts on [React](React-II.md)
