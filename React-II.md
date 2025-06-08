@@ -4,7 +4,7 @@
 
 - Prop drilling in React refers to the process of passing data down through multiple levels of nested components via props, even when intermediate components do not need the data themselves. It arises when a deeply nested child component requires access to data held by a distant ancestor component.
 
-![alt text](image.png)
+![alt text](Images/react2/image.png)
 
 
 - For example, the app component might render a Shop and Header component and these components has child Components and other nested Components. You'll also need to manage some state and if the value is being used by your child component you then need to share it through props and also update it with help of props. This often means that you need to pass that shared data through multiple layers of Components. And that is something that's called prop drilling.
@@ -60,7 +60,7 @@ export default function MyComponent({ onClickHandler }) {
 
 - On browser
 
-<video controls src="2025-1.mov" title="title"></video>
+<video controls src="Images/react2/2025-1.mov" title="title"></video>
 
 
 - Here, we are passing the `onClickHandler` to `MyComponent` which does not uses it. This is a scenario of prop drilling. To solve it let's use component composition.
@@ -114,7 +114,7 @@ export default function MyComponent({ onClickHandler }) {
 
 - On browser
 
-<video controls src="2025-1.mov" title="title"></video>
+<video controls src="Images/react2/2025-1.mov" title="title"></video>
 
 - Composition means you build components by combining other components — passing elements or components as `children` or as props.
 - Instead of deeply nested props, you can use composition components to avoid prop drilling by injecting components or behavior into a container component.
@@ -128,7 +128,7 @@ export default function MyComponent({ onClickHandler }) {
 - It’s like saying *Hey React, here’s some data (like a theme mode or user). Any component that wants it can just grab it — no need to drill it down*.
 - Simple analogy could be thinking context api as Wi-fi. Instead of giving internet access (props) through a long wire (prop drilling) to each device (component), you just turn on the Wi-Fi (Context) and now any device (component) in the range can connect directly.
 
-![alt text](image-1.png)
+![alt text](Images/react2/image-1.png)
 
 
 - Let's create a folder `/store`. In React's Context API, a `store` is used to hold the data that you want to share across multiple components. It is essentially a container for your application's state.
@@ -196,7 +196,6 @@ export default App;
 >      }
 >      </MyComponent> 
 >    </MyContext.Provider>
->  );
 > ```
 >
 > - The `Provider` property also works for the latest react version
@@ -303,7 +302,7 @@ export default function MyComponent() {
 
 - On browser
 
-![alt text](image-2.png)
+![alt text](Images/react2/image-2.png)
 
 - Why do we need to add `value` inside the provider? Why Not Just `createContext()` and Expect Auto-Data? when we create context
 
@@ -385,7 +384,7 @@ export default function ChildComponentOfMyComponent() {
 
 - Now we need to use context value and call the function `onClickHandler`. But when we see the auto suggestion while typing in `ChildComponentOfMyComponent`, we cannot see the `onClickHandler`
 
-![alt text](image-3.png)
+![alt text](Images/react2/image-3.png)
 
 - Now let's update context
 
@@ -402,7 +401,7 @@ export const MyContext = createContext({
 
 - Now we can see the function name in the suggestion
 
-![alt text](image-4.png)
+![alt text](Images/react2/image-4.png)
 
 - Updating the `onClickHandler` into the provider value.
 
@@ -474,7 +473,7 @@ export default function ChildComponentOfMyComponent() {
 
 - On browser
 
-<video controls src="2025-2.mov" title="title"></video>
+<video controls src="Images/react2/2025-2.mov" title="title"></video>
 
 - This is how we link our state with context and use state via context. There is an alternative way to use context that is using `Context_Name.Consumer`.
 - The React Context Consumer is a component that allows you to subscribe to context changes within a React application. It is used in conjunction with the Context Provider to access data that has been shared across the component tree.
@@ -510,7 +509,7 @@ export default function ChildComponentOfMyComponent() {
 
 - On browser
 
-<video controls src="2025-2.mov" title="title"></video>
+<video controls src="Images/react2/2025-2.mov" title="title"></video>
 
 - The Context Consumer expects a function as its child. This function receives the current context value  (`context`) as its argument and returns the JSX that should be rendered.
 
@@ -572,7 +571,7 @@ export default App;
 
 - On browser works the same way
 
-<video controls src="2025-2.mov" title="title"></video>
+<video controls src="Images/react2/2025-2.mov" title="title"></video>
 
 
 
@@ -624,7 +623,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-3.mov" title="title"></video>
+<video controls src="Images/react2/2025-3.mov" title="title"></video>
 
 
 
@@ -708,7 +707,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-4.mov" title="title"></video>
+<video controls src="Images/react2/2025-4.mov" title="title"></video>
 
 
 - `countReducer` is a reducer and it is a pure function (no side effects) that takes the current state and an action, and returns a new state.
@@ -819,7 +818,7 @@ export default function App() {
 
 - On browser
 
-![alt text](image-5.png)
+![alt text](Images/react2/image-5.png)
 
 - The `useEffect()` runs after the first render. You can safely do side effects here without breaking React’s rendering.
 - `useEffect` function takes two arguments:
@@ -1069,7 +1068,7 @@ export default App;
 - Here whenever the `App` component is rendered, a new object is created and that new object is passed to the `MyComponent` and since this new object as new memory address , the `useEffect` executed again.
 
 
-![alt text](image-6.png)
+![alt text](Images/react2/image-6.png)
 
 - Even though `{ name: "Harsh" }` looks the same on every render, it's a new object in memory, so React thinks the dependency changed, and re-runs the effect.
 - Similarly functions are also at the end object, because objects and functions are reference types in JavaScript. Even if their content is the same, their reference is new every time the component renders.
@@ -1143,7 +1142,7 @@ export default App;
 
 - On browser
 
-![alt text](image-7.png)
+![alt text](Images/react2/image-7.png)
 
 - Here, the `useEffect` does not gets executed when the `App` component gets re-rendered.
 - Similarly we can use `useCallback` on function as well
@@ -1199,7 +1198,7 @@ export default App;
 
 - On browser
 
-![alt text](image-8.png)
+![alt text](Images/react2/image-8.png)
 
 - `Parent` re-renders because count changes. Since `Child` is a normal component, it also re-renders — even though its props (`name="John"`) didn’t change.
 - If there are multiple child components, those component will also get re-rendered even though the value of props are same. We can avoid this using `memo`.
@@ -1235,7 +1234,7 @@ export default App;
 
 - On browser
 
-![alt text](image-9.png)
+![alt text](Images/react2/image-9.png)
 
 - Even, if we clicked the `increment` button, the `Child` component won't get executed because it is wrapped in `memo`.
 - `memo()` is a higher-order component provided by React that memoizes a functional component. It prevents unnecessary re-renders by reusing the last rendered result if the `props` haven't changed. So it compares the previous prop value and current one and then if the value is not changed then it does not re-rendered that component.
@@ -1248,7 +1247,7 @@ export default App;
 
 ### Disadvantage of `memo`
 
-![alt text](image-10.png)
+![alt text](Images/react2/image-10.png)
 
 
 >[!NOTE]
@@ -1298,7 +1297,7 @@ export default App;
 
 - On browser
 
-![alt text](image-11.png)
+![alt text](Images/react2/image-11.png)
 
 - `Parent` re-renders on `count` change. `greeting` is memoized using `useMemo`. `Child` is wrapped with `memo()`, so it only re-renders if props change.
 - Because `greet` (a function) is memoized, its reference stays the same — so `Child` doesn't re-render. If you remove `useMemo`, the greet function is recreated on every render, and `Child` re-renders even though the behavior is the same.
@@ -1426,7 +1425,7 @@ export default function App() {
 
 - On browser
 
-![alt text](image-12.png)
+![alt text](Images/react2/image-12.png)
 
 - Here, when we say Component Type, we mean, the function or class that defines what the component looks like and how it behaves. This is the `Item` component
 
@@ -1515,7 +1514,7 @@ export default function App() {
 
 - On browser
 
-<video controls src="2025-5.mov" title="title"></video>
+<video controls src="Images/react2/2025-5.mov" title="title"></video>
 
 - Here, the render position of component type `Item` is (consider from `Item 3`)
 
@@ -1530,7 +1529,7 @@ export default function App() {
 - React only uses a `key` (a default component attribute) when you explicitly pass it in a list context — like when rendering multiple components using `.map()`.
 - If you forget to provide a `key`, React will show a warning in the console.
 
-![alt text](image-13.png)
+![alt text](Images/react2/image-13.png)
 
 - Let's use `index` of `.map()`.
 
@@ -1592,7 +1591,7 @@ export default function App() {
 
 - On browser (issue still persist)
 
-<video controls src="2025-5.mov" title="title"></video>
+<video controls src="Images/react2/2025-5.mov" title="title"></video>
 
 - Why so, because `.map()` index gives position of the component and not the **position of the data**. So we are selecting **position of component** and not the data that's why the data gets dynamically change into the same position. Now to give unique id to the data and `key` prop. Let's modify our value to object like below.
 
@@ -1654,13 +1653,13 @@ export default function App() {
 
 - On browser
 
-<video controls src="2025-6.mov" title="title"></video>
+<video controls src="Images/react2/2025-6.mov" title="title"></video>
 
 ## Build Custom Hooks
 
 - Now to build our custom hooks, we need to follow the below rules.
 
-![alt text](image-14.png)
+![alt text](Images/react2/image-14.png)
 
 
 -  Custom hooks follow the same rules as built-in hooks:
@@ -1717,7 +1716,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-7.mov" title="title"></video>
+<video controls src="Images/react2/2025-7.mov" title="title"></video>
 
 
 - Custom hook function can return anything, it can be number, string , array or object as well. It can take input and give output.
@@ -1880,7 +1879,7 @@ export default function Login() {
 
 - On browser
 
-![alt text](image-15.png)
+![alt text](Images/react2/image-15.png)
 
 - This is a simple form page. Here, we have use `htmlFor` this label element. This is the react equivalent to the `for` attribute, which you would set in native HTML. Sames goes for `class` which helps to add CSS classes. So react equivalent is `className`.
 - Now let's create a `onClick` handleron login button and log something into it.
@@ -1921,24 +1920,24 @@ export default function Login() {
 
 - On browser
 
-<video controls src="2025-8.mov" title="title"></video>
+<video controls src="Images/react2/2025-8.mov" title="title"></video>
 
 
 - If we notice, the `onClickHandler` gets executed but the page is also refreshed and we could see query parameters added into our url which is `/?email=&password=`. This is the default behavior of the browser for form submission. Technically that means that an HTTP request is created and is sent to the backend server that's serving the website.
 
-![alt text](image-16.png)
+![alt text](Images/react2/image-16.png)
 
 
-![alt text](image-17.png)
+![alt text](Images/react2/image-17.png)
 
 
 - This automatic behavior can be a problem. In many React applications this automatic behavior might be a problem. Because here, the server that's serving this React website on this address is actually a pure development server. Here, we are not validating the input data as well. So how can we prevent the default behavior? using  a prop called `type='button'` on button element. This type won't submit the the form. The default type is `type='submit'`.
 
-![alt text](image-18.png)
+![alt text](Images/react2/image-18.png)
 
 - When we set `type='button'`, we can see on click the page does not gets reloaded. We make sure that this button is no longer submitting the form.
 
-![alt text](image-19.png)
+![alt text](Images/react2/image-19.png)
 
 - Another way to do so, which is more is by using `onSubmit` handler and `event.preventDefault()`.
 
@@ -1979,7 +1978,7 @@ export default function Login() {
 
 - On browser
 
-![alt text](image-19.png)
+![alt text](Images/react2/image-19.png)
 
 - The form here will actually trigger a submit event. We get such an `event` object for every event that's being triggered for click events, just like for change events or the submit event. But this event object now has a special method which we can call, the `preventDefault` method. And this method does what the name implies, it prevents the default browser behavior, which would be to generate and send this HTTP request. And that is indeed therefore a pattern which you will see in many React applications.
 - In React, we can get and set these input form values with help of state or refs hooks. But there is a more better approach which is `FormData`.
@@ -2035,7 +2034,7 @@ export default function Login() {
 
 - On browser
 
-![alt text](image-20.png)
+![alt text](Images/react2/image-20.png)
 
 - Every form input element is associated with the prop `name` (like `<input id="email" type="email" name="email" />`) which gives keys and their input as value for the Object. It converts the form data into a plain JavaScript object. To access particular value we can use the `get()` method.
 - `.entries()` returns an iterator of all key-value pairs in the `FormData` object. `.entries()` does not shows multi-select input values. Let's see an example.
@@ -2110,7 +2109,7 @@ export default function Login() {
 
 - On browser
 
-![alt text](image-21.png)
+![alt text](Images/react2/image-21.png)
 
 - In such case we can retrieve all selected option by prop `name` and using `getAll()`.
 
@@ -2189,7 +2188,7 @@ export default function Login() {
 
 - On browser
 
-![alt text](image-22.png)
+![alt text](Images/react2/image-22.png)
 
 - We can add validation with helps of state but HTML provided by built-in validation props like `required`, `type`, `min`, `max` etc.. These are [built-in validation props](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Form_validation#using_built-in_form_validation) provided by HTML.
 
@@ -2209,9 +2208,9 @@ export default function Login() {
 
 - On browser when we enter a invalid data
 
-![alt text](image-23.png)
+![alt text](Images/react2/image-23.png)
 
-![alt text](image-24.png)
+![alt text](Images/react2/image-24.png)
 
 ## Form Action (React 19+)
 
@@ -2291,7 +2290,7 @@ export default function Login() {
 
 - On browser
 
-<video controls src="2025-9.mov" title="title"></video>
+<video controls src="Images/react2/2025-9.mov" title="title"></video>
 
 
 - Now, when using this form actions feature, this `formData` object (`formDataObject`) is created automatically for you by React. And this `formData` object then will contain all the submitted data, so all the submitted input values in that form.
@@ -2420,7 +2419,7 @@ export default function Login() {
 
 - On browser
 
-![alt text](image-25.png)
+![alt text](Images/react2/image-25.png)
 
 
 - `useActionState` takes two parameters.
@@ -2541,7 +2540,7 @@ export default function Login() {
 
 - On browser
 
-<video controls src="2025-10.mov" title="title"></video>
+<video controls src="Images/react2/2025-10.mov" title="title"></video>
 
 
 - `objectname.key?.value` is equivalent to `objectname && objectname.key ? objectname.key.value : undefined`. Example
@@ -2692,7 +2691,7 @@ export default function Login() {
 
 - On browser
 
-<video controls src="2025-11.mov" title="title"></video>
+<video controls src="Images/react2/2025-11.mov" title="title"></video>
 
 - `useFormStatus` returns 4 key properties
 
@@ -2821,7 +2820,7 @@ export default function Login() {
 
 - On browser
 
-<video controls src="2025-11.mov" title="title"></video>
+<video controls src="Images/react2/2025-11.mov" title="title"></video>
 
 
 ### Register Multiple Form Actions
@@ -2936,7 +2935,7 @@ export default function Login() {
 
 - On browser
 
-<video controls src="2025-12.mov" title="title"></video>
+<video controls src="Images/react2/2025-12.mov" title="title"></video>
 
 - Based on button different form action function get invoked.
 
@@ -2944,16 +2943,142 @@ export default function Login() {
 
 - `React.StrictMode` is a useful component for highlighting potential problems in an application.
 - Strict mode is a set of development tools that help you catch potential problems in your code before they become actual bugs. When you enable strict mode in your React application, you’re essentially telling React to turn on a bunch of extra checks and warnings that are designed to help you write better code.
-- These checks and warnings can catch things like:
-  - Components with side effects
-  - Deprecated or unsafe lifecycle methods
-  - Unsafe use of certain built in functions
-  - Duplicate keys in lists
-
-![alt text](2025-strictmode.gif)
+- `React.StrictMode` is a **development-only wrapper** that helps you write better React code. It doesn't render anything in the DOM — instead, it activates extra checks and warnings for its children.
 
 
-https://chatgpt.com/c/6816fdbf-82a4-8009-8e6a-37ed3c5cfef1
-https://medium.com/@codeofrelevancy/what-is-strict-mode-in-react-cc8b51fb6096
+![alt text](Images/react2/2025-strictmode.gif)
 
-TO be continue later
+- It helps in several ways (only in development mode):
+
+1. Identifies unsafe lifecycle methods -> Warns if you're using old methods like `componentWillMount`, `componentWillReceiveProps`, etc. (which are deprecated). `StrictMode` warns if you're using deprecated lifecycle methods in class components example
+
+```
+❌ Problematic Code:
+jsx
+Copy
+Edit
+class MyComponent extends React.Component {
+  componentWillMount() {
+    // deprecated lifecycle
+    console.log("Mounting...");
+  }
+  render() {
+    return <div>Hello</div>;
+  }
+}
+```
+
+- ⚠️ What StrictMode Does, You’ll get a warning in the console:
+
+```
+Warning: componentWillMount has been renamed...
+```
+
+- ✅ Fix: Use `componentDidMount()` or `useEffect()` instead
+
+2. Warns about legacy API usage -> Like using string refs (`ref="myRef"`) instead of `useRef` or `callback` refs. Example
+
+```
+❌ Problematic Code:
+jsx
+Copy
+Edit
+class MyComponent extends React.Component {
+  render() {
+    return <input ref="myInput" />;
+  }
+}
+```
+
+- ⚠️ What StrictMode Does:
+
+```
+Warning: Legacy string ref "myInput" is not recommended...
+```
+
+- ✅ Fix:
+
+```
+<input ref={(el) => (this.input = el)} />
+```
+
+- or in functional components:
+
+```
+const ref = useRef();
+<input ref={ref} />
+```
+
+
+3. Detects unexpected side effects -> It intentionally double-invokes functions like `useEffect`, `useState`, and `constructor` to help you detect side-effects that shouldn't run twice. `StrictMode` intentionally runs `useEffect`, `useState`, etc. twice (in dev mode only) to help catch side-effects that are not properly handled.
+
+```
+❌ Problematic Code:
+useEffect(() => {
+  console.log("Fetching data...");
+  fetchData(); // this might call an API
+
+}, []);
+```
+
+- ⚠️ What StrictMode Does, It runs the effect twice, and you’ll notice:
+
+```
+Fetching data...
+Fetching data...  ← warning sign you might be causing unintended side effects
+```
+
+- ✅ Fix: Add cleanup or refactor to avoid repeating side effects.
+
+
+5. Duplicate Keys in Lists -> `StrictMode` doesn’t allow duplicate keys, which can cause bugs when rendering lists.
+
+```
+❌ Problematic Code
+const items = ['A', 'B', 'A'];
+return (
+  <ul>
+    {items.map((item) => (
+      <li key={item}>{item}</li> // 'A' is repeated
+    ))}
+  </ul>
+);
+```
+
+- ⚠️ What StrictMode Does:
+
+```
+Warning: Encountered two children with the same key, 'A'...
+```
+
+- ✅ Fix: Use a unique identifier, like index (if safe):
+
+```
+<li key={`${item}-${index}`}>{item}</li>
+```
+
+4. Checks for deprecated methods -> Helps ensure you're writing forward-compatible code.
+
+- **This only happens in development and does not affect production.** You can wrap up `StrictMode` in your all components or in particular component as well
+
+```
+// All Components
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+//Particular Component
+<React.StrictMode>
+  <MyComponent />
+</React.StrictMode>
+```
+
+- Just like `<Fragment>`, `<StrictMode>` does not render any extra DOM elements.
