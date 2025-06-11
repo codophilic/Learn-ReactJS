@@ -56,6 +56,7 @@ npx create-react-app textutilities              OR          npm create-react-app
 > - For most developers, using `npx create-react-app my-app` is recommended because:
 >   - It saves space by not permanently installing the tool.
 >   - It ensures you’re always using the latest version.
+> - `create-react-app` is deprecated in latest react version so you need to use vite `npm create vite@latest my-react-app -- --template react`
 
 ### Create React Project
 
