@@ -437,9 +437,89 @@ export default function Counter(){
 - When we call `useDispatch` we don't pass any argument to it, but instead, this gives us back a `dispatch` function which you can execute. So `dispatch` is a function, a function which we can call, which will dispatch an action against our Redux store.
 - In the increment handler (`incrementHandler`) we want to use this dispatch function and execute it to dispatch a new action. An action is an object with a `type` property and the value for `type` should be one of the identifiers we use in our Redux store reducer which are `increment` or `decrement`.
 
+### Working with `action` property
 
 
+- Now when we dispatch any action, there could be a scenario where we need to pass more properties with the action or we can say we need to pass a `payload` object or any data type which consist of more information what that action must do. Consider below example
 
+```
+// store.js
+import { createStore } from 'redux';
+
+const counterReducer = (state = { counter: 0 }, action) => {
+
+  // Handling the case where an action has a payload
+  // This allows for incrementing by a specific value, e.g., incrementing by 5
+  // when the action payload is provided.
+  if (action.type === 'increment' && action.payload) {
+    return {
+      counter: state.counter + action.payload,
+    };
+  }
+  
+  if (action.type === 'increment') {
+    return {
+      counter: state.counter + 1,
+    };
+  }
+
+  if (action.type === 'decrement') {
+    return {
+      counter: state.counter - 1,
+    };
+  }
+
+  return state;
+};
+
+const store = createStore(counterReducer);
+
+export default store;
+
+
+// Counter.jsx
+
+import { useDispatch, useSelector } from 'react-redux';
+import classes from './Counter.module.css';
+
+export default function Counter(){
+
+  // useSelector is a hook that allows you to extract data from the Redux store state.
+  // It takes a selector function as an argument, which receives the entire state and returns the part of the state you want.
+  const counter = useSelector((state) => state.counter);
+
+  // useDispatch is a hook that returns a reference to the dispatch function from the Redux store.
+  const dispatch = useDispatch();
+  // Dispatching actions to the Redux store
+  const incrementHandler = () => {
+    dispatch({ type: 'increment' });
+  }
+  const decrementHandler = () => {
+    dispatch({ type: 'decrement' });
+  }
+
+  const incrementHandlerby5 = () => {
+    dispatch({ type: 'increment', payload: 5 });
+  }
+    return (
+     <main className={classes.counter}>
+      <h1>Redux Counter</h1>
+      <div className={classes.value}>{counter}</div>
+      <div>
+        <button onClick={incrementHandler}>Increment</button>
+        <button onClick={incrementHandlerby5}>Increment by 5</button>
+        <button onClick={decrementHandler}>Decrement</button>
+      </div>
+    </main>
+    )
+}
+```
+
+- On browser
+
+<video controls src="2025-2.mov" title="title"></video>
+
+- Here, we are incrementing the counter by 5 using `payload` as property of `action`.
 
 
 
