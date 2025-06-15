@@ -522,4 +522,373 @@ export default function Counter(){
 - Here, we are incrementing the counter by 5 using `payload` as property of `action`.
 
 
+### Working with Multiple State
 
+- Let's say you wanted to show/hide a counter. To do so you require a new state. This can be achieve by modifying the reducer function which will now consist of two states (`counter: 0, showCounter: true`). Let's modify the reducer function.
+
+```
+//store.js
+import { createStore } from 'redux';
+
+const counterReducer = (state = { counter: 0, showCounter: true }, action) => {
+
+  // Handling the case where an action has a payload
+  // This allows for incrementing by a specific value, e.g., incrementing by 5
+  // when the action payload is provided.
+  // showCounter will maintain its value unless explicitly changed by another action.
+  if (action.type === 'increment' && action.payload) {
+    return {
+      counter: state.counter + action.payload,
+      showCounter: state.showCounter
+    };
+  }
+  
+  if (action.type === 'increment') {
+    return {
+      counter: state.counter + 1,
+      showCounter: state.showCounter
+    };
+  }
+
+  if (action.type === 'decrement') {
+    return {
+      counter: state.counter - 1,
+      showCounter: state.showCounter
+    };
+  }
+
+  // Adding a new action type to toggle the visibility of the counter
+  if (action.type === 'toggle') {
+    return {
+      counter: state.counter, 
+      // Toggling the showCounter state, if it was true (show), it becomes false(hide) and vice versa
+      showCounter: !state.showCounter
+    };
+  }
+
+  return state;
+};
+
+const store = createStore(counterReducer);
+
+export default store;
+```
+
+- Now let's create a new button to toggle the counter visibility in `Counter.jsx`
+
+```
+//Counter.jsx
+
+import { useDispatch, useSelector } from 'react-redux';
+import classes from './Counter.module.css';
+
+export default function Counter(){
+
+  // useSelector is a hook that allows you to extract data from the Redux store state.
+  // It takes a selector function as an argument, which receives the entire state and returns the part of the state you want.
+  const counter = useSelector((state) => state.counter);
+
+  // Extracting showCounter from the Redux store state which will determine if the counter should be displayed or not.
+  const showCounter = useSelector((state) => state.showCounter);
+
+  // useDispatch is a hook that returns a reference to the dispatch function from the Redux store.
+  const dispatch = useDispatch();
+  // Dispatching actions to the Redux store
+  const incrementHandler = () => {
+    dispatch({ type: 'increment' });
+  }
+  const decrementHandler = () => {
+    dispatch({ type: 'decrement' });
+  }
+
+  const incrementHandlerby5 = () => {
+    dispatch({ type: 'increment', payload: 5 });
+  }
+
+  const toggleCounterHandler = () => {
+    dispatch({ type: 'toggle' });
+  }
+    return (
+     <main className={classes.counter}>
+      <h1>Redux Counter</h1>
+      {showCounter && <div className={classes.value}>{counter}</div>}
+      <div>
+        <button onClick={incrementHandler}>Increment</button>
+        <button onClick={incrementHandlerby5}>Increment by 5</button>
+        <button onClick={decrementHandler}>Decrement</button>
+        <button onClick={toggleCounterHandler}>Toggle Counter</button>
+      </div>
+    </main>
+    )
+}
+```
+
+- On browser
+
+<video controls src="2025-3.mov" title="title"></video>
+
+- **In a reducer function, you must always return a new object (i.e., a new reference) whenever the state changes. This is one of the core principles of immutability in Redux or any reducer-based state management.**
+- **React (and Redux) relies on *shallow comparison* `(===)` to check if the state has changed. If you mutate the existing state object instead of returning a new one, React or Redux might not detect that anything has changed, and your UI won’t re-render.**
+- Suppose you modify the existing state value
+
+```
+const initialState = {
+  count: 0
+};
+
+function reducer(state = initialState, action) {
+  if (action.type === "INCREMENT") {
+    // ❌ Direct mutation (WRONG)
+    state.count += 1;
+    return state;
+  }
+
+  return state;
+}
+```
+
+- If you use this in a React component, the component may not re-render after dispatching INCREMENT because `state === state` still holds true (the reference object didn't change), so React thinks nothing changed.
+- When we return a new object
+
+```
+function reducer(state = initialState, action) {
+  if (action.type === "INCREMENT") {
+    // ✅ Correct Way: Return a New State Object
+    return {
+      ...state,        // copy the existing state
+      count: state.count + 1  // update just the changed part
+    };
+  }
+
+  return state;
+}
+```
+
+- Now, a new object is returned, so `newState !== oldState`, React/Redux sees a difference and triggers re-render.
+- So if you mutate the existing object and return it, the comparison fails to detect a change — because the reference didn't change.
+
+
+## Redux ToolKit
+
+- Let's identify a couple of potential problems we could be facing if our application would continue to groww when we manage more and more state with Redux.
+- One potential issue can be our action types.
+
+```
+action.type === 'increment'
+```
+
+- When you dispatch an action, you have to make sure that you don't mistype the identifier here otherwise it of course won't be handled by the reducer or won't be handled correctly.mNow that's not a problem in a small app like this but in bigger applications with a lot of developers working on the app and with a lot of different actions that you could mess up one of these identifiers. You could even have clashing identifiers names.
+- For ensuring that we have unique identifiers and we don't miss type we could create constants,
+
+```
+export const INCREMENT = 'increment'
+
+  if (action.type === INCREMENT) {
+    // ✅ Correct Way: Return a New State Object
+    return {
+      ...state,        // copy the existing state
+      count: state.count + 1  // update just the changed part
+    };
+  }
+```
+
+- These constant can be maintained into a separate file `constant.js` and can be maintained.
+- Another potential problem is the amount of data which we manage inside the reducer.
+
+```
+    return {
+      counter: state.counter + action.payload,
+      showCounter: state.showCounter
+    };
+```
+
+- The more data we have the more different pieces of state we have, the bigger our state objects get. And that means that we need to copy a lot of state and update the corresponding property based on action type and keep all the other state properties, and it also means that this reducer function gets longer and longer and all of a sudden we might have an unmaintainable big Redux file.
+- Another potential problem we could be facing is the state immutability which we have to respect.
+
+```
+function reducer(state = initialState, action) {
+  if (action.type === "INCREMENT") {
+    // ❌ Direct mutation (WRONG)
+    state.count += 1;
+    return state;
+  }
+
+  return state;
+}
+
+function reducer(state = initialState, action) {
+  if (action.type === "INCREMENT") {
+    // ✅ Correct Way: Return a New State Object
+    return {
+      ...state,        // copy the existing state
+      count: state.count + 1  // update just the changed part
+    };
+  }
+
+  return state;
+}
+```
+
+- We have to ensure that we always return a brand new state object and that we don't accidentally change the existing state anywhere. And especially if you have more complex data with nested objects and arrays it's easy to mess this up and accidentally change some nested data even though you didn't want to.
+- All these issue can be handle by a library called Redux Toolkit. Redux Toolkit simply as an extra package which makes working with Redux more convenient and easier.
+- Let's install Redux Toolkit
+
+```
+npm install @reduxjs/toolkit
+```
+
+>[!NOTE]
+> - When using Redux Toolkit, you don't need to install Redux separately. Redux Toolkit includes the core Redux library as a dependency.
+
+- In Redux toolkit we do have method `createReducer` but we will be using `createSlice`. In Redux Toolkit, a slice is a way to define a piece of your application state along with the reducers and actions related to that specific state — all in one place. It simplifies the typical Redux boilerplate code.
+
+```
+import { createSlice } from '@reduxjs/toolkit';
+import { createStore } from 'redux';
+
+const initialState = { counter: 0, showCounter: true };
+
+// Using createSlice from Redux Toolkit to create a slice of the store
+const counterSlice = createSlice({
+  name: 'counter', // Name of the slice
+  // Initial state of the slice -> initialState: initialState (variable), a shorter syntax of writing the same attribute without repeating the key
+  initialState,
+  reducers: { // Reducers for the slice
+    // Each reducer function handles a specific action type
+    // The action parameter is an object that contains the type and payload
+    // The state parameter is the current state of the slice
+    // The state is mutable in Redux Toolkit, so we can directly modify it
+    // This is different from the traditional Redux where we return a new state object
+    // The payload is optional, and if provided, it will be used to increment the counter by that value
+    // If no payload is provided, the counter will be incremented by 1
+    increment(state, action) {
+      // Incrementing the counter by the payload value if provided, otherwise by 1
+      state.counter += action.payload || 1;
+    },
+    decrement(state) {
+      state.counter -= 1;
+    },
+    toggle(state) {
+      // Toggling the visibility of the counter
+      state.showCounter = !state.showCounter;
+    }
+  }
+});
+
+
+// Inside the createStore function, we pass the reducer function from the slice
+// This reducer function will handle the actions defined in the slice
+// const store = createStore(counterSlice.reducer);
+
+const store = configureStore({
+  reducer: counterSlice.reducer // Using the reducer from the slice
+});
+
+export const actions = counterSlice.actions; // Extracting the actions from the slice
+// Exporting the actions to be used in components
+// Each action has their reducer function defined as constants in the actions object
+// This allows us to dispatch actions like actions.increment() or actions.decrement() in our components without needing to define them again like writing action creators manually e.g actions.type === 'increment' or actions.type === 'decrement' is not required here
+
+
+export default store;
+```
+
+- A slice is created using the `createSlice()` function from Redux Toolkit.
+It includes:
+  - A name for the slice
+  - The initial state
+  - Reducer functions to handle actions
+  - Auto-generated action creators and action types
+
+- `createSlice()` automatically:
+  - Creates action types like `counter/increment`, `counter/decrement`, etc.
+  - Creates action creators (e.g. `increment()`, `decrement()`)
+  - Handles immutable state updates safely using **Immer** under the hood. So usually we always return a new object in the reducer function, but here if we modify the existing object, **Immer** internally will give a new object with the updated value and thus gives an immutable code.
+- Now to register our reducer with store we need to use `createStore(counterSlice.reducer)` but redux toolkit gives `configureStore`. `configureStore` is the Redux Toolkit’s modern replacement for `createStore`. It does more out of the box to simplify and enhance your Redux setup. It merges multiple reducers to single reducers function.
+- The `configureStore` requires a configuration object.
+
+```
+const store = configureStore({
+  reducer: counterSlice.reducer // Using the reducer from the slice
+});
+```
+
+- However, with `configureStore`, the value for reducer can be a single reducer so we can for example use `counterSlice.reducer` to use the reducer from that `counterSlice` which combines all those reducer methods to find in that slice.
+- We can use that as a global main reducer but if we had multiple state slices in a bigger application then alternatively as a value for this reducer key, we could also set an object that would have keys of our choice, and the values of those properties would then be different reducer functions.
+
+```
+const store = configureStore({
+  reducer: {counter: counterSlice.reducer, auth: authSlice.reducer}  // Merging multiple reducers
+});
+```
+
+- So we would create a map of reducers you could say, and this map is then set as a value for the main reducer and behind the scenes `configureStore` will emerge all those reducers into one big reducer.
+- Now let's dispatch actions. Now `counterSlice.actions` gives bunch of actions types which are reducer function names.
+
+![alt text](image-10.png)
+
+- These method when called it automatically creates object for which thus they are called actions creators where these object have their respective action type property as their unique identifiers. So we don't have to worry about action identifiers. We don't have to create those action objects on our own. We can tap into this actions key into this actions object on our `createSlice` and execute these action creator methods
+- Now to dispatch the action, in `Counter.jsx`
+
+```
+import { useDispatch, useSelector } from 'react-redux';
+import { actions } from '../store/store';
+import classes from './Counter.module.css';
+
+export default function Counter(){
+
+  // useSelector is a hook that allows you to extract data from the Redux store state.
+  // It takes a selector function as an argument, which receives the entire state and returns the part of the state you want.
+  const counter = useSelector((state) => state.counter);
+
+  // Extracting showCounter from the Redux store state which will determine if the counter should be displayed or not.
+  const showCounter = useSelector((state) => state.showCounter);
+
+  // useDispatch is a hook that returns a reference to the dispatch function from the Redux store.
+  const dispatch = useDispatch();
+  // Dispatching actions to the Redux store
+  const incrementHandler = () => {
+    dispatch(actions.increment()); // Incrementing the counter by 1
+  }
+  const decrementHandler = () => {
+    dispatch(actions.decrement()); // Decrementing the counter by 1
+  }
+
+  const incrementHandlerby5 = () => {
+    dispatch(actions.increment(5)); // Incrementing the counter by 5: {payload: 5}
+    // The payload is optional, if not provided, it will increment by 1
+  }
+
+  const toggleCounterHandler = () => {
+    dispatch(actions.toggle()); // Toggling the visibility of the counter
+  }
+    return (
+     <main className={classes.counter}>
+      <h1>Redux Counter</h1>
+      {showCounter && <div className={classes.value}>{counter}</div>}
+      <div>
+        <button onClick={incrementHandler}>Increment</button>
+        <button onClick={incrementHandlerby5}>Increment by 5</button>
+        <button onClick={decrementHandler}>Decrement</button>
+        <button onClick={toggleCounterHandler}>Toggle Counter</button>
+      </div>
+    </main>
+    )
+}
+```
+
+- On browser
+
+<video controls src="2025-3.mov" title="title"></video>
+
+>[!NOTE]
+> - When we are dispatching action `increment(5)`, redux toolkit will automatically pass the payload as an object with a type and `payload` property, so we can access it in the reducer function as `action.payload`. This is the default property name `payload` that Redux Toolkit uses for the payload of an action.
+> - In the reducer function we cannot use any our of custom property name like we did when we use redux.
+>
+>```
+>// In React ToolKit we need to always use action.payload as payload is the attribute used for any additional object to be passed
+>    increment(state, action) {
+>     // Incrementing the counter by the payload value if provided, otherwise by 1
+>     state.counter += action.payload || 1;
+>   },
+> ```
