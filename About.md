@@ -4736,6 +4736,21 @@ export default App;
 
 ## React Router
 
+- When you visit websites you can typically append a path after the domain name like, slash `/welcome` and that loads, for example, the `welcome` page of a website. And if you then type a different URL into the browser address bar, or if you click a link that changes the URL, for example, to `/product`, a different page gets loaded. So the visible content of the website changes.
+
+![alt text](image.png)
+
+- That's what Routing is all about. Different URL paths load different content on the screen. Now, traditionally, you would implement Routing by simply loading different HTML files for different paths, and that is how you would build a **multi-page application** which you typically would build without ReactJS.
+
+![alt text](image-1.png)
+
+- Now, with that, you get different content for different paths, but the disadvantage is that you always have to fetch new content. A new HTTP request is sent and a new response is received, and that can kind of break the user flow. It can introduce some lag and slow down your website and it can therefore lead to a bad user experience.
+- So that's why we might wanna build a single page application when we're building more complex user interfaces. With those, you send only one initial HTML request and then this HTML file with a bunch of extra JavaScript is downloaded, and thereafter the extra JavaScript code that runs on the client will actually take care about adjusting what the user sees on the screen.
+
+![alt text](image-2.png)
+
+
+- That's how single page applications work. We can support path changes in the URL and load different content based on the path. We can add client-side React code that basically watches the currently active URL and that triggers whenever the URL changes, and that then leads to different content being displayed on the screen when the URL changes. So instead of loading new HTML files from the backend, we could add some client-side code that simply watches the URL and then loads a different React component when that URL changes.
 - Lets consider Geeks for Geeks website.
 
 
@@ -4899,6 +4914,59 @@ export default App;
 
 >[!NOTE]
 > - In React Router v6 (`react-router-dom v6`), the `Switch` component has been replaced with the `Routes` component. 
+
+- There is also another way to defined routing where we use `createBrowserRoute`. The above approach seems to be used in older react dom version.
+
+```
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import './App.css';
+import About from './components/About';
+import TextFilters from './components/TextFilters';
+import TextInput from './components/TextInput';
+import Timer from './components/Timer';
+
+
+
+// createBrowserRouter is used for defining routes in React Router v6.4+. It takes an array of route 
+// objects and returns a router instance that can be used with the Router component.
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <TextInput />
+  },
+  {
+    path: "/about",
+    element: <About />
+  },
+  {
+    path: "/filter",
+    element: <TextFilters />
+  },
+  {
+    path: "/timer",
+    element: <Timer />
+  }
+]);
+
+
+// RouterProvider is used to provide the router instance to the React application. It is a component that wraps the entire application and allows the use of routing features like navigation, route matching, and rendering components based on the current URL.
+// This is typically used in conjunction with the createBrowserRouter function to define the routes for the application.
+function App() {
+  return (
+
+        <RouterProvider router={router} />
+    
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video controls src="2025-1.mov" title="title"></video>
+
+
 
 ## Types of Component
 

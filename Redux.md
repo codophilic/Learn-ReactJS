@@ -5,7 +5,7 @@
 
 ## Different types of States
 
-![alt text](image.png)
+![alt text](Images/redux/image.png)
 
 
 - We have seen React's State Management Hooks like `useState` or `useReducer` so that we can tell React that some data changed and so that it then updates the UI. But we can split the definition of state into three main kinds of state.
@@ -34,25 +34,25 @@
 
 ### React Context Potential Disadvantages
 
-![alt text](image-1.png)
+![alt text](Images/redux/image-1.png)
 
 
 - One potential disadvantage is that with React Context, you can have a very complex setup and managing state with React Context can become quite complex. And that definitely depends on the kind of application you're building.
 - For a lot of small or medium-sized applications that will very likely not be a problem. But if you're building a large application an enterprise level application with a lot of components and a lot of things going on, then when using React Context, you can end up with code like this
 
-![alt text](image-2.png)
+![alt text](Images/redux/image-2.png)
 
 - Where you have a lot of different pieces of Context,  lot of different States that affect multiple components or the entire app, and therefore a lot of different Context Provider components which you built for managing these states. And you can end up with deeply nested JSX code
 - Either using this way or you could just use one big Context and one Context Provider component for a managing the entire state and all the different kinds of state of your application.
 
-![alt text](image-3.png)
+![alt text](Images/redux/image-3.png)
 
 
 - But that could lead in a large Context Provider component which manages a lot of different things, and therefore itself becomes quite difficult to maintain and manage because it's doing a lot of things. You might end up with a large Context that cares about authentication, theming, user input, if a modal should be displayed or not, and maybe a lot of other things as well.
 - You can absolutely face this problem in real react projects you might be working on, and therefore this is one potential disadvantage.
 - Another potential disadvantage could be performance. We have an official quote by a member of their React team, who basically says that the React Context, **that React Context is great for low-frequency updates like changing a theme, or maybe also authentication, but it's not that great if your data changes a lot**.
 
-![alt text](image-4.png)
+![alt text](Images/redux/image-4.png)
 
 - So he says that React Context is not really a great replacement for Redux in all scenarios, in all cases. So therefore Redux is an alternative for React Context.
 
@@ -70,7 +70,7 @@
 - Let's understand some concepts in redux.
 
 
-![alt text](image-5.png)
+![alt text](Images/redux/image-5.png)
 
 
 
@@ -79,7 +79,7 @@
 - So data changes from time to time. So how do we change data into stored in? Here's one very important rule. **Components, never directly manipulate the store data.** So we have that subscription, but we don't have a data flow in the other direction. So how will the data or state would get changed? we use a concept called reducers.
 - We have a reducer function is responsible, for mutating the data or state. So for changing the store data. This reducer function is **not** `useReducer()` hook. Reducer functions in general, are just a general concept. Reducer functions are functions, which takes some input, and then transform that input, they reduce it, and spit out a new output a new result. So we have a reducer function, which is responsible for updating the store data.
 
-![alt text](image-6.png)
+![alt text](Images/redux/image-6.png)
 
 - We know component can subscribe to the data but do we now connect components and that reducer function? Because ultimately, it will of course be the components that should trigger a data change. We have `actions` and components `dispatch` actions. And therefore we could also say that components trigger, certain actions. Now an action is really just a simple JavaScript object, which describes the kind of operation, the reducers should perform. Therefore, Redux then forwards actions to the reducer, reads that description of the desired operation, and then this operation is performed by the reducer.
 - So components dispatch actions, which describe what should be done, but don't do it directly, then these actions are forwarded to the reducer, the reducer then does what the action wants, the reducer to do. And then the reducer, spits out a new state, which effectively will replace the existing state in that Central Data Store. And when that happens, when that state in that data store is updated, subscribing components are notified, so that they can update their UI.
@@ -248,7 +248,7 @@ State updated: { count: 1 }
 - Run command `npm create vite@latest simple-react-redux-counter -- --template react`. It will create a new react application with help of vite. After navigating to your project directly install the dependencies `npm install`. To start the development server run `npm run dev`.
 
 
-![alt text](image-7.png)
+![alt text](Images/redux/image-7.png)
 
 - Let's modify the `App.jsx`, and create a new component under `/component` folder.
 
@@ -310,7 +310,7 @@ export default App
 
 - On browser
 
-![alt text](image-8.png)
+![alt text](Images/redux/image-8.png)
 
 - Let's setup store and reducer function with help of `redux` library under folder `store`
 
@@ -383,7 +383,7 @@ export default function Counter(){
 
 - On browser
 
-![alt text](image-9.png)
+![alt text](Images/redux/image-9.png)
 
 
 
@@ -432,7 +432,7 @@ export default function Counter(){
 
 - On browser
 
-<video controls src="2025-1.mov" title="title"></video>
+<video controls src="Images/redux/2025-1.mov" title="title"></video>
 
 - When we call `useDispatch` we don't pass any argument to it, but instead, this gives us back a `dispatch` function which you can execute. So `dispatch` is a function, a function which we can call, which will dispatch an action against our Redux store.
 - In the increment handler (`incrementHandler`) we want to use this dispatch function and execute it to dispatch a new action. An action is an object with a `type` property and the value for `type` should be one of the identifiers we use in our Redux store reducer which are `increment` or `decrement`.
@@ -517,7 +517,7 @@ export default function Counter(){
 
 - On browser
 
-<video controls src="2025-2.mov" title="title"></video>
+<video controls src="Images/redux/2025-2.mov" title="title"></video>
 
 - Here, we are incrementing the counter by 5 using `payload` as property of `action`.
 
@@ -625,7 +625,7 @@ export default function Counter(){
 
 - On browser
 
-<video controls src="2025-3.mov" title="title"></video>
+<video controls src="Images/redux/2025-3.mov" title="title"></video>
 
 - **In a reducer function, you must always return a new object (i.e., a new reference) whenever the state changes. This is one of the core principles of immutability in Redux or any reducer-based state management.**
 - **React (and Redux) relies on *shallow comparison* `(===)` to check if the state has changed. If you mutate the existing state object instead of returning a new one, React or Redux might not detect that anything has changed, and your UI won’t re-render.**
@@ -825,7 +825,7 @@ const store = configureStore({
 - So we would create a map of reducers you could say, and this map is then set as a value for the main reducer and behind the scenes `configureStore` will emerge all those reducers into one big reducer.
 - Now let's dispatch actions. Now `counterSlice.actions` gives bunch of actions types which are reducer function names.
 
-![alt text](image-10.png)
+![alt text](Images/redux/image-10.png)
 
 - These method when called it automatically creates object for which thus they are called actions creators where these object have their respective action type property as their unique identifiers. So we don't have to worry about action identifiers. We don't have to create those action objects on our own. We can tap into this actions key into this actions object on our `createSlice` and execute these action creator methods
 - Now to dispatch the action, in `Counter.jsx`
@@ -879,7 +879,7 @@ export default function Counter(){
 
 - On browser
 
-<video controls src="2025-3.mov" title="title"></video>
+<video controls src="Images/redux/2025-3.mov" title="title"></video>
 
 >[!NOTE]
 > - When we are dispatching action `increment(5)`, redux toolkit will automatically pass the payload as an object with a type and `payload` property, so we can access it in the reducer function as `action.payload`. This is the default property name `payload` that Redux Toolkit uses for the payload of an action.
