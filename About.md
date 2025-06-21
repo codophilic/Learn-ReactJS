@@ -4966,7 +4966,572 @@ export default App;
 
 <video controls src="2025-1.mov" title="title"></video>
 
+- Now if you see, we are not able to get the navigation bar. Now to add those, we need to define a new component `<RootLayout>`.
 
+```
+//RootLayout.jsx
+import { Outlet } from "react-router-dom";
+import Navbar from "./Navbar";
+
+
+export const NavBarProps = {
+  navTitle: "Text Utilities",
+  tab1: "Home",
+  tab2: "About",
+  tab3: "Text Filtration",
+  tab4: "Timer"
+};
+
+// RootLayout is a component that serves as the main layout for the application.
+// It includes a Navbar component and an Outlet for rendering nested routes.
+// Outlet is a placeholder that will be replaced by the content of the current route.
+// Basically the URL path will be matched with the routes defined in the App.js file, and the corresponding component will be rendered inside the Outlet.
+// That component will become Outlet's child component.
+
+function RootLayout(props) {
+  return (
+    <>
+      <Navbar {...NavBarProps} />
+      <div style={{ padding: '20px' }}>
+        <Outlet />
+      </div>
+    </>
+  );
+}
+
+export default RootLayout;
+
+
+//App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import './App.css';
+import About from './components/About';
+import Navbar from './components/Navbar';
+import TextFilters from './components/TextFilters';
+import TextInput from './components/TextInput';
+import Timer from './components/Timer';
+import RootLayout from './components/RootLayout';
+
+
+
+// createBrowserRouter is used for defining routes in React Router v6.4+. It takes an array of route 
+// objects and returns a router instance that can be used with the Router component.
+const router = createBrowserRouter([
+  {
+    // The path property defines the URL path for the route.
+    // The element property specifies the React component that should be rendered when the route matches.
+    // The children property is an array of nested routes that will be rendered within the parent route's component.
+    // <RootLayout /> is a component that serves as the layout for the application, providing a consistent structure across different pages.
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {
+    path: "/",
+    element: <TextInput />
+  },   
+      {
+    path: "/about",
+    element: <About />
+  },
+  {
+    path: "/filter",
+    element: <TextFilters />
+  },
+  {
+    path: "/timer",
+    element: <Timer />
+  }
+]
+  }
+]);
+
+
+// RouterProvider is used to provide the router instance to the React application. It is a component that wraps the entire application and allows the use of routing features like navigation, route matching, and rendering components based on the current URL.
+// This is typically used in conjunction with the createBrowserRouter function to define the routes for the application.
+function App() {
+  return (
+
+        <RouterProvider router={router} />
+    
+  );
+}
+
+export default App;
+```
+
+- On browser, we are able to get navigation bar along with routes
+
+![alt text](image-3.png)
+
+- Now if enter any random path on our url, we may get below error page
+
+![alt text](image-4.png)
+
+
+
+- Now of course, it's not unlikely, that over time visitors might accidentally, or, due to erroneous links provided by us, visit pages that they shouldn't visit, that simply don't exist. And therefore, you might want to prepare a default error page that's shown in situations like this. To do that we could let's create a `ErrorPage` component.
+
+```
+//ErrorPage.jsx
+
+export default function ErrorPage() {
+    return (
+        <div style={styleForErrorPage}>
+            <style>{keyframes}</style>
+            <h1 style={glowText}>Oops!</h1>
+            <div style={neonBar}></div>
+            <p style={glowSubText}>Sorry, an unexpected error has occurred.</p>
+            <p style={glowSubText}>We are working to fix this issue. Please try again later.</p>
+        </div>
+    );
+}
+```
+
+- The `react-router-dom` package tells us where we can add the special error element property? that is to our route definitions, to define which page should be loaded if an error is created. For that, we can go to our route definitions and we could add it under `errorElement`.
+
+```
+//App.jsx
+
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import './App.css';
+import About from './components/About';
+import Navbar from './components/Navbar';
+import TextFilters from './components/TextFilters';
+import TextInput from './components/TextInput';
+import Timer from './components/Timer';
+import RootLayout from './components/RootLayout';
+import ErrorPage from './components/ErrorPage';
+
+
+// createBrowserRouter is used for defining routes in React Router v6.4+. It takes an array of route 
+// objects and returns a router instance that can be used with the Router component.
+const router = createBrowserRouter([
+  {
+    // The path property defines the URL path for the route.
+    // The element property specifies the React component that should be rendered when the route matches.
+    // The children property is an array of nested routes that will be rendered within the parent route's component.
+    // <RootLayout /> is a component that serves as the layout for the application, providing a consistent structure across different pages.
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+    path: "/",
+    element: <TextInput />
+  },   
+      {
+    path: "/about",
+    element: <About />
+  },
+  {
+    path: "/filter",
+    element: <TextFilters />
+  },
+  {
+    path: "/timer",
+    element: <Timer />
+  }
+]
+  }
+]);
+
+
+// RouterProvider is used to provide the router instance to the React application. It is a component that wraps the entire application and allows the use of routing features like navigation, route matching, and rendering components based on the current URL.
+// This is typically used in conjunction with the createBrowserRouter function to define the routes for the application.
+function App() {
+  return (
+
+        <RouterProvider router={router} />
+    
+  );
+}
+
+export default App;
+```
+
+- When we enter a URL that doesn't exist, the `react-router-dom` package will generate an error, and that error will automatically bubble up to our root route definition.
+- On browser
+
+![alt text](image-5.png)
+
+### `NavLink`
+
+- Currently in `NavBar.js`, we are using `Link`, let's add some css which will show active link.
+
+```
+//App.css
+
+.nav-link {
+  color: #010202;
+  text-decoration: none;
+  margin: 0 10px;
+}
+.nav-link:hover {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+// Existing NavBar.js
+
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+
+
+export default function Navbar({navTitle,tab1,tab2,tab3,tab4}){
+    return (
+        <>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <Link className="navbar-brand" to="/">{navTitle}</Link>
+        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav mr-auto">
+            <li className="nav-item active">
+                <Link className="nav-link" to="/" > {tab1} <span className="sr-only">(current)</span></Link>
+            </li>
+            <li className="nav-item">
+                <Link className="nav-link" to="/about"> {tab2} </Link>
+            </li>
+
+            <li className="nav-item">
+                <Link className="nav-link" to="/filter"> {tab3} </Link>
+            </li>
+            <li className="nav-item">
+                <Link className="nav-link" to="/timer"> {tab4} </Link>
+            </li>
+            </ul>
+            <form className="form-inline my-2 my-lg-0">
+            <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
+            <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+        </nav>
+        </>
+    );
+}
+
+Navbar.propTypes={
+    navTitle: PropTypes.string.isRequired,
+    tab1: PropTypes.string.isRequired,
+    tab2: PropTypes.string.isRequired
+}
+// Navbar.defaultProps={
+//     navTitle: "Some Default Value",
+//     tab1: "Some Tab1",
+//     tab2: "Some Tab2"
+// }
+```
+
+- On browser
+
+<video controls src="2025-2.mov" title="title"></video>
+
+- If you see, our we were able to click on table and we were also able to see the underlined tab but our design for the active tab on the menu does not retain. This can be fixed by adding some additional logic, but we have another choice which is using `NavLink`.
+- Both `Link` and `NavLink` let you navigate without a page refresh. `NavLink` is preferred when you want to highlight the currently active link (like highlighting a tab or menu item). Let's implement `NavLink`.
+
+```
+//NavBar.js
+
+import PropTypes from 'prop-types';
+import { NavLink } from 'react-router-dom';
+
+export default function Navbar({navTitle,tab1,tab2,tab3,tab4}){
+    return (
+        <>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <NavLink className="navbar-brand" to="/">{navTitle}</NavLink>
+        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav mr-auto">
+            <li className="nav-item active">
+                <NavLink to="/" end className={({isActive})=> isActive? "nav-link active": "nav-link"}>  {tab1} <span className="sr-only">(current)</span></NavLink>
+            </li>
+            <li className="nav-item">
+                <NavLink to="/about" end className={({isActive})=> isActive? "nav-link active": "nav-link"} > {tab2} </NavLink>
+            </li>
+
+            <li className="nav-item">
+                <NavLink to="/filter" end className={({isActive})=> isActive? "nav-link active": "nav-link"}> {tab3} </NavLink>
+            </li>
+            <li className="nav-item">
+                <NavLink to="/timer" end className={({isActive})=> isActive? "nav-link active": "nav-link"}> {tab4} </NavLink>
+            </li>
+            </ul>
+            <form className="form-inline my-2 my-lg-0">
+            <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
+            <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+        </nav>
+        </>
+    );
+}
+
+Navbar.propTypes={
+    navTitle: PropTypes.string.isRequired,
+    tab1: PropTypes.string.isRequired,
+    tab2: PropTypes.string.isRequired
+}
+// Navbar.defaultProps={
+//     navTitle: "Some Default Value",
+//     tab1: "Some Tab1",
+//     tab2: "Some Tab2"
+// }
+
+
+//App.css
+
+.nav-link {
+  color: #010202;
+  text-decoration: none;
+  margin: 0 10px;
+}
+.nav-link:hover {
+  font-weight: bold;
+  text-decoration: underline;
+}
+.nav-link.active {
+  font-weight: bold;
+  text-decoration: underline;
+  font-style: italic;
+}
+```
+
+- On browser
+
+<video controls src="2025-3.mov" title="title"></video>
+
+
+- Here, `className` will consist of function, which gets an object from `NavLink`. This object contains `isActive` variable when destruct. So when we write
+
+```
+<NavLink
+  to="/about"
+  className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+>
+  About
+</NavLink>
+```
+
+- React router automatically calls that function and passes an object that looks like
+
+```
+{
+  isActive: true,   // true if the current route matches the link
+  isPending: false, // (if you're using data loading/navigation)
+}
+```
+
+- You can destructure this object directly
+
+```
+({ isActive }) => ...
+```
+
+- `isActive` variable is automatically passed by `NavLink`. You can style the link differently when it's the current route.
+
+
+>[!NOTE]
+> - `NavLink` destructs the object and gives `isActive` variable only into function `className={({isActive})=> isActive? "nav-link active": "nav-link"}`.
+
+
+- In React Router, the `end` prop on a `<NavLink>` controls how strictly the path should be matched. When you use
+
+```
+<NavLink to="/" end>
+```
+
+- You're telling React Router, match only the exact path `/` — not `/about`, `/filter`, `/anything`. Without `end`, `/` would also match all nested paths like `/about`, `/filter`, etc., because they start with `/` and all tabs would become active if clicked once.
+- Use `NavLink` when:
+  - You want to highlight the current page in the navbar
+  - You need dynamic styling based on the route
+  - You're building tabs, sidebars, or navbars with active indicators
+
+### `useNavigate`
+
+- In React Router, `useNavigate()` is a hook that lets you programmatically navigate between routes — just like a user would click a link, but from your code.
+- Let's see an example in `TextInput`
+
+```
+//TextInput.js
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export default function TextInput(){
+    const [inputUser,SetInputUser]=useState(" ");
+    const OnChangeEvent=(event)=>{
+        SetInputUser(event.target.value);
+    }
+    const OnClickEvent=()=>{
+        SetInputUser(inputUser.toUpperCase());
+    }
+    const navigate = useNavigate();
+    const handleNavigation = () => {
+        navigate("/about");
+    };
+    return(
+        <div>
+        <div className="form-group">
+        <label htmlFor="exampleFormControlTextarea1">Enter your Text Here </label>
+        <textarea className="form-control" value={inputUser}  onChange={OnChangeEvent} id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+        <button type="button" onClick={OnClickEvent} className="btn btn-primary">Convert to UPPERCASE</button>
+
+        <div className="container my-3">
+            <p> Number of Words - {inputUser.split(" ").length} , Number of Characters - {inputUser.length}</p>
+        </div>
+
+            <button onClick={handleNavigation}>Go to About</button>
+        </div>
+    );
+}
+```
+
+- On browser
+
+<video controls src="2025-4.mov" title="title"></video>
+
+
+
+- Other navigation purposes that can be use with `useNavigate` are
+
+```
+navigate(-1); // go back
+navigate(1);  // go forward
+navigate('/about', { replace: true });
+//replace: true replaces the current entry in the history stack (like history.replace()), so the back button won't return to the previous route.
+```
+
+>[!NOTE]
+> - `useNavigate` is only for internal navigation. `useNavigate('/about')` or `useNavigate('/dashboard')` works only within your React Router app.
+> - We cannot navigate external urls like `useNavigate("www.google.com")`. To open external URL we can use `window.location.href`.
+
+## Dynamic Routes
+
+- Dynamic Routing means defining routes that can change based on URL parameters — like `/users/:id` or `/product/:productId`. Instead of hardcoding every possible route, you use URL parameters to create flexible, reusable routes.
+- Example of dynamic router
+
+```
+<Route path="/user/:id" element={<UserProfile />} />
+```
+
+- Here, `:id` is a dynamic segment. You could visit `/user/1`, `/user/99` — all go to the same `UserProfile` component, but with different `id` loading data of specific user.
+- Now in the URl, we are sending dynamic segment, but how to retrieve it? that is using `useParam`, let's see an complete example
+- Let's create a new component `DisplayUser`
+
+```
+import { useParams } from "react-router-dom";
+
+export default function DisplayUser() {
+
+    const params = useParams();
+    // Extract userId from the URL parameters
+    const userId = params.userId;
+
+    const userList = [
+        { id: 1, name: "John Doe", email: "john.gmail.com" },
+        { id: 2, name: "Jane Smith", email: "smith.gmail.com" },
+        { id: 3, name: "Alice Johnson", email: "alice.gmail.com" },
+        { id: 4, name: "Bob Brown", email: "bob.gmail.com" }
+    ];
+    // Find the user with the matching userId
+    const user = userList.find((user) => user.id === parseInt(userId));
+
+  return (
+    <div>
+        {user ? (
+            <div>
+            <h2>User Details</h2>
+            <p><strong>ID:</strong> {user.id}</p>
+            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            </div>
+        ) : (
+            <p>User not found.</p>
+        )}
+    </div>
+  );
+}
+```
+
+- In `App.js`, add a new route
+
+```
+
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import './App.css';
+import About from './components/About';
+import Navbar from './components/Navbar';
+import TextFilters from './components/TextFilters';
+import TextInput from './components/TextInput';
+import Timer from './components/Timer';
+import RootLayout from './components/RootLayout';
+import ErrorPage from './components/ErrorPage';
+import DisplayUser from './components/DisplayUser';
+
+
+// createBrowserRouter is used for defining routes in React Router v6.4+. It takes an array of route 
+// objects and returns a router instance that can be used with the Router component.
+const router = createBrowserRouter([
+  {
+    // The path property defines the URL path for the route.
+    // The element property specifies the React component that should be rendered when the route matches.
+    // The children property is an array of nested routes that will be rendered within the parent route's component.
+    // <RootLayout /> is a component that serves as the layout for the application, providing a consistent structure across different pages.
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+    path: "/",
+    element: <TextInput />
+  },   
+      {
+    path: "/about",
+    element: <About />
+  },
+  {
+    path: "/filter",
+    element: <TextFilters />
+  },
+  {
+    path: "/timer",
+    element: <Timer />
+  },
+  {
+    path: "/user/:userId",
+    element: <DisplayUser />
+  }
+]
+  }
+]);
+
+
+// RouterProvider is used to provide the router instance to the React application. It is a component that wraps the entire application and allows the use of routing features like navigation, route matching, and rendering components based on the current URL.
+// This is typically used in conjunction with the createBrowserRouter function to define the routes for the application.
+function App() {
+  return (
+
+        <RouterProvider router={router} />
+    
+  );
+}
+
+export default App;
+```
+
+- On browser
+
+<video control src="2025-5.mov" title="title"></video>
+
+
+- React Router provides the `useParams` hook to access these dynamic values inside the component. If the URL is `/user/42`, then `id` will be `42`.
+- `useParams()` returns strings, even if the value looks like a number.
 
 ## Types of Component
 

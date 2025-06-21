@@ -1,4 +1,5 @@
-import React,{useState} from 'react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function TextInput(){
     const [inputUser,SetInputUser]=useState(" ");
@@ -8,6 +9,10 @@ export default function TextInput(){
     const OnClickEvent=()=>{
         SetInputUser(inputUser.toUpperCase());
     }
+    const navigate = useNavigate();
+    const handleNavigation = () => {
+        navigate("/about");
+    };
     return(
         <div>
         <div className="form-group">
@@ -20,6 +25,7 @@ export default function TextInput(){
             <p> Number of Words - {inputUser.split(" ").length} , Number of Characters - {inputUser.length}</p>
         </div>
 
+            <button onClick={handleNavigation}>Go to About</button>
         </div>
     );
 }
