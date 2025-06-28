@@ -5,7 +5,7 @@ export default function Navbar({navTitle,tab1,tab2,tab3,tab4}){
     return (
         <>
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <NavLink className="navbar-brand" to="/">{navTitle}</NavLink>
+            <NavLink className="navbar-brand" to="">{navTitle}</NavLink>
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
         </button>
@@ -13,17 +13,17 @@ export default function Navbar({navTitle,tab1,tab2,tab3,tab4}){
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav mr-auto">
             <li className="nav-item active">
-                <NavLink to="/" end className={({isActive})=> isActive? "nav-link active": "nav-link"}>  {tab1} <span className="sr-only">(current)</span></NavLink>
+                <NavLink to="" end className={({isActive})=> isActive? "nav-link active": "nav-link"}>  {tab1} <span className="sr-only">(current)</span></NavLink>
             </li>
             <li className="nav-item">
-                <NavLink to="/about" end className={({isActive})=> isActive? "nav-link active": "nav-link"} > {tab2} </NavLink>
+                <NavLink to="about" end className={({isActive})=> isActive? "nav-link active": "nav-link"} > {tab2} </NavLink>
             </li>
 
             <li className="nav-item">
-                <NavLink to="/filter" end className={({isActive})=> isActive? "nav-link active": "nav-link"}> {tab3} </NavLink>
+                <NavLink to="filter" end className={({isActive})=> isActive? "nav-link active": "nav-link"}> {tab3} </NavLink>
             </li>
             <li className="nav-item">
-                <NavLink to="/timer" end className={({isActive})=> isActive? "nav-link active": "nav-link"}> {tab4} </NavLink>
+                <NavLink to="timer" end className={({isActive})=> isActive? "nav-link active": "nav-link"}> {tab4} </NavLink>
             </li>
             </ul>
             <form className="form-inline my-2 my-lg-0">

@@ -5533,6 +5533,313 @@ export default App;
 - React Router provides the `useParams` hook to access these dynamic values inside the component. If the URL is `/user/42`, then `id` will be `42`.
 - `useParams()` returns strings, even if the value looks like a number.
 
+### Absolute Path vs Relative Path
+
+- In the context of React Router DOM, absolute vs relative paths refer to how you define the route path in components like `<Route>`, `<Link>`, `<NavLink>`, `<Navigate>`, and `useNavigate`
+
+1. Absolute Path in React Router
+
+  - Starts with `/` (a leading slash).
+  - It defines the path from the root of your app, regardless of the current URL.
+  - Always points to the same location.
+
+```
+<Link to="/about" />  // Always goes to http://yourdomain.com/about
+```
+
+2. Relative Path in React Router
+
+  - Does NOT start with `/`.
+  - It is relative to the current route URL.
+  - Useful when building nested routes or when inside a sub-route.
+
+```
+Suppose you are currently on /dashboard:
+
+
+<Link to="settings" />  // Goes to /dashboard/settings
+<Link to="../home" />   // Goes one level up: /home
+useNavigate()("edit");     // If you're at /user/123, it goes to /user/123/edit
+useNavigate()("../list");  // Goes to /user/list
+```
+
+
+- When defining our routes, we define the paths for which they should be active. We got this root (`path: "/"`) wrapper route, here, and then we got a couple of child routes inside of that route.
+
+```
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+    path: "/",
+    element: <TextInput />
+  },   
+      {
+    path: "/about",
+    element: <About />
+  },
+  {
+    path: "/filter",
+    element: <TextFilters />
+  },
+  {
+    path: "/timer",
+    element: <Timer />
+  },
+  {
+    path: "/user/:userId",
+    element: <DisplayUser />
+  }
+]
+  }
+]);
+```
+
+
+- Now actually, all the child paths defined here are absolute paths because they all start with a `/`. This simply means that they're always seen from after the domain name. If we changed this wrapper path to `/root` and reload the page, when get an error.
+
+```
+const router = createBrowserRouter([
+  {
+
+    path: "/root",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+    path: "/",
+    element: <TextInput />
+  },   
+      {
+    path: "/about",
+    element: <About />
+  },
+  {
+    path: "/filter",
+    element: <TextFilters />
+  },
+  {
+    path: "/timer",
+    element: <Timer />
+  },
+  {
+    path: "/user/:userId",
+    element: <DisplayUser />
+  }
+]
+  }
+]);
+```
+
+- On browser
+
+![alt text](image-6.png)
+
+- If we just type in just `/root`, we don't see anything on the screen. So the problem here is we have absolute paths written because they're starting with a `/` and if we change it to `/root` we're saying that the parent route should handle all pages that start with `/root`, but then the child pages actually don't start with `/root`.
+- Now this issue can be resolved by using relative path.
+
+```
+const router = createBrowserRouter([
+  {
+    path: "/root",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+    path: "",
+    element: <TextInput />
+  },   
+      {
+    path: "about",
+    element: <About />
+  },
+  {
+    path: "filter",
+    element: <TextFilters />
+  },
+  {
+    path: "timer",
+    element: <Timer />
+  },
+  {
+    path: "user/:userId",
+    element: <DisplayUser />
+  }
+]
+  }
+]);
+```
+
+- Even after apply relative path changes, we would see our custom error page.
+
+<video controls src="2025-6.mov" title="title"></video>
+
+- This is because we need to update our `NavLink` as well to relative path.
+
+```
+// Previously all NavLink start from absolute path ('/about','/timer' etc..) as well as useNavigate
+
+// TextInput.jsx
+navigate("about");
+
+...
+<nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <NavLink className="navbar-brand" to="">{navTitle}</NavLink>
+        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav mr-auto">
+            <li className="nav-item active">
+                <NavLink to="" end className={({isActive})=> isActive? "nav-link active": "nav-link"}>  {tab1} <span className="sr-only">(current)</span></NavLink>
+            </li>
+            <li className="nav-item">
+                <NavLink to="about" end className={({isActive})=> isActive? "nav-link active": "nav-link"} > {tab2} </NavLink>
+            </li>
+
+            <li className="nav-item">
+                <NavLink to="filter" end className={({isActive})=> isActive? "nav-link active": "nav-link"}> {tab3} </NavLink>
+            </li>
+            <li className="nav-item">
+                <NavLink to="timer" end className={({isActive})=> isActive? "nav-link active": "nav-link"}> {tab4} </NavLink>
+            </li>
+... remaining codes
+```
+
+- On browser
+
+<video controls src="2025-7.mov" title>
+
+- Now, when defining routes like this, this simply means that these paths defined here are appended after the path of the wrapper route. So if we have a child route with a relative path, then React Router will take a look at the path of the parent route and append the child route path after the parent route path.
+- Having the root route as absolute path (`/`) and child route as relative path also works.
+
+```
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+    path: "",
+    element: <TextInput />
+  },   
+      {
+    path: "about",
+    element: <About />
+  },
+  {
+    path: "filter",
+    element: <TextFilters />
+  },
+  {
+    path: "timer",
+    element: <Timer />
+  },
+  {
+    path: "user/:userId",
+    element: <DisplayUser />
+  }
+]
+  }
+]);
+```
+
+- On browser
+
+<video controls src="2025-8.mov" title="title"></video>
+
+- Now we also have `/user` page where we provided `id` as param and display user details
+
+![alt text](image-7.png)
+
+- Let's add a home link
+
+```
+import { Link, useParams } from "react-router-dom";
+
+export default function DisplayUser() {
+
+    const params = useParams();
+    // Extract userId from the URL parameters
+    const userId = params.userId;
+
+    const userList = [
+        { id: 1, name: "John Doe", email: "john.gmail.com" },
+        { id: 2, name: "Jane Smith", email: "smith.gmail.com" },
+        { id: 3, name: "Alice Johnson", email: "alice.gmail.com" },
+        { id: 4, name: "Bob Brown", email: "bob.gmail.com" }
+    ];
+    // Find the user with the matching userId
+    const user = userList.find((user) => user.id === parseInt(userId));
+
+  return (
+    <div>
+        {user ? (
+            <div>
+            <h2>User Details</h2>
+            <p><strong>ID:</strong> {user.id}</p>
+            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            </div>
+        ) : (
+            <p>User not found.</p>
+        )}
+        <Link to="..">Go Back to Home</Link>
+    </div>
+  );
+}
+```
+
+- Now when we click on `Go Back to Home` it takes us from `http://localhost:3000/user/1` to `http://localhost:3000/`. Now let's say we wanted to step to `http://localhost:3000/user` (though we don't have this page for `/user` so we expect an error page if we landed up on `http://localhost:3000/user`), how to do so? so here we can use a attribute `relative="path"`.
+
+```
+import { Link, useParams } from "react-router-dom";
+
+export default function DisplayUser() {
+
+    const params = useParams();
+    // Extract userId from the URL parameters
+    const userId = params.userId;
+
+    const userList = [
+        { id: 1, name: "John Doe", email: "john.gmail.com" },
+        { id: 2, name: "Jane Smith", email: "smith.gmail.com" },
+        { id: 3, name: "Alice Johnson", email: "alice.gmail.com" },
+        { id: 4, name: "Bob Brown", email: "bob.gmail.com" }
+    ];
+    // Find the user with the matching userId
+    const user = userList.find((user) => user.id === parseInt(userId));
+
+  return (
+    <div>
+        {user ? (
+            <div>
+            <h2>User Details</h2>
+            <p><strong>ID:</strong> {user.id}</p>
+            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            </div>
+        ) : (
+            <p>User not found.</p>
+        )}
+        <Link to=".." relative="path">Go Back</Link>
+    </div>
+  );
+}
+```
+
+- On browser when clicked on `Go Back` it will step back to `/user` instead of `/`
+
+<video controls src="2025-9.mov" title="title"></video>
+
+- The default mode for `relative` is `route` which redirects to root route.
+
+
 ## Types of Component
 
 - In React, there are two primary ways to create components function and class components. Each has its own syntax and use cases.

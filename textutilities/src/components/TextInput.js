@@ -11,7 +11,7 @@ export default function TextInput(){
     }
     const navigate = useNavigate();
     const handleNavigation = () => {
-        navigate("/about");
+        navigate("about");
     };
     return(
         <div>

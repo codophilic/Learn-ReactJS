@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export default function DisplayUser() {
 
@@ -27,6 +27,7 @@ export default function DisplayUser() {
         ) : (
             <p>User not found.</p>
         )}
+        <Link to=".." relative="path">Go Back</Link>
     </div>
   );
 }
