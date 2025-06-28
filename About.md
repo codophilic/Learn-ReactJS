@@ -5840,6 +5840,44 @@ export default function DisplayUser() {
 - The default mode for `relative` is `route` which redirects to root route.
 
 
+### Index Route
+
+- An index route is the default child component rendered at a parent route when no child path is specified. In React Router DOM, an index route is a special kind of child route that renders when no other child route matches — it acts like the "default" route inside a nested route.
+
+```
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+    index: true, // This indicates that this route should match the root path ("/").
+    element: <TextInput />
+  },   
+      {
+    path: "about",
+    element: <About />
+  },
+  {
+    path: "filter",
+    element: <TextFilters />
+  },
+  {
+    path: "timer",
+    element: <Timer />
+  },
+  {
+    path: "user/:userId",
+    element: <DisplayUser />
+  }
+]
+  }
+]);
+```
+
+
+
 ## Types of Component
 
 - In React, there are two primary ways to create components function and class components. Each has its own syntax and use cases.
