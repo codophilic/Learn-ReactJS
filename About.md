@@ -58,6 +58,75 @@ npx create-react-app textutilities              OR          npm create-react-app
 >   - It ensures you’re always using the latest version.
 > - `create-react-app` is deprecated in latest react version so you need to use vite `npm create vite@latest my-react-app -- --template react`
 
+<br/>
+<details>
+
+<summary>About Vite</summary>
+
+- Vite (pronounced like *veet*) is a modern tool that helps you develop and build React apps faster. Think of it like a new and improved version of Create React App (CRA).
+- When building a React app, you need:
+
+  - Fast development: See changes instantly when you edit your code.
+  - Efficient build: Convert your code into fast-loading files for the web.
+
+- Create React App was good, but it's slow, especially for large apps. Vite is faster, lighter, and more efficient.
+- Vite with React refers to using Vite as the build tool and development server for a React application. Vite is a modern, fast build tool that provides a significantly improved development experience compared to older tools like Create React App (CRA).
+- Any new app will have a lot of boilerplate things that you will have to set up every time you want to create a new react application:
+
+  - A development environment, so you can code your app and view it in the browser
+  - Transpiling your code to a syntax older browsers can understand.
+  - The ability to build your app, so that you can deploy it.
+  - A server with hot reloading that will refresh your page as you make code changes.
+  - The ability to lint your code for errors/bugs.
+
+- The development server tools like CRA(Create React App) or Vite are designed to configure these boilerplate things just for you to create a new React app without setting up anything manually.
+- The Create React App was the default method to create a new React application over the years.
+- As your project grows in size, the development and build time increase substantially, because whenever the changes are made, CRA rebuilds the whole application. Hence using CRA can be very time-consuming when you have a large number of files.
+
+### What Made Vite Popular?
+
+- Vite (Pronounced as `veet`, which means fast in French). Unlike CRA Vite does not rebuild the whole app whenever changes are made, it is built on demand. It splits the app into two categories: dependencies and source code.
+
+1. Dependencies: These are things that do not change often during the development process. These bundles use `esbuildis` written in `Go` and is very fast than javascript.
+
+2. Source Code: It is called only on demand whenever required, and it is incredibly fast.
+
+### 📦 How to Create a React App with Vite?
+
+
+```
+# 1. Create your app using Vite
+npm create vite@latest my-react-app
+
+# 2. Choose "React" when it asks for framework
+# (Also choose "React + TypeScript" if needed)
+
+# 3. Go into the folder
+cd my-react-app
+
+# 4. Install dependencies
+npm install
+
+# 5. Start the dev server
+npm run dev
+```
+
+### 🖥️ Folder Structure (after using Vite)
+
+```
+my-react-app/
+├── index.html        # entry HTML
+├── src/
+│   ├── App.jsx       # main React component
+│   └── main.jsx      # entry point for React
+├── vite.config.js    # Vite configuration
+├── package.json
+```
+
+
+</details>
+<br/>
+
 ### Create React Project
 
 - Post running the `npx` command we can see below folder structure gets created.
