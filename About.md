@@ -4738,16 +4738,16 @@ export default App;
 
 - When you visit websites you can typically append a path after the domain name like, slash `/welcome` and that loads, for example, the `welcome` page of a website. And if you then type a different URL into the browser address bar, or if you click a link that changes the URL, for example, to `/product`, a different page gets loaded. So the visible content of the website changes.
 
-![alt text](image.png)
+![alt text](Images/about/router/image.png)
 
 - That's what Routing is all about. Different URL paths load different content on the screen. Now, traditionally, you would implement Routing by simply loading different HTML files for different paths, and that is how you would build a **multi-page application** which you typically would build without ReactJS.
 
-![alt text](image-1.png)
+![alt text](Images/about/router/image-1.png)
 
 - Now, with that, you get different content for different paths, but the disadvantage is that you always have to fetch new content. A new HTTP request is sent and a new response is received, and that can kind of break the user flow. It can introduce some lag and slow down your website and it can therefore lead to a bad user experience.
 - So that's why we might wanna build a single page application when we're building more complex user interfaces. With those, you send only one initial HTML request and then this HTML file with a bunch of extra JavaScript is downloaded, and thereafter the extra JavaScript code that runs on the client will actually take care about adjusting what the user sees on the screen.
 
-![alt text](image-2.png)
+![alt text](Images/about/router/image-2.png)
 
 
 - That's how single page applications work. We can support path changes in the URL and load different content based on the path. We can add client-side React code that basically watches the currently active URL and that triggers whenever the URL changes, and that then leads to different content being displayed on the screen when the URL changes. So instead of loading new HTML files from the backend, we could add some client-side code that simply watches the URL and then loads a different React component when that URL changes.
@@ -4964,7 +4964,7 @@ export default App;
 
 - On browser
 
-<video controls src="2025-1.mov" title="title"></video>
+<video controls src="Images/about/router/2025-1.mov" title="title"></video>
 
 - Now if you see, we are not able to get the navigation bar. Now to add those, we need to define a new component `<RootLayout>`.
 
@@ -5061,11 +5061,11 @@ export default App;
 
 - On browser, we are able to get navigation bar along with routes
 
-![alt text](image-3.png)
+![alt text](Images/about/router/image-3.png)
 
 - Now if enter any random path on our url, we may get below error page
 
-![alt text](image-4.png)
+![alt text](Images/about/router/image-4.png)
 
 
 
@@ -5152,7 +5152,7 @@ export default App;
 - When we enter a URL that doesn't exist, the `react-router-dom` package will generate an error, and that error will automatically bubble up to our root route definition.
 - On browser
 
-![alt text](image-5.png)
+![alt text](Images/about/router/image-5.png)
 
 ### `NavLink`
 
@@ -5226,7 +5226,7 @@ Navbar.propTypes={
 
 - On browser
 
-<video controls src="2025-2.mov" title="title"></video>
+<video controls src="Images/about/router/2025-2.mov" title="title"></video>
 
 - If you see, our we were able to click on table and we were also able to see the underlined tab but our design for the active tab on the menu does not retain. This can be fixed by adding some additional logic, but we have another choice which is using `NavLink`.
 - Both `Link` and `NavLink` let you navigate without a page refresh. `NavLink` is preferred when you want to highlight the currently active link (like highlighting a tab or menu item). Let's implement `NavLink`.
@@ -5304,7 +5304,7 @@ Navbar.propTypes={
 
 - On browser
 
-<video controls src="2025-3.mov" title="title"></video>
+<video controls src="Images/about/router/2025-3.mov" title="title"></video>
 
 
 - Here, `className` will consist of function, which gets an object from `NavLink`. This object contains `isActive` variable when destruct. So when we write
@@ -5394,7 +5394,7 @@ export default function TextInput(){
 
 - On browser
 
-<video controls src="2025-4.mov" title="title"></video>
+<video controls src="Images/about/router/2025-4.mov" title="title"></video>
 
 
 
@@ -5527,7 +5527,7 @@ export default App;
 
 - On browser
 
-<video control src="2025-5.mov" title="title"></video>
+<video control src="Images/about/router/2025-5.mov" title="title"></video>
 
 
 - React Router provides the `useParams` hook to access these dynamic values inside the component. If the URL is `/user/42`, then `id` will be `42`.
@@ -5636,7 +5636,7 @@ const router = createBrowserRouter([
 
 - On browser
 
-![alt text](image-6.png)
+![alt text](Images/about/router/image-6.png)
 
 - If we just type in just `/root`, we don't see anything on the screen. So the problem here is we have absolute paths written because they're starting with a `/` and if we change it to `/root` we're saying that the parent route should handle all pages that start with `/root`, but then the child pages actually don't start with `/root`.
 - Now this issue can be resolved by using relative path.
@@ -5675,7 +5675,7 @@ const router = createBrowserRouter([
 
 - Even after apply relative path changes, we would see our custom error page.
 
-<video controls src="2025-6.mov" title="title"></video>
+<video controls src="Images/about/router/2025-6.mov" title="title"></video>
 
 - This is because we need to update our `NavLink` as well to relative path.
 
@@ -5712,7 +5712,7 @@ navigate("about");
 
 - On browser
 
-<video controls src="2025-7.mov" title>
+<video controls src="Images/about/router/2025-7.mov" title>
 
 - Now, when defining routes like this, this simply means that these paths defined here are appended after the path of the wrapper route. So if we have a child route with a relative path, then React Router will take a look at the path of the parent route and append the child route path after the parent route path.
 - Having the root route as absolute path (`/`) and child route as relative path also works.
@@ -5751,11 +5751,11 @@ const router = createBrowserRouter([
 
 - On browser
 
-<video controls src="2025-8.mov" title="title"></video>
+<video controls src="Images/about/router/2025-8.mov" title="title"></video>
 
 - Now we also have `/user` page where we provided `id` as param and display user details
 
-![alt text](image-7.png)
+![alt text](Images/about/router/image-7.png)
 
 - Let's add a home link
 
@@ -5835,7 +5835,7 @@ export default function DisplayUser() {
 
 - On browser when clicked on `Go Back` it will step back to `/user` instead of `/`
 
-<video controls src="2025-9.mov" title="title"></video>
+<video controls src="Images/about/router/2025-9.mov" title="title"></video>
 
 - The default mode for `relative` is `route` which redirects to root route.
 
@@ -5876,6 +5876,53 @@ const router = createBrowserRouter([
 ]);
 ```
 
+### `loader` & `useLoaderData`
+
+- These are part of Data APIs introduced to make data fetching easier and more powerful in React Router. `loader` is a function that fetches data before the component renders. `useLoaderData()` is a hook that reads the data returned by the loader.
+- Normally, you'd fetch data inside your component using `useEffect`, like this
+
+```
+useEffect(() => {
+  fetchData().then(setData);
+}, []);
+```
+
+- But with React Router’s loader, you fetch data in advance (before showing the page), so:
+  - ✅ No loading flashes
+  - ✅ No extra code inside your component
+  - ✅ Works well with route-based data
+- A sample example could be fetching data and using it
+
+```
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+    index: true, // This indicates that this route should match the root path ("/").
+    element: <FetchUser />,
+    loader: {async () => {
+    const res = await fetch("/api/user"); // Call API and fetch the data
+    return res.json(); // 👈 returned data available to component
+  }}
+      }]
+  }
+]);
+
+
+// FetchUser.jsx
+
+import { useLoaderData } from 'react-router-dom';
+
+function FetchUser() {
+  const user = useLoaderData(); // 👈 grabs data returned by the loader
+  return <h1>Welcome {user.name}!</h1>;
+}
+```
+
+- So you don't need to use `useEffect` + `useState` to fetch data. Better user experience (data is ready when page loads). Works great with nested routes
 
 
 ## Types of Component

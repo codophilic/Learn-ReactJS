@@ -3082,3 +3082,4 @@ root.render(
 ```
 
 - Just like `<Fragment>`, `<StrictMode>` does not render any extra DOM elements.
+- Learn about [Redux](Redux.md)
